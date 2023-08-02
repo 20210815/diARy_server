@@ -6,7 +6,8 @@ import jakarta.persistence.*;
 
 @Data
 @Entity
-@Table(name = "DiaryLike")
+@Table(name = "diary_like")
+@IdClass(DiaryLikeId.class) // 복합 기본 키 클래스를 지정
 public class DiaryLike {
     @Id
     @ManyToOne

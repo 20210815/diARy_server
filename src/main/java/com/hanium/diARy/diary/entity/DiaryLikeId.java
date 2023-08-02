@@ -1,11 +1,13 @@
 package com.hanium.diARy.diary.entity;
 
-import com.hanium.diARy.user.entity.User;
-
+import lombok.*;
 import java.io.Serializable;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 public class DiaryLikeId implements Serializable {
-    private User user;
-    private Diary diary;
+    private Long user;
+    private Long diary;
 
 }
