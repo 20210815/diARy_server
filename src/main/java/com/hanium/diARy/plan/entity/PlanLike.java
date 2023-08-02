@@ -4,9 +4,10 @@ import com.hanium.diARy.user.entity.User;
 import lombok.Data;
 
 import jakarta.persistence.*;
-@Entity
+
 @Data
-@IdClass(PlanLikeId.class)
+@Entity
+@Table(name = "PlanLike")
 public class PlanLike {
     @Id
     @ManyToOne

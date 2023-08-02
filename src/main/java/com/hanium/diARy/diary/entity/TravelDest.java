@@ -5,30 +5,34 @@ import com.hanium.diARy.plan.entity.Plan;
 import lombok.Data;
 import jakarta.persistence.*;
 
-@Entity
 @Data
+@Entity
 @Table(name = "travel_dest")
 public class TravelDest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "travel_dest_id")
-    private int travelDestId;
+    private Long travelDestId;
 
+    @ManyToOne
+    @JoinColumn(name = "diary_id", nullable = false)
+    private Diary diary;
+
+    @Column(name = "content", nullable = false, length = 100)
     private String content;
 
+    @Column(name = "name", length = 10)
     private String name;
 
+    @Column(name = "address", length = 100)
     private String address;
 
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "location_id", referencedColumnName = "location_id"),
-            @JoinColumn(name = "plan_id", referencedColumnName = "plan_id")
-    })
+    @JoinColumn(name = "location_id")
     private Location location;
 
     @ManyToOne
-    @JoinColumn(name = "plan_id", insertable = false, updatable = false) // plan_id는 Plan 엔티티를 참조하는 데만 사용
+    @JoinColumn(name = "plan_id")
     private Plan plan;
 
 }

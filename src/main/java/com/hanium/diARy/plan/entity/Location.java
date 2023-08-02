@@ -2,23 +2,24 @@ package com.hanium.diARy.plan.entity;
 
 import lombok.Data;
 import jakarta.persistence.*;
-@Entity
+
 @Data
-@IdClass(LocationId.class)
+@Entity
+@Table(name = "Location")
 public class Location {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "location_id")
-    private int locationId;
+    private Long locationId;
 
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "plan_id", referencedColumnName = "plan_id"),
-            @JoinColumn(name = "user_id", referencedColumnName = "user_id") // user_id가 plan_id와 복합 기본 키
-    })
+    @JoinColumn(name = "plan_id", nullable = false)
     private Plan plan;
 
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
+    @Column(name = "address", nullable = false, length = 50)
     private String address;
 
 }

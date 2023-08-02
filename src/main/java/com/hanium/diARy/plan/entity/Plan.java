@@ -4,29 +4,29 @@ import com.hanium.diARy.user.entity.User;
 import lombok.Data;
 
 import jakarta.persistence.*;
-
 import java.sql.Date;
-import java.time.LocalDateTime;
 
-@Entity
 @Data
+@Entity
 @Table(name = "Plan")
 public class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="plan_id")
-    private int planId;
+    @Column(name = "plan_id")
+    private Long planId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "title", nullable = false, length = 10)
     private String title;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
-    @Column(name = "public")
+    @Column(name = "public", nullable = false)
     private boolean isPublic;
 
+    // Getter and Setter, Constructors, etc.
 }
