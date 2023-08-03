@@ -3,6 +3,7 @@ package com.hanium.diARy.plan.entity;
 import lombok.*;
 import java.io.Serializable;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
