@@ -1,7 +1,9 @@
 package com.hanium.diARy.diary.controller;
 
 import com.hanium.diARy.diary.dto.CommentDto;
+import com.hanium.diARy.diary.dto.ReplyDto;
 import com.hanium.diARy.diary.service.CommentService;
+import com.hanium.diARy.diary.service.ReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +15,12 @@ import java.util.List;
 @RequestMapping("/diary")
 public class CommentController {
     private final CommentService commentService;
+    private final ReplyService replyService;
 
-    @Autowired
-    public CommentController(CommentService commentService) {
+    public CommentController(@Autowired CommentService commentService,
+                             @Autowired ReplyService replyService) {
         this.commentService = commentService;
+        this.replyService = replyService;
     }
 
     @PostMapping("/{diaryId}/comment")
@@ -39,6 +43,7 @@ public class CommentController {
         return commentDtoList;
     }
 
+    //유저별 댓글 답글 조회
     @GetMapping("/{userId}/comment")
     public List<CommentDto> readUserCommentAll(@PathVariable("userId") Long id) {
         List<CommentDto> commentDtoList = commentService.readUserCommentAll(id);

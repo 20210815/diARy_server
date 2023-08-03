@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -39,6 +40,14 @@ public class ReplyRepository {
 
     public Iterator<Reply> readReplyAll() {
         return this.replyRepositoryInterface.findAll().iterator();
+    }
+
+    public List<Reply> readCommentReplyAll(Long id) {
+        return this.replyRepositoryInterface.findByComment_CommentId(id);
+    }
+
+    public List<Reply> readUserReplyAll(Long id) {
+        return this.replyRepositoryInterface.findByUser_UserId(id);
     }
 
     public void updateReply(Long id, ReplyDto dto) {

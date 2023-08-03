@@ -5,13 +5,12 @@ import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.repository.CommentRepository;
 import com.hanium.diARy.diary.repository.DiaryRepository;
-import com.hanium.diARy.user.entity.User;
+import com.hanium.diARy.diary.repository.ReplyRepository;
 import com.hanium.diARy.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,16 +19,19 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final DiaryRepository diaryRepository;
+    private final ReplyRepository replyRepository;
 
     @Autowired
     public CommentService(
             CommentRepository commentRepository,
             UserRepository userRepository,
-            DiaryRepository diaryRepository
+            DiaryRepository diaryRepository,
+            ReplyRepository replyRepository
     ) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.diaryRepository = diaryRepository;
+        this.replyRepository = replyRepository;
     }
 
     public void createComment(CommentDto commentDto) {
@@ -75,6 +77,7 @@ public class CommentService {
                     comment.getUser()
             ));
         }
+
         return commentDtoList;
     }
 

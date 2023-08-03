@@ -18,9 +18,9 @@ public class UserRepository {
     public void createUser(UserDto userDto) {
         User user = new User();
         user.setUsername(userDto.getUsername());
-        user.setCreatedAt(userDto.getCreatedAt());
         user.setEmail(userDto.getEmail());
         user.setPassword(userDto.getPassword());
         user.setImage(user.getImage());
+        this.userRepositoryInterface.save(user);
     }
 }

@@ -7,6 +7,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class DiaryLikeId implements Serializable {
-    private Long userId;
-    private Long diaryId;
+    private Long user;
+    private Long diary;
 }

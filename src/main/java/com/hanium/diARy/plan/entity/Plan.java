@@ -1,6 +1,5 @@
 package com.hanium.diARy.plan.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hanium.diARy.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

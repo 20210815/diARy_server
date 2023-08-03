@@ -14,11 +14,15 @@ import java.util.Optional;
 @Repository
 public class DiaryRepository{
     private final DiaryRepositoryInterface diaryRepositoryInterface;
+    private final TagRepositoryInterface tagRepositoryInterface;
 
     public DiaryRepository(
-            @Autowired DiaryRepositoryInterface diaryRepositoryInterface
+            @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
+            @Autowired TagRepositoryInterface tagRepositoryInterface
+
     ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
+        this.tagRepositoryInterface = tagRepositoryInterface;
     }
 
     @Transactional
@@ -28,10 +32,11 @@ public class DiaryRepository{
         diaryEntity.setUser(diaryDto.getUser());
         diaryEntity.setContent(diaryDto.getContent());
         diaryEntity.setPublic(diaryDto.isPublic());
-        diaryEntity.setTag(diaryDto.getTag());
+        diaryEntity.setTags(diaryDto.getTags());
         diaryEntity.setTitle(diaryDto.getTitle());
         diaryEntity.setSatisfaction(diaryDto.getSatisfaction());
-        diaryEntity.setTravelPeriod(diaryDto.getTravelPeriod());
+        diaryEntity.setTravelStart(diaryDto.getTravelStart());
+        diaryEntity.setTravelEnd(diaryDto.getTravelEnd());
 
         // Perform validation if needed (e.g., check for required fields in diaryDto)
 
@@ -59,11 +64,12 @@ public class DiaryRepository{
         }
         Diary diaryEntity = targetEntity.get();
         diaryEntity.setTitle(diaryDto.getTitle() == null ? diaryEntity.getTitle() : diaryDto.getTitle());
-        diaryEntity.setContent(diaryDto.getContent() == null ? diaryEntity.getContent() : diaryDto.getContent());
-        diaryEntity.setTag(diaryDto.getTag() == null? diaryEntity.getTag() : diaryDto.getTag());
-        diaryEntity.setUser(diaryEntity.getUser() == null? diaryEntity.getUser() : diaryDto.getUser());
+        diaryEntity.setContent(diaryDto.getContent());
+        diaryEntity.setTags(diaryDto.getTags() == null? diaryEntity.getTags():diaryDto.getTags());
+        diaryEntity.setUser(diaryDto.getUser());
         diaryEntity.setPublic(diaryDto.isPublic());
-        diaryEntity.setTravelPeriod(diaryDto.getTravelPeriod() == null? diaryEntity.getTravelPeriod() : diaryDto.getTravelPeriod());
+        diaryEntity.setTravelStart(diaryDto.getTravelStart());
+        diaryEntity.setTravelEnd(diaryDto.getTravelEnd());
         diaryEntity.setSatisfaction(diaryDto.getSatisfaction() == 0? diaryEntity.getSatisfaction() : diaryDto.getSatisfaction());
         this.diaryRepositoryInterface.save(diaryEntity);
     }

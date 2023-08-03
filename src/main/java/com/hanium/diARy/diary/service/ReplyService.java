@@ -52,6 +52,38 @@ public class ReplyService {
         return replyDtoList;
     }
 
+    public List<ReplyDto> readUserReplyAll(Long id) {
+        List<Reply> replyList = replyRepository.readUserReplyAll(id);
+        List<ReplyDto> replyDtoList = new ArrayList<>();
+
+        for(Reply reply : replyList) {
+            replyDtoList.add(new ReplyDto(
+                    reply.getComment(),
+                    reply.getDiary(),
+                    reply.getContent(),
+                    reply.getUser()
+
+            ));
+        }
+        return replyDtoList;
+    }
+
+    public List<ReplyDto> readCommentReplyAll(Long id) {
+        List<Reply> replyList = replyRepository.readCommentReplyAll(id);
+        List<ReplyDto> replyDtoList = new ArrayList<>();
+
+        for(Reply reply : replyList) {
+            replyDtoList.add(new ReplyDto(
+                    reply.getComment(),
+                    reply.getDiary(),
+                    reply.getContent(),
+                    reply.getUser()
+
+            ));
+        }
+        return replyDtoList;
+    }
+
     public void updateReply(Long id, ReplyDto dto) {
         replyRepository.updateReply(id, dto);
     }

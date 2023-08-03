@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/replies")
+@RequestMapping("/diary")
 public class ReplyController {
     private final ReplyService replyService;
 
@@ -19,30 +19,42 @@ public class ReplyController {
         this.replyService = replyService;
     }
 
-    @PostMapping
+    @PostMapping("/{diaryId}/comment/{commentId}/reply")
     public void createReply(@RequestBody ReplyDto replyDto) {
         replyService.createReply(replyDto);
     }
 
-    @GetMapping("/{id}")
-    public ReplyDto readReply(@PathVariable Long id) {
+    //답글 - 댓글로 조회
+/*
+    @GetMapping("/{diaryId}/comment/{commentId}/reply/{replyId}")
+    public ReplyDto readReply(@PathVariable("replyId") Long id) {
         ReplyDto replyDto = replyService.readReply(id);
         return replyDto;
     }
+*/
 
+    @GetMapping("/{diaryId}/comment/{commentId}/reply")
+    public List<ReplyDto> readCommentAllReply(@PathVariable("commentId") Long id) {
+        return this.replyService.readCommentReplyAll(id);
+    }
+
+    //user 댓글 조회
+
+/*
     @GetMapping
     public List<ReplyDto> readAllReplies() {
         List<ReplyDto> replyDtoList = replyService.readReplyAll();
         return replyDtoList;
     }
+*/
 
-    @PutMapping("/{id}")
-    public void updateReply(@PathVariable Long id, @RequestBody ReplyDto replyDto) {
+    @PutMapping("/{diaryId}/comment/{commentId}/reply/{replyId}")
+    public void updateReply(@PathVariable("replyId") Long id, @RequestBody ReplyDto replyDto) {
         replyService.updateReply(id, replyDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteReply(@PathVariable Long id) {
+    @DeleteMapping("/{diaryId}/comment/{commentId}/reply/{replyId}")
+    public void deleteReply(@PathVariable("replyId") Long id) {
         replyService.deleteReply(id);
     }
 }

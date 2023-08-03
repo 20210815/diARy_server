@@ -33,10 +33,12 @@ public class DiaryService {
         return new DiaryDto(
                 diaryEntity.getTitle(),
                 diaryEntity.getContent(),
-                diaryEntity.getTag(),
                 diaryEntity.getSatisfaction(),
-                diaryEntity.getTravelPeriod(),
-                diaryEntity.getUser()
+                diaryEntity.isPublic(),
+                diaryEntity.getTravelStart(),
+                diaryEntity.getTravelEnd(),
+                diaryEntity.getUser(),
+                diaryEntity.getTags()
         );
     }
 
@@ -48,10 +50,12 @@ public class DiaryService {
             diaryDtoList.add(new DiaryDto(
                     diaryEntity.getTitle(),
                     diaryEntity.getContent(),
-                    diaryEntity.getTag(),
                     diaryEntity.getSatisfaction(),
-                    diaryEntity.getTravelPeriod(),
-                    diaryEntity.getUser()
+                    diaryEntity.isPublic(),
+                    diaryEntity.getTravelStart(),
+                    diaryEntity.getTravelEnd(),
+                    diaryEntity.getUser(),
+                    diaryEntity.getTags()
             ));
         }
         return diaryDtoList;
