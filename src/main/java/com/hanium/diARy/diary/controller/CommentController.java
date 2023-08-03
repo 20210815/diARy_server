@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/diary")
 public class CommentController {
     private final CommentService commentService;
 
@@ -19,33 +19,39 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping
-    public ResponseEntity<String> createComment(@RequestBody CommentDto commentDto) {
+    @PostMapping("/{diaryId}/comment")
+    public void createComment(@RequestBody CommentDto commentDto) {
         commentService.createComment(commentDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Comment created successfully");
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CommentDto> readComment(@PathVariable Long id) {
-        CommentDto commentDto = commentService.readComment(id);
-        return ResponseEntity.ok(commentDto);
+/*
+    @GetMapping("/{diaryId}/comment/{commentId}")
+    public CommentDto readComment(@PathVariable("commentId") Long commentId,
+                                  @PathVariable("diaryId") Long diaryId) {
+        CommentDto commentDto = commentService.readComment(commentId);
+        return commentDto;
+    }
+*/
+
+    @GetMapping("/{diaryId}/comment")
+    public List<CommentDto> readDiaryCommentAll(@PathVariable("diaryId") Long id) {
+        List<CommentDto> commentDtoList = commentService.readDiaryCommentAll(id);
+        return commentDtoList;
     }
 
-    @GetMapping
-    public ResponseEntity<List<CommentDto>> readCommentAll() {
-        List<CommentDto> commentDtoList = commentService.readCommentAll();
-        return ResponseEntity.ok(commentDtoList);
+    @GetMapping("/{userId}/comment")
+    public List<CommentDto> readUserCommentAll(@PathVariable("userId") Long id) {
+        List<CommentDto> commentDtoList = commentService.readUserCommentAll(id);
+        return commentDtoList;
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateComment(@PathVariable Long id, @RequestBody CommentDto dto) {
+    @PutMapping("/{diaryId}/comment/{commentId}")
+    public void updateComment(@PathVariable("commentId") Long id, @RequestBody CommentDto dto) {
         commentService.updateComment(id, dto);
-        return ResponseEntity.ok("Comment updated successfully");
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long id) {
+    @DeleteMapping("/{diaryId}/comment/{commentId}")
+    public void deleteComment(@PathVariable("commentId") Long id) {
         commentService.deleteComment(id);
-        return ResponseEntity.ok("Comment deleted successfully");
     }
 }

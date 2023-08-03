@@ -21,4 +21,5 @@ public class CommentDto {
         this.content = content;
         this.user = user;
     }
+
 }

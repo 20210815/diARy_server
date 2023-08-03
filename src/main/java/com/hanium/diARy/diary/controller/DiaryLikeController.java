@@ -17,7 +17,7 @@ public class DiaryLikeController {
         this.diaryLikeService = diaryLikeService;
     }
 
-    @PostMapping("/{diary_id}/diary-like")
+    @PostMapping("/{diaryId}/diary-like")
     public void createDiaryLike(@RequestBody DiaryLikeDto dto) {
         diaryLikeService.createDiaryLike(dto);
     }
@@ -29,20 +29,29 @@ public class DiaryLikeController {
         return diaryLikeDto;
     }*/
 
-    @GetMapping("/{diary_id}/diary-like")
-    public List<DiaryLikeDto> readDiaryLikeAll(@PathVariable Long diaryId) {
-        List<DiaryLikeDto> diaryLikeDtoList = diaryLikeService.readDiaryLikeAll();
+    @GetMapping("/{diaryId}/diary-like")
+    public List<DiaryLikeDto> readDiaryLikeAllByDiary(@PathVariable Long diaryId) {
+        List<DiaryLikeDto> diaryLikeDtoList = diaryLikeService.getUsersWhoLikedDiaryId(diaryId);
+        return diaryLikeDtoList;
+    }
+    @GetMapping("/{userId}/diary-like")
+    public List<DiaryLikeDto> readDiaryLikeAllByUser(@PathVariable Long userId) {
+        List<DiaryLikeDto> diaryLikeDtoList = diaryLikeService.getLikedDiariesByUserId(userId);
         return diaryLikeDtoList;
     }
 
-    @PutMapping("/{diaryId}/{userId}")
+
+/*    @PutMapping("/{diaryId}/{userId}")
     public void updateDiaryLike(@PathVariable DiaryLikeId id,
                                                 @RequestBody DiaryLikeDto dto) {
         diaryLikeService.updateDiaryLike(id, dto);
-    }
+    }*/
 
-    @DeleteMapping("/{diaryId}/{userId}")
-    public void deleteDiaryLike(@PathVariable DiaryLikeId id) {
+    @DeleteMapping("/{diaryId}/diary-like/{userId}")
+    public void deleteDiaryLike(@PathVariable Long diaryId,
+                                @PathVariable Long userId)
+    {
+        DiaryLikeId id = new DiaryLikeId(diaryId, userId);
         diaryLikeService.deleteDiaryLike(id);
     }
 }

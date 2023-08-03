@@ -3,12 +3,15 @@ package com.hanium.diARy.diary.repository;
 import com.hanium.diARy.diary.dto.DiaryLikeDto;
 import com.hanium.diARy.diary.entity.DiaryLike;
 import com.hanium.diARy.diary.entity.DiaryLikeId;
+import com.hanium.diARy.user.dto.UserDto;
+import com.hanium.diARy.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -57,5 +60,13 @@ public class DiaryLikeRepository {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         this.diaryLikeRepositoryInterface.delete(targetDiaryLike.get());
+    }
+
+    public List<DiaryLike> findDiaryLikesByUserId(Long userId) {
+        return this.diaryLikeRepositoryInterface.findByUser_UserId(userId);
+    }
+
+    public List<DiaryLike> findDiaryLikesByDiaryId(Long diaryId) {
+        return this.diaryLikeRepositoryInterface.findByDiary_DiaryId(diaryId);
     }
 }

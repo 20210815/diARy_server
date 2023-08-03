@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -50,6 +51,14 @@ public class CommentRepository {
         return this.commentRepositoryInterface.findAll().iterator();
     }
 
+    public List<Comment> readUserCommentAll(Long userId) {
+        return this.commentRepositoryInterface.findByUser_UserId(userId);
+    }
+
+    public List<Comment> readDiaryCommentAll(Long diaryId) {
+        return this.commentRepositoryInterface.findByDiary_DiaryId(diaryId);
+    }
+
     public void updateComment(Long id, CommentDto dto) {
         Optional<Comment> targetComment = this.commentRepositoryInterface.findById(id);
         if(targetComment.isEmpty()) {
@@ -58,10 +67,8 @@ public class CommentRepository {
         Comment comment = targetComment.get();
         comment.setContent(
                 dto.getContent() == null? comment.getContent() : dto.getContent());
-        comment.setDiary(
-                dto.getDiary() == null? comment.getDiary() : dto.getDiary());
-        comment.setUser(
-                dto.getUser() == null? comment.getUser() : dto.getUser());
+        comment.setDiary(dto.getDiary());
+        comment.setUser(dto.getUser());
 
         this.commentRepositoryInterface.save(comment);
     }

@@ -4,6 +4,8 @@ import com.hanium.diARy.diary.dto.DiaryLikeDto;
 import com.hanium.diARy.diary.entity.DiaryLike;
 import com.hanium.diARy.diary.entity.DiaryLikeId;
 import com.hanium.diARy.diary.repository.DiaryLikeRepository;
+import com.hanium.diARy.user.dto.UserDto;
+import com.hanium.diARy.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,5 +56,29 @@ public class DiaryLikeService {
 
     public void deleteDiaryLike(DiaryLikeId id) {
         diaryLikeRepository.deleteDiaryLike(id);
+    }
+
+    public List<DiaryLikeDto> getLikedDiariesByUserId(Long userId) {
+        List<DiaryLike> likedDiaries = diaryLikeRepository.findDiaryLikesByUserId(userId);
+        List<DiaryLikeDto> likedDiariesDto = new ArrayList<>();
+
+        for (DiaryLike diaryLike : likedDiaries) {
+            likedDiariesDto.add(new DiaryLikeDto(
+                    diaryLike.getDiary(), diaryLike.getUser()));
+        }
+
+        return likedDiariesDto;
+    }
+
+    public List<DiaryLikeDto> getUsersWhoLikedDiaryId(Long diaryId) {
+        List<DiaryLike> likedUsers = diaryLikeRepository.findDiaryLikesByDiaryId(diaryId);
+        List<DiaryLikeDto> likedUsersDto = new ArrayList<>();
+
+        for (DiaryLike diaryLike : likedUsers) {
+            likedUsersDto.add(new DiaryLikeDto(
+                    diaryLike.getDiary(), diaryLike.getUser()));
+        }
+
+        return likedUsersDto;
     }
 }

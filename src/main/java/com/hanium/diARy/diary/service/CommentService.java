@@ -64,6 +64,34 @@ public class CommentService {
         return commentDtoList;
     }
 
+    public List<CommentDto> readUserCommentAll(Long userId) {
+        List<Comment> commentList = this.commentRepository.readUserCommentAll(userId);
+        List<CommentDto> commentDtoList = new ArrayList<>();
+
+        for (Comment comment : commentList) {
+            commentDtoList.add(new CommentDto(
+                    comment.getDiary(),
+                    comment.getContent(),
+                    comment.getUser()
+            ));
+        }
+        return commentDtoList;
+    }
+
+    public List<CommentDto> readDiaryCommentAll(Long diaryId) {
+        List<Comment> commentList = this.commentRepository.readDiaryCommentAll(diaryId);
+        List<CommentDto> commentDtoList = new ArrayList<>();
+
+        for (Comment comment : commentList) {
+            commentDtoList.add(new CommentDto(
+                    comment.getDiary(),
+                    comment.getContent(),
+                    comment.getUser()
+            ));
+        }
+        return commentDtoList;
+    }
+
     public void updateComment(Long id, CommentDto dto) {
         this.commentRepository.updateComment(id, dto);
     }

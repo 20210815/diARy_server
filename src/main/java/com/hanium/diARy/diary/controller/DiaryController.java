@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("diary")
+@RequestMapping("/diary")
 public class DiaryController {
     private final DiaryService diaryService;
 
@@ -28,19 +28,19 @@ public class DiaryController {
         return this.diaryService.readDiaryAll();
     }
 
-    @GetMapping("{id}")
-    public DiaryDto readDiary(@PathVariable("id") Long id) {
+    @GetMapping("/{diaryId}")
+    public DiaryDto readDiary(@PathVariable("diaryId") Long id) {
         return this.diaryService.readDiary(id);
     }
 
-    @PutMapping("{id}")
-    public void updateDiary(@PathVariable("id") Long id,
+    @PutMapping("/{diaryId}")
+    public void updateDiary(@PathVariable("diaryId") Long id,
                             @RequestBody DiaryDto diaryDto){
         this.diaryService.updateDiary(id, diaryDto);
     }
 
-    @DeleteMapping("{id}")
-    public void deleteDiary(@PathVariable("id") Long id) {
+    @DeleteMapping("/{diaryId}")
+    public void deleteDiary(@PathVariable("diaryId") Long id) {
         this.diaryService.deleteDiary(id);
     }
 
