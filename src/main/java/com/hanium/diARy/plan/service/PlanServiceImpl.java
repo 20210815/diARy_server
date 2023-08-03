@@ -173,13 +173,9 @@ public Long createPlan(PlanRequestDto request) {
         }
 
         // Plan 엔티티와 연관된 PlanLike 엔티티를 삭제합니다.
-//        List<PlanLike> planLikes = plan.getPlanLikes();
-//        for (PlanLike planLike : planLikes) {
-//            planLikeRepository.delete(planLike);
-//        }
         List<PlanLike> planLikes = plan.getPlanLikes();
         for (PlanLike planLike : planLikes) {
-            planLikeRepository.deleteById(planLike.getPlan().getPlanId(), planLike.getUser().getUserId());
+            planLikeRepository.delete(planLike);
         }
 
         // Plan 엔티티와 연관된 Tag 엔티티를 모두 삭제합니다.
@@ -191,6 +187,7 @@ public Long createPlan(PlanRequestDto request) {
         // Plan 엔티티를 삭제합니다.
         planRepository.delete(plan);
     }
+
 
 
     @Override
