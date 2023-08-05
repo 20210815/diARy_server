@@ -1,5 +1,7 @@
 package com.hanium.diARy.diary.repository;
 
+import com.hanium.diARy.diary.DiaryLikeMapper;
+import com.hanium.diARy.diary.DiaryMapper;
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.dto.DiaryLikeDto;
 import com.hanium.diARy.diary.entity.Diary;
@@ -11,6 +13,7 @@ import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -23,15 +26,21 @@ public class DiaryLikeRepository {
     private final DiaryLikeRepositoryInterface diaryLikeRepositoryInterface;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final UserRepositoryInterface userRepositoryInterface;
+    private final DiaryMapper diaryMapper;
+    private final DiaryLikeMapper diaryLikeMapper;
 
     public DiaryLikeRepository(
             @Autowired DiaryLikeRepositoryInterface diaryLikeRepositoryInterface,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
-            @Autowired UserRepositoryInterface userRepositoryInterface
-    ){
+            @Autowired UserRepositoryInterface userRepositoryInterface,
+            @Autowired DiaryMapper diaryMapper,
+            @Autowired DiaryLikeMapper diaryLikeMapper
+            ){
         this.diaryLikeRepositoryInterface = diaryLikeRepositoryInterface;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.userRepositoryInterface = userRepositoryInterface;
+        this.diaryMapper = diaryMapper;
+        this.diaryLikeMapper = diaryLikeMapper;
     }
 
     public void createDiaryLike(Long diaryId, Long userId) {
@@ -79,24 +88,21 @@ public class DiaryLikeRepository {
         this.diaryLikeRepositoryInterface.delete(diaryLike);
     }
 
-/*    public List<DiaryDto> findDiaryLikesByUserId(Long userId) {
-        List<Diary> diaryList = this.diaryLikeRepositoryInterface.findByUser_UserId(userId);
+    public List<DiaryDto> findDiaryLikesByUserId(Long userId) {
+        List<DiaryLike> diaryList = this.diaryLikeRepositoryInterface.findByUser_UserId(userId);
         List<DiaryDto> likedDiaries = new ArrayList<>();
 
-        for (Diary diary : diaryList) {
-            likedDiaries.add(new DiaryDto(
-                    diary.getUser(),
-                    diary.getTravelStart(),
-                    diary.getContent(),
-                    diary.getTags(),
-                    diary.getTravelEnd(),
-                    diary.getSatisfaction(),
-                    diary.getTitle()
-            ));
+        for (DiaryLike diary : diaryList) {
+            diary.getDiary();
+            //Diary가 나옴 이걸 DTO로 변환
+            DiaryLikeDto diaryLikeDto = this.diaryLikeMapper.toDto(diary);
+            Optional<Diary> diary1 = this.diaryRepositoryInterface.findById(diaryLikeDto.getDiaryId());
+            DiaryDto diaryDto = this.diaryMapper.toDto(diary1.get());
+            likedDiaries.add(diaryDto);
         }
 
         return likedDiaries;
-    }*/
+    }
     public List<UserDto> findDiaryLikesByDiaryId(Long diaryId) {
         List<DiaryLike> diaryLikes = diaryLikeRepositoryInterface.findByDiary_DiaryId(diaryId);
         List<UserDto> userDtoList = new ArrayList<>();
