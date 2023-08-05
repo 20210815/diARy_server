@@ -72,12 +72,11 @@ public class DiaryLikeRepository {
         this.diaryLikeRepositoryInterface.save(diaryLike);
     }*/
 
-    public void deleteDiaryLike(DiaryLikeId idDto) {
-        Optional<DiaryLike> targetDiaryLike = this.diaryLikeRepositoryInterface.findById(idDto);
-        if(targetDiaryLike.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        this.diaryLikeRepositoryInterface.delete(targetDiaryLike.get());
+    public void deleteDiaryLike(DiaryLikeDto diaryLikeDto) {
+        DiaryLike diaryLike = new DiaryLike();
+        diaryLike.setUser(this.userRepositoryInterface.findById(diaryLikeDto.getUserId()).get());
+        diaryLike.setDiary(this.diaryRepositoryInterface.findById(diaryLikeDto.getDiaryId()).get());
+        this.diaryLikeRepositoryInterface.delete(diaryLike);
     }
 
 /*    public List<DiaryDto> findDiaryLikesByUserId(Long userId) {

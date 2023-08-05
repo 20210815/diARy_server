@@ -59,8 +59,8 @@ public class DiaryLikeService {
         diaryLikeRepository.updateDiaryLike(id, dto);
     }*/
 
-    public void deleteDiaryLike(DiaryLikeId id) {
-        diaryLikeRepository.deleteDiaryLike(id);
+    public void deleteDiaryLike(DiaryLikeDto diaryLikeDto) {
+        diaryLikeRepository.deleteDiaryLike(diaryLikeDto);
     }
 
 

@@ -57,7 +57,9 @@ public class DiaryLikeController {
     public void deleteDiaryLike(@PathVariable Long diaryId,
                                 @PathVariable Long userId)
     {
-        DiaryLikeId id = new DiaryLikeId(diaryId, userId);
-        diaryLikeService.deleteDiaryLike(id);
+        DiaryLikeDto diaryLikeDto = new DiaryLikeDto();
+        diaryLikeDto.setDiaryId(diaryId);
+        diaryLikeDto.setUserId(userId);
+        this.diaryLikeService.deleteDiaryLike(diaryLikeDto);
     }
 }
