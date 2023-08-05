@@ -1,9 +1,12 @@
 package com.hanium.diARy.diary.service;
 
+import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.dto.DiaryLikeDto;
+import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryLike;
 import com.hanium.diARy.diary.entity.DiaryLikeId;
 import com.hanium.diARy.diary.repository.DiaryLikeRepository;
+import com.hanium.diARy.diary.repository.DiaryLikeRepositoryInterface;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,26 +19,28 @@ import java.util.List;
 @Service
 public class DiaryLikeService {
     private final DiaryLikeRepository diaryLikeRepository;
+    private final DiaryLikeRepositoryInterface diaryLikeRepositoryInterface;
 
     public DiaryLikeService(
-            @Autowired DiaryLikeRepository diaryLikeRepository
+            @Autowired DiaryLikeRepository diaryLikeRepository,
+            @Autowired DiaryLikeRepositoryInterface diaryLikeRepositoryInterface
     ) {
         this.diaryLikeRepository = diaryLikeRepository;
+        this.diaryLikeRepositoryInterface = diaryLikeRepositoryInterface;
     }
 
     public void createDiaryLike(DiaryLikeDto dto) {
-        diaryLikeRepository.createDiaryLike(dto);
+        this.diaryLikeRepository.createDiaryLike(dto.getDiaryId(), dto.getUserId());
     }
 
     public DiaryLikeDto readDiaryLike(DiaryLikeId id) {
-        DiaryLike diaryLike = diaryLikeRepository.readDiaryLike(id);
+
         return new DiaryLikeDto(
-                diaryLike.getDiary(),
-                diaryLike.getUser()
+
         );
     }
 
-    public List<DiaryLikeDto> readDiaryLikeAll() {
+/*    public List<DiaryLikeDto> readDiaryLikeAll() {
         Iterator<DiaryLike> iterator = diaryLikeRepository.readDiaryLikeAll();
         List<DiaryLikeDto> diaryLikeDtoList = new ArrayList<>();
 
@@ -48,37 +53,40 @@ public class DiaryLikeService {
         }
 
         return diaryLikeDtoList;
-    }
+    }*/
 
-    public void updateDiaryLike(DiaryLikeId id, DiaryLikeDto dto) {
+/*    public void updateDiaryLike(DiaryLikeId id, DiaryLikeDto dto) {
         diaryLikeRepository.updateDiaryLike(id, dto);
-    }
+    }*/
 
     public void deleteDiaryLike(DiaryLikeId id) {
         diaryLikeRepository.deleteDiaryLike(id);
     }
 
-    public List<DiaryLikeDto> getLikedDiariesByUserId(Long userId) {
-        List<DiaryLike> likedDiaries = diaryLikeRepository.findDiaryLikesByUserId(userId);
-        List<DiaryLikeDto> likedDiariesDto = new ArrayList<>();
 
-        for (DiaryLike diaryLike : likedDiaries) {
-            likedDiariesDto.add(new DiaryLikeDto(
-                    diaryLike.getDiary(), diaryLike.getUser()));
-        }
 
-        return likedDiariesDto;
+/*    public List<DiaryDto> getLikedDiariesByUserId(Long userId) {
+        List<Diary> likedDiaries = diaryLikeRepositoryInterface.findByUser_UserId(userId);
+        return likedDiaries;
+    }*/
+
+    public List<User> getUsersWhoLikedDiaryId(Long diaryId) {
+        List<User> likedUsers = diaryLikeRepositoryInterface.findByDiary_DiaryId(diaryId);
+        return likedUsers;
     }
 
-    public List<DiaryLikeDto> getUsersWhoLikedDiaryId(Long diaryId) {
-        List<DiaryLike> likedUsers = diaryLikeRepository.findDiaryLikesByDiaryId(diaryId);
-        List<DiaryLikeDto> likedUsersDto = new ArrayList<>();
+/*    public List<DiaryLikeDto> getDiaryLikesByDiaryId(Long diaryId) {
+        List<DiaryLike> diaryLikes = diaryLikeRepositoryInterface.findByDiary_DiaryId(diaryId);
+        List<DiaryLikeDto> diaryLikeDtos = new ArrayList<>();
 
-        for (DiaryLike diaryLike : likedUsers) {
-            likedUsersDto.add(new DiaryLikeDto(
-                    diaryLike.getDiary(), diaryLike.getUser()));
+        for (DiaryLike diaryLike : diaryLikes) {
+            DiaryLikeDto dto = new DiaryLikeDto();
+            dto.setDiaryId(diaryLike.getDiary().getId());
+            dto.setUserId(diaryLike.getUser().getId());
+            // Set other properties as needed
+            diaryLikeDtos.add(dto);
         }
 
-        return likedUsersDto;
-    }
+        return diaryLikeDtos;
+    }*/
 }

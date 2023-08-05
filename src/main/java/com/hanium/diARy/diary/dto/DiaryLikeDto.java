@@ -7,14 +7,6 @@ import lombok.Data;
 
 @Data
 public class DiaryLikeDto {
-    private Diary diary;
-    private User user;
-
-    public DiaryLikeDto() {
-    }
-
-    public DiaryLikeDto(Diary diary, User user) {
-        this.diary = diary;
-        this.user = user;
-    }
+    private Long diaryId;
+    private Long userId;
 }

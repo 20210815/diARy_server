@@ -17,19 +17,8 @@ public class DiaryDto {
     private Date travelStart;
     private Date travelEnd;
     private User user;
-    private List<DiaryTag> tags;
+    private List<DiaryTagDto> tags;
+    private List<DiaryLikeDto> likes;
 
-    public DiaryDto() {
-    }
-
-    public DiaryDto(String title, String content, int satisfaction, boolean isPublic, Date travelStart, Date travelEnd, User user, List<DiaryTag> tags) {
-        this.title = title;
-        this.content = content;
-        this.satisfaction = satisfaction;
-        this.isPublic = isPublic;
-        this.travelStart = travelStart;
-        this.travelEnd = travelEnd;
-        this.user = user;
-        this.tags = tags;
-    }
 }
+

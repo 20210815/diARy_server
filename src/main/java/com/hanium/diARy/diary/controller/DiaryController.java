@@ -2,6 +2,8 @@ package com.hanium.diARy.diary.controller;
 
 import com.hanium.diARy.diary.service.DiaryService;
 import com.hanium.diARy.diary.dto.DiaryDto;
+import com.hanium.diARy.diary.service.TagService;
+import com.hanium.diARy.plan.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,22 +13,28 @@ import java.util.List;
 @RequestMapping("/diary")
 public class DiaryController {
     private final DiaryService diaryService;
+    private final TagService tagService;
 
     public DiaryController(
-            @Autowired DiaryService diaryService
+            @Autowired DiaryService diaryService,
+            @Autowired TagService tagService
     ) {
         this.diaryService = diaryService;
+        this.tagService = tagService;
     }
 
     @PostMapping()
-    public void createDiary(@RequestBody DiaryDto diaryDto) {
-        this.diaryService.createDiary(diaryDto);
+    public Long createDiary(@RequestBody DiaryDto diaryDto) {
+        return this.diaryService.createDiary(diaryDto);
     }
 
     @GetMapping()
     public List<DiaryDto> readDiaryAll() {
         return this.diaryService.readDiaryAll();
     }
+
+    @GetMapping("/public")
+    public List<DiaryDto> readPublicDiaryAll() {return this.diaryService.readPublicDiaryAll();}
 
     @GetMapping("/{diaryId}")
     public DiaryDto readDiary(@PathVariable("diaryId") Long id) {

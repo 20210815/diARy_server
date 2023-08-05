@@ -1,35 +1,52 @@
 package com.hanium.diARy.diary.repository;
 
+import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.dto.DiaryLikeDto;
+import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryLike;
 import com.hanium.diARy.diary.entity.DiaryLikeId;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
+import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class DiaryLikeRepository {
-    private DiaryLikeRepositoryInterface diaryLikeRepositoryInterface;
+    private final DiaryLikeRepositoryInterface diaryLikeRepositoryInterface;
+    private final DiaryRepositoryInterface diaryRepositoryInterface;
+    private final UserRepositoryInterface userRepositoryInterface;
 
     public DiaryLikeRepository(
-            @Autowired DiaryLikeRepositoryInterface diaryLikeRepositoryInterface
+            @Autowired DiaryLikeRepositoryInterface diaryLikeRepositoryInterface,
+            @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
+            @Autowired UserRepositoryInterface userRepositoryInterface
     ){
         this.diaryLikeRepositoryInterface = diaryLikeRepositoryInterface;
+        this.diaryRepositoryInterface = diaryRepositoryInterface;
+        this.userRepositoryInterface = userRepositoryInterface;
     }
 
-    public void createDiaryLike(DiaryLikeDto dto) {
+    public void createDiaryLike(Long diaryId, Long userId) {
         DiaryLike diaryLike = new DiaryLike();
-        diaryLike.setDiary(dto.getDiary());
-        diaryLike.setUser(dto.getUser());
+        diaryLike.setDiary(this.diaryRepositoryInterface.findById(diaryId).get());
+        diaryLike.setUser(this.userRepositoryInterface.findById(userId).get());
         this.diaryLikeRepositoryInterface.save(diaryLike);
     }
+/*
+
+        List<DiaryLike> likesList = this.diaryRepositoryInterface.findById(diaryId).get().getDiaryLikes();
+        DiaryLike diaryLike = new DiaryLike();
+        diaryLike.setDiary(this.diaryRepositoryInterface.findById(diaryId).get());
+        diaryLike.setUser(this.userRepositoryInterface.findById(userId).get());
+        likesList.add(diaryLike);*/
 
     public DiaryLike readDiaryLike(DiaryLikeId idDto) {
         Optional<DiaryLike> diaryLike = this.diaryLikeRepositoryInterface.findById(idDto);
@@ -39,20 +56,21 @@ public class DiaryLikeRepository {
         return diaryLike.get();
     }
 
+
     public Iterator<DiaryLike> readDiaryLikeAll() {
         return this.diaryLikeRepositoryInterface.findAll().iterator();
     }
 
-    public void updateDiaryLike(DiaryLikeId idDto, DiaryLikeDto dto) {
+/*    public void updateDiaryLike(DiaryLikeId idDto, DiaryLikeDto dto) {
         Optional<DiaryLike> targetDiaryLike = this.diaryLikeRepositoryInterface.findById(idDto);
         if(targetDiaryLike.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         DiaryLike diaryLike = targetDiaryLike.get();
-        diaryLike.setUser(dto.getUser());
+        diaryLike.setUser();
         diaryLike.setDiary(dto.getDiary());
         this.diaryLikeRepositoryInterface.save(diaryLike);
-    }
+    }*/
 
     public void deleteDiaryLike(DiaryLikeId idDto) {
         Optional<DiaryLike> targetDiaryLike = this.diaryLikeRepositoryInterface.findById(idDto);
@@ -62,11 +80,25 @@ public class DiaryLikeRepository {
         this.diaryLikeRepositoryInterface.delete(targetDiaryLike.get());
     }
 
-    public List<DiaryLike> findDiaryLikesByUserId(Long userId) {
-        return this.diaryLikeRepositoryInterface.findByUser_UserId(userId);
-    }
+/*    public List<DiaryDto> findDiaryLikesByUserId(Long userId) {
+        List<Diary> diaryList = this.diaryLikeRepositoryInterface.findByUser_UserId(userId);
+        List<DiaryDto> likedDiaries = new ArrayList<>();
 
-    public List<DiaryLike> findDiaryLikesByDiaryId(Long diaryId) {
+        for (Diary diary : diaryList) {
+            likedDiaries.add(new DiaryDto(
+                    diary.getUser(),
+                    diary.getTravelStart(),
+                    diary.getContent(),
+                    diary.getTags(),
+                    diary.getTravelEnd(),
+                    diary.getSatisfaction(),
+                    diary.getTitle()
+            ));
+        }
+
+        return likedDiaries;
+    }*/
+/*    public List<UserDto> findDiaryLikesByDiaryId(Long diaryId) {
         return this.diaryLikeRepositoryInterface.findByDiary_DiaryId(diaryId);
-    }
+    }*/
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -31,9 +32,11 @@ public class Diary {
     @Column(name = "satisfaction", nullable = false)
     private int satisfaction;
 
-    @OneToMany(mappedBy = "diary", orphanRemoval = true)
-    @Column(nullable = true)
-    private List<DiaryTag> tags;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "diary_diary_tag", // 다른 이름으로 변경
+            joinColumns = @JoinColumn(name = "diary_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private List<DiaryTag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DiaryLike> diaryLikes;

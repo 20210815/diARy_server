@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/diary")
 public class CommentController {
-    private final CommentService commentService;
+/*    private final CommentService commentService;
     private final ReplyService replyService;
 
     public CommentController(@Autowired CommentService commentService,
@@ -28,14 +28,14 @@ public class CommentController {
         commentService.createComment(commentDto);
     }
 
-/*
+*//*
     @GetMapping("/{diaryId}/comment/{commentId}")
     public CommentDto readComment(@PathVariable("commentId") Long commentId,
                                   @PathVariable("diaryId") Long diaryId) {
         CommentDto commentDto = commentService.readComment(commentId);
         return commentDto;
     }
-*/
+*//*
 
     @GetMapping("/{diaryId}/comment")
     public List<CommentDto> readDiaryCommentAll(@PathVariable("diaryId") Long id) {
@@ -58,5 +58,5 @@ public class CommentController {
     @DeleteMapping("/{diaryId}/comment/{commentId}")
     public void deleteComment(@PathVariable("commentId") Long id) {
         commentService.deleteComment(id);
-    }
+    }*/
 }

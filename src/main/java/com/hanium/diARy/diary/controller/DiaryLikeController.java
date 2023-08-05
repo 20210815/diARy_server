@@ -1,7 +1,11 @@
 package com.hanium.diARy.diary.controller;
+import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.dto.DiaryLikeDto;
 import com.hanium.diARy.diary.entity.DiaryLikeId;
 import com.hanium.diARy.diary.service.DiaryLikeService;
+import com.hanium.diARy.diary.service.DiaryService;
+import com.hanium.diARy.user.dto.UserDto;
+import com.hanium.diARy.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,10 +15,13 @@ import java.util.List;
 @RequestMapping("/diary")
 public class DiaryLikeController {
     private final DiaryLikeService diaryLikeService;
+    private final DiaryService diaryService;
 
     @Autowired
-    public DiaryLikeController(DiaryLikeService diaryLikeService) {
+    public DiaryLikeController(DiaryLikeService diaryLikeService,
+                               DiaryService diaryService) {
         this.diaryLikeService = diaryLikeService;
+        this.diaryService = diaryService;
     }
 
     @PostMapping("/{diaryId}/diary-like")
@@ -30,15 +37,14 @@ public class DiaryLikeController {
     }*/
 
     @GetMapping("/{diaryId}/diary-like")
-    public List<DiaryLikeDto> readDiaryLikeAllByDiary(@PathVariable Long diaryId) {
-        List<DiaryLikeDto> diaryLikeDtoList = diaryLikeService.getUsersWhoLikedDiaryId(diaryId);
-        return diaryLikeDtoList;
+    public List<User> readDiaryLikeAllByDiary(@PathVariable("diaryId") Long diaryId) {
+        return this.diaryLikeService.getUsersWhoLikedDiaryId(diaryId);
     }
-    @GetMapping("/{userId}/diary-like")
-    public List<DiaryLikeDto> readDiaryLikeAllByUser(@PathVariable Long userId) {
-        List<DiaryLikeDto> diaryLikeDtoList = diaryLikeService.getLikedDiariesByUserId(userId);
+/*    @GetMapping("/user/{userId}/diary-like")
+    public List<DiaryDto> readDiaryLikeAllByUser(@PathVariable("userId") Long userId) {
+        List<DiaryDto> diaryLikeDtoList = diaryLikeService.getLikedDiariesByUserId(userId);
         return diaryLikeDtoList;
-    }
+    }*/
 
 
 /*    @PutMapping("/{diaryId}/{userId}")
