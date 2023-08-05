@@ -98,7 +98,15 @@ public class DiaryLikeRepository {
 
         return likedDiaries;
     }*/
-/*    public List<UserDto> findDiaryLikesByDiaryId(Long diaryId) {
-        return this.diaryLikeRepositoryInterface.findByDiary_DiaryId(diaryId);
-    }*/
+    public List<UserDto> findDiaryLikesByDiaryId(Long diaryId) {
+        List<DiaryLike> diaryLikes = diaryLikeRepositoryInterface.findByDiary_DiaryId(diaryId);
+        List<UserDto> userDtoList = new ArrayList<>();
+        for (DiaryLike like : diaryLikes) {
+            User user = like.getUser();
+            UserDto userDto = new UserDto(user.getUsername(), user.getEmail(), user.getPassword(), user.getImage());
+            userDtoList.add(userDto);
+        }
+
+        return userDtoList;
+    }
 }

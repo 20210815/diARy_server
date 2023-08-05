@@ -70,9 +70,8 @@ public class DiaryLikeService {
         return likedDiaries;
     }*/
 
-    public List<User> getUsersWhoLikedDiaryId(Long diaryId) {
-        List<User> likedUsers = diaryLikeRepositoryInterface.findByDiary_DiaryId(diaryId);
-        return likedUsers;
+    public List<UserDto> getUsersWhoLikedDiaryId(Long diaryId) {
+        return this.diaryLikeRepository.findDiaryLikesByDiaryId(diaryId);
     }
 
 /*    public List<DiaryLikeDto> getDiaryLikesByDiaryId(Long diaryId) {

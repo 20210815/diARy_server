@@ -12,5 +12,5 @@ import java.util.List;
 
 public interface DiaryLikeRepositoryInterface extends CrudRepository<DiaryLike, DiaryLikeId> {
     public List<Diary> findByUser_UserId(Long userId);
-    public List<User> findByDiary_DiaryId(Long diaryId);
+    public List<DiaryLike> findByDiary_DiaryId(Long diaryId);
 }

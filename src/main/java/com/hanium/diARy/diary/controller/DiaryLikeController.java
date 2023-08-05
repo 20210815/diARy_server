@@ -37,7 +37,7 @@ public class DiaryLikeController {
     }*/
 
     @GetMapping("/{diaryId}/diary-like")
-    public List<User> readDiaryLikeAllByDiary(@PathVariable("diaryId") Long diaryId) {
+    public List<UserDto> readDiaryLikeAllByDiary(@PathVariable("diaryId") Long diaryId) {
         return this.diaryLikeService.getUsersWhoLikedDiaryId(diaryId);
     }
 /*    @GetMapping("/user/{userId}/diary-like")
