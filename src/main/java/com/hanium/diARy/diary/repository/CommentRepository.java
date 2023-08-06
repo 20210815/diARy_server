@@ -2,6 +2,7 @@ package com.hanium.diARy.diary.repository;
 
 import com.hanium.diARy.diary.DiaryMapper;
 import com.hanium.diARy.diary.dto.CommentDto;
+import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.user.UserMapper;
@@ -71,14 +72,26 @@ public class CommentRepository {
 
     public void updateComment(Long id, CommentDto dto) {
         Optional<Comment> targetComment = this.commentRepositoryInterface.findById(id);
-        if(targetComment.isEmpty()) {
+        if (targetComment.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         Comment comment = targetComment.get();
-        comment.setContent(
-                dto.getContent() == null? comment.getContent() : dto.getContent());
-        comment.setDiary(this.diaryMapper.toEntity(dto.getDiary()));
-        comment.setUser(this.userMapper.toEntity(dto.getUser()));
+        String content = dto.getContent();
+        if (content != null) {
+            comment.setContent(content);
+        }
+
+        DiaryDto diaryDto = dto.getDiary();
+        if (diaryDto != null) {
+            Diary diary = this.diaryMapper.toEntity(diaryDto);
+            comment.setDiary(diary);
+        }
+
+        UserDto userDto = dto.getUser();
+        if (userDto != null) {
+            User user = this.userMapper.toEntity(userDto);
+            comment.setUser(user);
+        }
 
         this.commentRepositoryInterface.save(comment);
     }

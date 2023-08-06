@@ -38,11 +38,13 @@ public class CommentController {
     }*/
 
 
+    // diary 별로 모든 댓글 조회
     @GetMapping("/{diaryId}/comment")
     public List<CommentDto> readDiaryCommentAll(@PathVariable("diaryId") Long id) {
         return this.commentService.readDiaryCommentAll(id);
     }
 
+    //diary user 상관 없이 모든 댓글 조회
     @GetMapping("/comment/all")
     public List<CommentDto> readCommentAll() {
         return this.commentService.readCommentAll();
@@ -54,12 +56,12 @@ public class CommentController {
         List<CommentDto> commentDtoList = commentService.readUserCommentAll(id);
         return commentDtoList;
     }
+*/
 
     @PutMapping("/{diaryId}/comment/{commentId}")
     public void updateComment(@PathVariable("commentId") Long id, @RequestBody CommentDto dto) {
         commentService.updateComment(id, dto);
     }
-*/
 
     @DeleteMapping("/{diaryId}/comment/{commentId}")
     public void deleteComment(@PathVariable("commentId") Long id) {
