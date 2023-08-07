@@ -1,6 +1,7 @@
 package com.hanium.diARy.diary.service;
 
 import com.hanium.diARy.diary.DiaryMapper;
+import com.hanium.diARy.diary.ReplyMapper;
 import com.hanium.diARy.diary.dto.CommentDto;
 import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Diary;
@@ -18,30 +19,22 @@ import java.util.List;
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private final DiaryRepository diaryRepository;
-    private final ReplyRepository replyRepository;
     private final CommentRepositoryInterface commentRepositoryInterface;
-    private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final DiaryMapper diaryMapper;
+    private final ReplyMapper replyMapper;
 
     @Autowired
     public CommentService(
             CommentRepository commentRepository,
-            UserRepository userRepository,
-            DiaryRepository diaryRepository,
-            ReplyRepository replyRepository,
             CommentRepositoryInterface commentRepositoryInterface,
-            DiaryRepositoryInterface diaryRepositoryInterface,
-            DiaryMapper diaryMapper
+            DiaryMapper diaryMapper,
+            ReplyMapper replyMapper
+
     ) {
         this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
-        this.diaryRepository = diaryRepository;
-        this.replyRepository = replyRepository;
-        this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.commentRepositoryInterface = commentRepositoryInterface;
         this.diaryMapper = diaryMapper;
+        this.replyMapper = replyMapper;
     }
 
     public void createComment(CommentDto commentDto) {
@@ -57,7 +50,8 @@ public class CommentService {
         return new CommentDto(
                 diaryMapper.toDto(comment.getDiary()),
                 comment.getContent(),
-                this.convertUserToUserDto(comment.getUser())
+                this.convertUserToUserDto(comment.getUser()),
+                this.replyMapper.toDtoList(comment.getReplies())
         );
     }
 
@@ -85,7 +79,8 @@ public class CommentService {
             commentDtoList.add(new CommentDto(
                     this.diaryMapper.toDto(comment.getDiary()),
                     comment.getContent(),
-                    this.convertUserToUserDto(comment.getUser())
+                    this.convertUserToUserDto(comment.getUser()),
+                    this.replyMapper.toDtoList(comment.getReplies())
             ));
         }
 
@@ -100,7 +95,8 @@ public class CommentService {
             commentDtoList.add(new CommentDto(
                     this.diaryMapper.toDto(comment.getDiary()),
                     comment.getContent(),
-                    this.convertUserToUserDto(comment.getUser())
+                    this.convertUserToUserDto(comment.getUser()),
+                    this.replyMapper.toDtoList(comment.getReplies())
             ));
         }
 

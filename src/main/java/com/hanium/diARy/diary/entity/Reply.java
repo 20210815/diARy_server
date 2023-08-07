@@ -1,10 +1,12 @@
 package com.hanium.diARy.diary.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanium.diARy.user.entity.User;
 import lombok.Data;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.time.Instant;
 
 @Data
 @Entity
@@ -35,6 +37,18 @@ public class Reply {
 
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
+
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date(Instant.now().toEpochMilli());
+        this.updatedAt = new Date(Instant.now().toEpochMilli());
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date(Instant.now().toEpochMilli());
+    }
 
 }
 

@@ -33,10 +33,20 @@ public class ReplyController {
     }
 */
 
+    //diary-댓글별 조회
+
     @GetMapping("/{diaryId}/comment/{commentId}/reply")
-    public List<ReplyDto> readCommentAllReply(@PathVariable("commentId") Long id) {
-        return this.replyService.readCommentReplyAll(id);
+    public List<ReplyDto> readCommentAllReply(@PathVariable("commentId") Long commentId) {
+        return this.replyService.readCommentReplyAll(commentId);
     }
+
+    // reply 전체 조회
+    @GetMapping("/reply/all")
+    public List<ReplyDto> readAllReply() {
+        return this.replyService.readReplyAll();
+    }
+
+
 
     //user 댓글 조회
 

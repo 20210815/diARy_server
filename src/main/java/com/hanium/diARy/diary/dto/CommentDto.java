@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,4 +18,5 @@ public class CommentDto {
     private DiaryDto diary;
     private String content;
     private UserDto user;
+    private List<ReplyDto> replyDtos;
 }
