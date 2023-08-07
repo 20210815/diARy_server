@@ -79,26 +79,48 @@ public class ReplyRepository {
     }
 
     public void updateReply(Long id, ReplyDto dto) {
+        if (id == null) {
+            throw new IllegalArgumentException("Reply id cannot be null.");
+        }
+
         Optional<Reply> targetReply = this.replyRepositoryInterface.findById(id);
-        if(targetReply.isEmpty()){
+        if (targetReply.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+
         Reply reply = targetReply.get();
-        reply.setContent(
-                dto.getContent() == null? reply.getContent() : dto.getContent()
-        );
-        reply.setUser(
-                this.userRepositoryInterface.findById(dto.getUserId()).get() == null ? this.userRepositoryInterface.findById(reply.getUser().getUserId()).get() : this.userRepositoryInterface.findById(dto.getUserId()).get()
-        );
-        reply.setComment(
-                this.commentRepositoryInterface.findById(dto.getCommentId()).get() == null ? this.commentRepositoryInterface.findById(reply.getComment().getCommentId()).get() : this.commentRepositoryInterface.findById(dto.getCommentId()).get()
-        );
-        reply.setDiary(
-                this.diaryRepositoryInterface.findById(dto.getDiaryId()).get() == null ? this.diaryRepositoryInterface.findById(reply.getDiary().getDiaryId()).get() : this.diaryRepositoryInterface.findById(dto.getDiaryId()).get()
-        );
+
+        // Update content if dto.getContent() is not null
+        if (dto.getContent() != null) {
+            reply.setContent(dto.getContent());
+        }
+
+        // Update user if dto.getUserId() is not null
+        if (dto.getUserId() != null) {
+            User newUser = this.userRepositoryInterface.findById(dto.getUserId()).orElse(null);
+            if (newUser != null) {
+                reply.setUser(newUser);
+            }
+        }
+
+        // Update comment if dto.getCommentId() is not null
+        if (dto.getCommentId() != null) {
+            Comment newComment = this.commentRepositoryInterface.findById(dto.getCommentId()).orElse(null);
+            if (newComment != null) {
+                reply.setComment(newComment);
+            }
+        }
+
+        // Update diary if dto.getDiaryId() is not null
+        if (dto.getDiaryId() != null) {
+            Diary newDiary = this.diaryRepositoryInterface.findById(dto.getDiaryId()).orElse(null);
+            if (newDiary != null) {
+                reply.setDiary(newDiary);
+            }
+        }
+
         this.replyRepositoryInterface.save(reply);
     }
-
     public void deleteReply(Long id) {
         Optional<Reply> targetReply = this.replyRepositoryInterface.findById(id);
         if(targetReply.isEmpty()) {
