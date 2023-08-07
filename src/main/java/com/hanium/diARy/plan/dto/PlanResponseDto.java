@@ -1,8 +1,10 @@
 package com.hanium.diARy.plan.dto;
 
+import com.hanium.diARy.plan.entity.Plan;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 
@@ -14,4 +16,8 @@ public class PlanResponseDto {
     private List<LocationDto> locations;
     private List<TagDto> tags;
 
+    public PlanResponseDto(Plan plan) {
+        this.plan = new PlanDto();
+        BeanUtils.copyProperties(plan, this.plan);
+    }
 }
