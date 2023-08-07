@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.sql.Time;
 
 @Data
 @Entity
@@ -27,8 +28,11 @@ public class Location {
     @Column(name = "date")
     private Date date;
 
-    @Column(name = "time")
-    private Date time;
+    @Column(name = "time_start")
+    private Time timeStart;
+
+    @Column(name = "time_end")
+    private Time timeEnd;
 
     @Column(name = "name", nullable = false, length = 50)
     private String name;
