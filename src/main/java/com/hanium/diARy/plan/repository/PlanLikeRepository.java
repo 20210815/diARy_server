@@ -1,5 +1,6 @@
 package com.hanium.diARy.plan.repository;
 
+import com.hanium.diARy.plan.dto.PlanResponseDto;
 import com.hanium.diARy.plan.entity.PlanLike;
 import com.hanium.diARy.plan.entity.PlanLikeId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,5 @@ public interface PlanLikeRepository extends JpaRepository<PlanLike, PlanLikeId> 
 
     void deleteByPlan_PlanIdAndUser_UserId(Long planId, Long userId);
 
-    @Query("SELECT p.plan.planId FROM PlanLike p WHERE p.user.userId = ?1")
-    List<Long> getAllPlanIdsLikedByUser_UserId(Long userId);
+    List<PlanLike> findByUser_UserId(Long userId);
 }

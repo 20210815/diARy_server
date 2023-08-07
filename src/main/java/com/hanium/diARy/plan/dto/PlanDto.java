@@ -9,8 +9,8 @@ public class PlanDto {
     private Long planId;
     private String title;
     private String content;
-    private Date travelStart;
-    private Date travelEnd;
+    private String travelStart;
+    private String travelEnd;
     private Date createdAt;
     private Date updatedAt;
     private boolean isPublic;

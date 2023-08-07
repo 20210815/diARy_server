@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController("/plan/{planId}/plan-like")
 public class PlanLikeController {
 
     private final PlanLikeService planLikeService;
@@ -17,13 +17,13 @@ public class PlanLikeController {
         this.planLikeService = planLikeService;
     }
 
-    @GetMapping("/plan/{planId}/plan-like")
+    @GetMapping
     public ResponseEntity<List<Long>> getAllPlanLikesByPlanId(@PathVariable Long planId) {
         List<Long> planLikes = planLikeService.getAllUserIdsLikesByPlanId(planId);
         return new ResponseEntity<>(planLikes, HttpStatus.OK);
     }
 
-    @PostMapping("/plan/{planId}/plan-like")
+    @PostMapping
     public ResponseEntity<String> createPlanLike(@PathVariable Long planId, @RequestBody PlanLikeDto planLikeDto) {
         // PlanId를 설정합니다.
         planLikeDto.setPlanId(planId);
@@ -31,15 +31,9 @@ public class PlanLikeController {
         return new ResponseEntity<>("success", HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/plan/{planId}/plan-like/{userId}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deletePlanLike(@PathVariable Long planId, @PathVariable Long userId) {
         planLikeService.deletePlanLike(planId, userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @GetMapping("/user/{userId}/plan-like")
-    public ResponseEntity<List<Long>> getAllPlanIdsLikedByUserId(@PathVariable Long userId) {
-        List<Long> planIdsLikedByUser = planLikeService.getAllPlanIdsLikedByUserId(userId);
-        return new ResponseEntity<>(planIdsLikedByUser, HttpStatus.OK);
     }
 }
