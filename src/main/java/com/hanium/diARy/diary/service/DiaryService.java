@@ -1,7 +1,9 @@
 package com.hanium.diARy.diary.service;
 
+import com.hanium.diARy.diary.CommentMapper;
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.dto.DiaryTagDto;
+import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryLike;
 import com.hanium.diARy.diary.entity.DiaryTag;
@@ -23,11 +25,14 @@ public class DiaryService {
     private static final Logger logger = LoggerFactory.getLogger(DiaryService.class);
 
     private final DiaryRepository diaryRepository;
+    private final CommentMapper commentMapper;
 
     public DiaryService(
-            @Autowired DiaryRepository diaryRepository
-    ) {
+            @Autowired DiaryRepository diaryRepository,
+            @Autowired CommentMapper commentMapper
+            ) {
         this.diaryRepository = diaryRepository;
+        this.commentMapper = commentMapper;
     }
 
     public Long createDiary(DiaryDto diaryDto) {
@@ -41,6 +46,7 @@ public class DiaryService {
         dto.setUser(diaryEntity.getUser());
         dto.setSatisfaction(diaryEntity.getSatisfaction());
         dto.setPublic(diaryEntity.isPublic());
+        dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
         List<DiaryTagDto> tagDtos = new ArrayList<>();
         for (DiaryTag tag : diaryEntity.getTags()) {
             DiaryTagDto tagDto = new DiaryTagDto();
@@ -79,6 +85,7 @@ public class DiaryService {
             for(DiaryLike diaryLike : diaryEntity.getDiaryLikes()) {
                 userList.add(diaryLike.getUser());
             }
+            dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
             dto.setTravelStart(diaryEntity.getTravelStart());
             dto.setTravelEnd(diaryEntity.getTravelEnd());
             dto.setContent(diaryEntity.getContent());
@@ -97,6 +104,7 @@ public class DiaryService {
             dto.setUser(diaryEntity.getUser());
             dto.setSatisfaction(diaryEntity.getSatisfaction());
             dto.setPublic(diaryEntity.isPublic());
+            dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
             List<DiaryTagDto> tagDtos = new ArrayList<>();
             for (DiaryTag tag : diaryEntity.getTags()) {
                 DiaryTagDto tagDto = new DiaryTagDto();

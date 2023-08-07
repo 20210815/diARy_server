@@ -23,6 +23,7 @@ public class DiaryDto {
     private User user;
     private List<DiaryTagDto> tags;
     private List<DiaryLikeDto> likes;
+    private List<CommentDto> comments;
 
 }
 

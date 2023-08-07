@@ -1,5 +1,7 @@
 package com.hanium.diARy.diary.repository;
 
+import com.hanium.diARy.diary.CommentMapper;
+import com.hanium.diARy.diary.dto.CommentDto;
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.dto.DiaryTagDto;
 import com.hanium.diARy.diary.entity.Diary;
@@ -23,14 +25,17 @@ import java.util.Optional;
 public class DiaryRepository{
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final TagRepositoryInterface tagRepositoryInterface;
+    private final CommentMapper commentMapper;
 
     public DiaryRepository(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
-            @Autowired TagRepositoryInterface tagRepositoryInterface
+            @Autowired TagRepositoryInterface tagRepositoryInterface,
+            @Autowired CommentMapper commentMapper
 
-    ) {
+            ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.tagRepositoryInterface = tagRepositoryInterface;
+        this.commentMapper = commentMapper;
     }
 
     @Transactional
@@ -59,6 +64,7 @@ public class DiaryRepository{
             }
         }
         diaryEntity.setTitle(diaryDto.getTitle());
+        diaryEntity.setComments(this.commentMapper.toEntityList(diaryDto.getComments()));
         diaryEntity.setSatisfaction(diaryDto.getSatisfaction());
         diaryEntity.setTravelStart(diaryDto.getTravelStart());
         diaryEntity.setTravelEnd(diaryDto.getTravelEnd());
@@ -127,6 +133,7 @@ public class DiaryRepository{
         diaryEntity.setPublic(diaryDto.isPublic());
         diaryEntity.setTravelStart(diaryDto.getTravelStart());
         diaryEntity.setTravelEnd(diaryDto.getTravelEnd());
+        diaryEntity.setComments(this.commentMapper.toEntityList(diaryDto.getComments()));
         diaryEntity.setSatisfaction(diaryDto.getSatisfaction() == 0 ? diaryEntity.getSatisfaction() : diaryDto.getSatisfaction());
         this.diaryRepositoryInterface.save(diaryEntity);
     }

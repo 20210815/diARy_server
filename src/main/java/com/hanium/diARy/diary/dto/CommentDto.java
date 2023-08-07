@@ -15,8 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDto {
-    private DiaryDto diary;
+    private Long diaryId;
     private String content;
-    private UserDto user;
+    private Long userId;
     private List<ReplyDto> replyDtos;
 }

@@ -10,6 +10,8 @@ import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepository;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
@@ -37,14 +39,18 @@ public class CommentRepository {
         this.userMapper = userMapper;
         this.diaryMapper = diaryMapper;
     }
+
+    @Transactional
     public void createComment(CommentDto commentDto) {
         Comment comment = new Comment();
-        User user = this.userMapper.toEntity(commentDto.getUser());
+        User user = this.userRepositoryInterface.findById(commentDto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + commentDto.getUserId()));
+        Diary diary = this.diaryRepositoryInterface.findById(commentDto.getDiaryId())
+                .orElseThrow(() -> new EntityNotFoundException("Diary not found with ID: " + commentDto.getDiaryId()));
+
         comment.setUser(user);
-        Diary diary = this.diaryMapper.toEntity(commentDto.getDiary());
         comment.setDiary(diary);
         comment.setContent(commentDto.getContent());
-
         commentRepositoryInterface.save(comment);
     }
 
@@ -81,18 +87,18 @@ public class CommentRepository {
             comment.setContent(content);
         }
 
-        DiaryDto diaryDto = dto.getDiary();
-        if (diaryDto != null) {
-            Diary diary = this.diaryMapper.toEntity(diaryDto);
+        Diary diary = this.diaryRepositoryInterface.findById(dto.getDiaryId()).get();
+        if(diary != null) {
             comment.setDiary(diary);
         }
-
-        UserDto userDto = dto.getUser();
-        if (userDto != null) {
-            User user = this.userMapper.toEntity(userDto);
-            comment.setUser(user);
+        else {
+            comment.setDiary(targetComment.get().getDiary());
         }
 
+        User user = this.userRepositoryInterface.findById(dto.getUserId()).get();
+        if(user != null) {
+            comment.setUser(user);
+        }
         this.commentRepositoryInterface.save(comment);
     }
 
