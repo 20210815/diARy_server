@@ -9,5 +9,4 @@ import java.io.Serializable;
 public class DiaryLikeId implements Serializable {
     private Long user;
     private Long diary;
-
 }

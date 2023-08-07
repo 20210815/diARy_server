@@ -1,9 +1,14 @@
 package com.hanium.diARy.diary.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanium.diARy.user.entity.User;
 import lombok.Data;
 import jakarta.persistence.*;
+
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -31,4 +36,18 @@ public class Comment {
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    @Column(name = "reply_id")
+    private List<Reply> replies = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new java.sql.Date(Instant.now().toEpochMilli());
+        this.updatedAt = new java.sql.Date(Instant.now().toEpochMilli());
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new java.sql.Date(Instant.now().toEpochMilli());
+    }
 }
