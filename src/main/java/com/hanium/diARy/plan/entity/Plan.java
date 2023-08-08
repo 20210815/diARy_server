@@ -28,10 +28,10 @@ public class Plan {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "title", nullable = false, length = 10)
-    private String title;
+    @Column(name = "travel_dest", nullable = false, length = 50)
+    private String travelDest;
 
-    @Column(name = "content", length = 10)
+    @Column(name = "content", length = 50)
     private String content;
 
     @Column(name = "travel_start", nullable = false)
@@ -50,10 +50,10 @@ public class Plan {
     private boolean isPublic;
 
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Location> locations;
+    private List<PlanLocation> planLocations;
 
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tag> tags;
+    private List<PlanTag> planTags;
 
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlanLike> planLikes;

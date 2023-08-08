@@ -5,7 +5,6 @@ import com.hanium.diARy.diary.dto.DiaryResponseDto;
 import com.hanium.diARy.diary.service.DiaryService;
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.service.TagService;
-import com.hanium.diARy.plan.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +25,8 @@ public class DiaryController {
     }
 
     @PostMapping()
-    public Long createDiary(@RequestBody DiaryRequestDto diaryDto) {
-        return this.diaryService.createDiary(diaryDto);
+    public Long createDiary(@RequestBody DiaryRequestDto dto) {
+        return this.diaryService.createDiary(dto);
     }
 
     @GetMapping()

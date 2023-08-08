@@ -101,6 +101,8 @@ public class DiaryService {
             dto.setUser(diaryEntity.getUser());
             dto.setSatisfaction(diaryEntity.getSatisfaction());
             dto.setPublic(diaryEntity.isPublic());
+            dto.setMemo(diaryEntity.getMemo());
+            dto.setTravelDest(diaryEntity.getTravelDest());
             List<DiaryTagDto> tagDtos = new ArrayList<>();
             for (DiaryTag tag : diaryEntity.getTags()) {
                 DiaryTagDto tagDto = new DiaryTagDto();
@@ -115,8 +117,6 @@ public class DiaryService {
             dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
             dto.setTravelStart(diaryEntity.getTravelStart());
             dto.setTravelEnd(diaryEntity.getTravelEnd());
-        }
-        return diaryDtoList;
     }*/
 
     public List<DiaryResponseDto> readPublicDiaryAll() {

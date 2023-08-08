@@ -53,7 +53,6 @@ public class DiaryRepository{
 
     @Transactional
     public Long createDiary(DiaryRequestDto diaryDto) {
-        // Create a new DiaryEntity instance and set its properties from DiaryDto
         DiaryDto diaryInfo = diaryDto.getDiaryDto();
         Diary diaryEntity = new Diary();
         diaryEntity.setUser(diaryInfo.getUser());
@@ -99,6 +98,7 @@ public class DiaryRepository{
                 tag.setName(tagDto.getName());
                 tag.getDiaries().add(diaryEntity);
                 tagRepositoryInterface.save(tag);
+                System.out.println("" + tag);
                 diaryEntity.getTags().add(tag);
             }
             else {
@@ -108,7 +108,6 @@ public class DiaryRepository{
                 diaryEntity.getTags().add(tag);
             }
         }
-
 
         // Perform validation if needed (e.g., check for required fields in diaryDto)
 

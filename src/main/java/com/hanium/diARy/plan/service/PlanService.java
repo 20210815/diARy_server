@@ -12,4 +12,5 @@ public interface PlanService {
     void deletePlan(Long planId);
     PlanResponseDto getPlanById(Long planId);
     PlanResponseDto updatePlanIsPublic(Long planId, boolean isPublic);
+    List<PlanResponseDto> getAllPlanByUserId(Long userId);
 }

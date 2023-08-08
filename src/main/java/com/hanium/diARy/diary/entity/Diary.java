@@ -1,5 +1,6 @@
 package com.hanium.diARy.diary.entity;
 
+import com.hanium.diARy.plan.entity.Plan;
 import com.hanium.diARy.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -56,10 +57,10 @@ public class Diary {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Column(name = "comment_id")
     private List<Comment> comments = new ArrayList<>();
-
 
 
     @PrePersist
