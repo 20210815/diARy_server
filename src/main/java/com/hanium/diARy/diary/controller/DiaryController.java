@@ -1,5 +1,6 @@
 package com.hanium.diARy.diary.controller;
 
+import com.hanium.diARy.diary.dto.DiaryRequestDto;
 import com.hanium.diARy.diary.service.DiaryService;
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.service.TagService;
@@ -24,7 +25,7 @@ public class DiaryController {
     }
 
     @PostMapping()
-    public Long createDiary(@RequestBody DiaryDto diaryDto) {
+    public Long createDiary(@RequestBody DiaryRequestDto diaryDto) {
         return this.diaryService.createDiary(diaryDto);
     }
 

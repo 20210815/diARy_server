@@ -1,13 +1,10 @@
 package com.hanium.diARy.diary.repository;
 
 import com.hanium.diARy.diary.CommentMapper;
-import com.hanium.diARy.diary.dto.CommentDto;
-import com.hanium.diARy.diary.dto.DiaryDto;
-import com.hanium.diARy.diary.dto.DiaryTagDto;
+import com.hanium.diARy.diary.dto.*;
 import com.hanium.diARy.diary.entity.Diary;
+import com.hanium.diARy.diary.entity.DiaryLocation;
 import com.hanium.diARy.diary.entity.DiaryTag;
-import com.hanium.diARy.plan.dto.TagDto;
-import com.hanium.diARy.plan.entity.Tag;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +13,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.swing.text.html.Option;
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,27 +26,62 @@ public class DiaryRepository{
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final TagRepositoryInterface tagRepositoryInterface;
     private final CommentMapper commentMapper;
+    private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
 
     public DiaryRepository(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired TagRepositoryInterface tagRepositoryInterface,
-            @Autowired CommentMapper commentMapper
+            @Autowired CommentMapper commentMapper,
+            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface
 
             ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.tagRepositoryInterface = tagRepositoryInterface;
         this.commentMapper = commentMapper;
+        this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;
     }
 
     @Transactional
-    public Long createDiary(DiaryDto diaryDto) {
+    public Long createDiary(DiaryRequestDto diaryDto) {
         // Create a new DiaryEntity instance and set its properties from DiaryDto
+        DiaryDto diaryInfo = diaryDto.getDiaryDto();
         Diary diaryEntity = new Diary();
-        diaryEntity.setUser(diaryDto.getUser());
-        diaryEntity.setContent(diaryDto.getContent());
-        diaryEntity.setPublic(diaryDto.isPublic());
+        diaryEntity.setUser(diaryInfo.getUser());
+        diaryEntity.setPublic(diaryInfo.isPublic());
+        diaryEntity.setTitle(diaryInfo.getTitle());
+        diaryEntity.setComments(this.commentMapper.toEntityList(diaryInfo.getComments()));
+        diaryEntity.setSatisfaction(diaryInfo.getSatisfaction());
+        diaryEntity.setTravelDest(diaryInfo.getTravelDest());
+        diaryEntity.setMemo(diaryInfo.getMemo());
+        diaryEntity.setTravelStart(diaryInfo.getTravelStart());
+        diaryEntity.setTravelEnd(diaryInfo.getTravelEnd());
 
-        for (DiaryTagDto tagDto : diaryDto.getTags()) {
+        diaryRepositoryInterface.save(diaryEntity);
+
+        List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
+
+        List<DiaryLocation> savedLocations = new ArrayList<>();
+        for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
+            DiaryLocation location = new DiaryLocation();
+            BeanUtils.copyProperties(diaryLocationDto, location);
+            try {
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeStart()));
+                java.util.Date parsedEndTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeEnd()));
+
+                location.setTimeStart(new Time(parsedStartTime.getTime()));
+                location.setTimeEnd(new Time(parsedEndTime.getTime()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                // Handle parsing exception if needed
+            }
+
+            location.setDiary(diaryEntity);
+            savedLocations.add(location);
+            diaryLocationRepositoryInterface.save(location);
+        }
+
+        for (DiaryTagDto tagDto : diaryDto.getDiaryDto().getTags()) {
             //받아온 태그를 하나하나 떼어서 원래 있는 건지 비교해봐야 함
             if(tagRepositoryInterface.findByName(tagDto.getName()) == null) {
                 //없으면 만들고 / 있으면 원래 거 그대로 선택...
@@ -63,11 +98,7 @@ public class DiaryRepository{
                 diaryEntity.getTags().add(tag);
             }
         }
-        diaryEntity.setTitle(diaryDto.getTitle());
-        diaryEntity.setComments(this.commentMapper.toEntityList(diaryDto.getComments()));
-        diaryEntity.setSatisfaction(diaryDto.getSatisfaction());
-        diaryEntity.setTravelStart(diaryDto.getTravelStart());
-        diaryEntity.setTravelEnd(diaryDto.getTravelEnd());
+
 
         // Perform validation if needed (e.g., check for required fields in diaryDto)
 
@@ -101,7 +132,6 @@ public class DiaryRepository{
         }
         Diary diaryEntity = targetEntity.get();
         diaryEntity.setTitle(diaryDto.getTitle() == null ? diaryEntity.getTitle() : diaryDto.getTitle());
-        diaryEntity.setContent(diaryDto.getContent());
 
 
         for (DiaryTag tags : diaryEntity.getTags()) {

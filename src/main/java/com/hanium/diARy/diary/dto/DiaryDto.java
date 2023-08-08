@@ -15,7 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 public class DiaryDto {
     private String title;
-    private String content;
+    private String travelDest;
+    private String memo;
     private int satisfaction;
     private boolean isPublic;
     private Date travelStart;

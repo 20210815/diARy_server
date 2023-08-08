@@ -3,7 +3,6 @@ package com.hanium.diARy.diary.repository;
 import com.hanium.diARy.diary.dto.DiaryTagDto;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryTag;
-import com.hanium.diARy.plan.entity.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

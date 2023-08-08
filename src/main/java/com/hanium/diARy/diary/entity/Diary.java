@@ -20,14 +20,16 @@ public class Diary {
     @Column(name = "title", nullable = false, length = 100)
     private String title;
 
+    @Column(name = "travel_dest")
+    private String travelDest;
+
+    private String memo;
+
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
     @Column(name = "updated_at")
     private Date updatedAt;
-
-    @Column(name = "content", nullable = false, length = 100)
-    private String content;
 
     @Column(name = "satisfaction", nullable = false)
     private int satisfaction;
