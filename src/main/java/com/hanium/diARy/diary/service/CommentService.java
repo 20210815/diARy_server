@@ -9,6 +9,8 @@ import com.hanium.diARy.diary.repository.*;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepository;
+import com.hanium.diARy.user.repository.UserRepositoryInterface;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,35 +24,38 @@ public class CommentService {
     private final CommentRepositoryInterface commentRepositoryInterface;
     private final DiaryMapper diaryMapper;
     private final ReplyMapper replyMapper;
+    private final DiaryRepositoryInterface diaryRepositoryInterface;
+    private final UserRepositoryInterface userRepositoryInterface;
 
     @Autowired
     public CommentService(
             CommentRepository commentRepository,
             CommentRepositoryInterface commentRepositoryInterface,
             DiaryMapper diaryMapper,
-            ReplyMapper replyMapper
+            ReplyMapper replyMapper,
+            DiaryRepositoryInterface diaryRepositoryInterface,
+            UserRepositoryInterface userRepositoryInterface
 
     ) {
         this.commentRepository = commentRepository;
         this.commentRepositoryInterface = commentRepositoryInterface;
         this.diaryMapper = diaryMapper;
         this.replyMapper = replyMapper;
+        this.diaryRepositoryInterface = diaryRepositoryInterface;
+        this.userRepositoryInterface = userRepositoryInterface;
     }
 
+    @Transactional
     public void createComment(CommentDto commentDto) {
-        Comment comment = new Comment();
-        comment.setDiary(this.diaryMapper.toEntity(commentDto.getDiary()));
-        comment.setUser(this.convertUserDtoToUser(commentDto.getUser()));
-        comment.setContent(commentDto.getContent());
-        this.commentRepositoryInterface.save(comment);
+        this.commentRepository.createComment(commentDto);
     }
 
     public CommentDto readComment(Long id) {
         Comment comment = this.commentRepository.readComment(id);
         return new CommentDto(
-                diaryMapper.toDto(comment.getDiary()),
+                diaryRepositoryInterface.findById(comment.getDiary().getDiaryId()).get().getDiaryId(),
                 comment.getContent(),
-                this.convertUserToUserDto(comment.getUser()),
+                userRepositoryInterface.findById(comment.getUser().getUserId()).get().getUserId(),
                 this.replyMapper.toDtoList(comment.getReplies())
         );
     }
@@ -63,8 +68,8 @@ public class CommentService {
             Comment comment = iterator.next();
             CommentDto dto = new CommentDto();
             dto.setContent(comment.getContent());
-            dto.setUser(this.convertUserToUserDto(comment.getUser()));
-            dto.setDiary(this.diaryMapper.toDto(comment.getDiary()));
+            dto.setUserId(comment.getUser().getUserId());
+            dto.setDiaryId(comment.getDiary().getDiaryId());
             commentDtoList.add(dto);
         }
 
@@ -77,9 +82,9 @@ public class CommentService {
 
         for (Comment comment : commentList) {
             commentDtoList.add(new CommentDto(
-                    this.diaryMapper.toDto(comment.getDiary()),
+                    comment.getDiary().getDiaryId(),
                     comment.getContent(),
-                    this.convertUserToUserDto(comment.getUser()),
+                    comment.getUser().getUserId(),
                     this.replyMapper.toDtoList(comment.getReplies())
             ));
         }
@@ -93,9 +98,9 @@ public class CommentService {
 
         for(Comment comment : commentList) {
             commentDtoList.add(new CommentDto(
-                    this.diaryMapper.toDto(comment.getDiary()),
+                    comment.getDiary().getDiaryId(),
                     comment.getContent(),
-                    this.convertUserToUserDto(comment.getUser()),
+                    comment.getUser().getUserId(),
                     this.replyMapper.toDtoList(comment.getReplies())
             ));
         }
@@ -111,28 +116,4 @@ public class CommentService {
         this.commentRepository.deleteComment(id);
     }
 
-    private User convertUserDtoToUser(UserDto userDto) {
-        User user = new User();
-        // UserDto에서 필요한 정보를 User 엔티티로 복사하는 로직을 작성
-        user.setPassword(userDto.getPassword());
-        user.setEmail(userDto.getEmail());
-        user.setImage(userDto.getImage());
-        user.setUsername(userDto.getUsername());
-        // 추가적인 정보가 있다면 이곳에서 설정
-
-        return user;
-    }
-
-
-
-    public UserDto convertUserToUserDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setEmail(user.getEmail());
-        userDto.setEmail(user.getEmail());
-        userDto.setPassword(user.getPassword());
-        userDto.setUsername(user.getUsername());
-        // 추가적인 정보가 있다면 이곳에서 설정
-
-        return userDto;
-    }
 }

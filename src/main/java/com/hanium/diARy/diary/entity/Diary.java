@@ -21,18 +21,16 @@ public class Diary {
     @Column(name = "title", nullable = false, length = 100)
     private String title;
 
+    @Column(name = "travel_dest")
+    private String travelDest;
+
+    private String memo;
+
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
     @Column(name = "updated_at")
     private Date updatedAt;
-
-    @Column(name = "travel_dest")
-    private String travelDest;
-
-    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(name = "diary_location_id")
-    private List<DiaryLocation> diaryLocations = new ArrayList<>();
 
     @Column(name = "satisfaction", nullable = false)
     private int satisfaction;
@@ -59,12 +57,10 @@ public class Diary {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Column(name = "comment_id")
     private List<Comment> comments = new ArrayList<>();
-
-    private String memo;
-
 
 
     @PrePersist

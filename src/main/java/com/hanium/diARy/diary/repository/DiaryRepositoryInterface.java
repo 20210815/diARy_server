@@ -8,5 +8,5 @@ import java.util.Iterator;
 import java.util.List;
 
 public interface DiaryRepositoryInterface extends CrudRepository<Diary, Long> {
-    public Iterable<Diary> findByIsPublicTrue();
+    public List<Diary> findByIsPublicTrue();
 }
