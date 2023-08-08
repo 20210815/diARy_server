@@ -7,7 +7,9 @@ import com.hanium.diARy.plan.entity.PlanLike;
 import com.hanium.diARy.plan.entity.PlanTag;
 import com.hanium.diARy.plan.repository.PlanLikeRepository;
 import com.hanium.diARy.plan.repository.PlanRepository;
+import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
+import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,15 +22,28 @@ public class PlanLikeServiceImpl implements PlanLikeService {
 
     private final PlanLikeRepository planLikeRepository;
     private final PlanRepository planRepository;
+    private final UserRepositoryInterface userRepositoryInterface;
 
-    public PlanLikeServiceImpl(PlanLikeRepository planLikeRepository, PlanRepository planRepository) {
+    public PlanLikeServiceImpl(PlanLikeRepository planLikeRepository, PlanRepository planRepository, UserRepositoryInterface userRepositoryInterface) {
         this.planLikeRepository = planLikeRepository;
         this.planRepository = planRepository;
+        this.userRepositoryInterface = userRepositoryInterface;
     }
 
     @Override
-    public List<Long> getAllUserIdsLikesByPlanId(Long planId) {
-        return planLikeRepository.getAllUserIdsLikedByPlan_PlanId(planId);
+    public List<UserDto> getAllUserIdsLikesByPlanId(Long planId) {
+        // PlanLikeRepository에서 직접 UserDto를 반환할 수 없으므로, PlanLike 객체들을 조회하고 직접 변환해야 합니다.
+        List<PlanLike> planLikes = planLikeRepository.getAllByPlan_PlanId(planId);
+
+        List<UserDto> userDtos = new ArrayList<>();
+        for (PlanLike planLike : planLikes) {
+            User user = planLike.getUser();
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(user, userDto);
+            userDtos.add(userDto);
+        }
+
+        return userDtos;
     }
 
     @Override
@@ -84,7 +99,12 @@ public class PlanLikeServiceImpl implements PlanLikeService {
                 planTagDtos.add(planTagDto);
             }
 
-            PlanResponseDto planResponseDto = new PlanResponseDto(planDto, planLocationDtos, planTagDtos);
+            // User 정보도 포함한 PlanResponseDto 생성
+            UserDto userDto = new UserDto();
+            User user = userRepositoryInterface.findById(userId).get();
+            BeanUtils.copyProperties(user, userDto);
+
+            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos);
             likedPlanResponseDtos.add(planResponseDto);
         }
 
