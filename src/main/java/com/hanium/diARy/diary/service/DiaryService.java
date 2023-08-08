@@ -1,6 +1,10 @@
 package com.hanium.diARy.diary.service;
 
+
+import com.hanium.diARy.diary.CommentMapper;
+import com.hanium.diARy.diary.DiaryLocationMapper;
 import com.hanium.diARy.diary.dto.DiaryDto;
+import com.hanium.diARy.diary.dto.DiaryRequestDto;
 import com.hanium.diARy.diary.dto.DiaryTagDto;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryLike;
@@ -23,15 +27,25 @@ public class DiaryService {
     private static final Logger logger = LoggerFactory.getLogger(DiaryService.class);
 
     private final DiaryRepository diaryRepository;
+    private final DiaryLocationMapper diaryLocationMapper;
+    private final CommentMapper commentMapper;
 
     public DiaryService(
-            @Autowired DiaryRepository diaryRepository
-    ) {
+            @Autowired DiaryRepository diaryRepository,
+            @Autowired CommentMapper commentMapper,
+            @Autowired DiaryLocationMapper diaryLocationMapper
+            ) {
         this.diaryRepository = diaryRepository;
+        this.commentMapper = commentMapper;
+        this.diaryLocationMapper = diaryLocationMapper;
     }
 
-    public Long createDiary(DiaryDto diaryDto) {
+/*    public Long createDiary(DiaryDto diaryDto) {
         return this.diaryRepository.createDiary(diaryDto);
+    }*/
+
+    public Long createDiary(DiaryRequestDto dto) {
+        return this.diaryRepository.createDiary(dto);
     }
 
     public DiaryDto readDiary(Long id) {
@@ -41,6 +55,9 @@ public class DiaryService {
         dto.setUser(diaryEntity.getUser());
         dto.setSatisfaction(diaryEntity.getSatisfaction());
         dto.setPublic(diaryEntity.isPublic());
+        dto.setMemo(diaryEntity.getMemo());
+        dto.setTravelDest(diaryEntity.getTravelDest());
+        dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
         List<DiaryTagDto> tagDtos = new ArrayList<>();
         for (DiaryTag tag : diaryEntity.getTags()) {
             DiaryTagDto tagDto = new DiaryTagDto();
@@ -54,7 +71,7 @@ public class DiaryService {
         }
         dto.setTravelStart(diaryEntity.getTravelStart());
         dto.setTravelEnd(diaryEntity.getTravelEnd());
-        dto.setContent(diaryEntity.getContent());
+        //dto.setDiaryLocationDtos(this.diaryLocationMapper.mapToDtoList(diaryEntity.getDiaryLocations()));
         return dto;
     }
 
@@ -68,6 +85,8 @@ public class DiaryService {
             dto.setUser(diaryEntity.getUser());
             dto.setSatisfaction(diaryEntity.getSatisfaction());
             dto.setPublic(diaryEntity.isPublic());
+            dto.setMemo(diaryEntity.getMemo());
+            dto.setTravelDest(diaryEntity.getTravelDest());
             List<DiaryTagDto> tagDtos = new ArrayList<>();
             for (DiaryTag tag : diaryEntity.getTags()) {
                 DiaryTagDto tagDto = new DiaryTagDto();
@@ -81,7 +100,7 @@ public class DiaryService {
             }
             dto.setTravelStart(diaryEntity.getTravelStart());
             dto.setTravelEnd(diaryEntity.getTravelEnd());
-            dto.setContent(diaryEntity.getContent());
+           // dto.setDiaryLocationDtos(this.diaryLocationMapper.mapToDtoList(diaryEntity.getDiaryLocations()));
             diaryDtoList.add(dto);
         }
         return diaryDtoList;
@@ -110,7 +129,7 @@ public class DiaryService {
             }
             dto.setTravelStart(diaryEntity.getTravelStart());
             dto.setTravelEnd(diaryEntity.getTravelEnd());
-            dto.setContent(diaryEntity.getContent());
+            //dto.setDiaryLocationDtos(this.diaryLocationMapper.mapToDtoList(diaryEntity.getDiaryLocations()));
             diaryDtoList.add(dto);
         }
         return diaryDtoList;

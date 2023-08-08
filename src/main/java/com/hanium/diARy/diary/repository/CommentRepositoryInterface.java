@@ -14,4 +14,5 @@ public interface CommentRepositoryInterface extends CrudRepository<Comment, Long
     public List<Comment> findByDiary(Diary diary);
     public List<Comment> findByUser(User user);
     public Comment findByCommentId(Long commentId);
+    public List<Comment> findByUser_UserId(Long userId);
 }

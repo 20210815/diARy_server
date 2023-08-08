@@ -1,13 +1,15 @@
 package com.hanium.diARy.user.service;
 
+import com.hanium.diARy.diary.CommentMapper;
+import com.hanium.diARy.diary.dto.CommentDto;
+import com.hanium.diARy.diary.dto.CommentReplyDto;
 import com.hanium.diARy.diary.dto.DiaryDto;
+import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryLike;
-import com.hanium.diARy.diary.repository.DiaryLikeRepository;
-import com.hanium.diARy.diary.repository.DiaryLikeRepositoryInterface;
-import com.hanium.diARy.diary.repository.DiaryRepository;
-import com.hanium.diARy.diary.repository.DiaryRepositoryInterface;
+import com.hanium.diARy.diary.repository.*;
 import com.hanium.diARy.diary.service.DiaryService;
+import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepository;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,36 +23,33 @@ public class UserService {
     private final UserRepository userRepository;
     private final DiaryLikeRepository diaryLikeRepository;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
+    private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
 
     public UserService(
             @Autowired UserRepository userRepository,
             @Autowired DiaryLikeRepository diaryLikeRepository,
-            @Autowired DiaryRepositoryInterface diaryRepositoryInterface
-    ) {
+            @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
+            @Autowired CommentRepository commentRepository,
+            @Autowired CommentMapper commentMapper
+            ) {
         this.userRepository = userRepository;
         this.diaryLikeRepository = diaryLikeRepository;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
+        this.commentRepository = commentRepository;
+        this.commentMapper = commentMapper;
     }
 
     //좋아요 누른 다이어리 확인
     //댓글 확인
 
     public List<DiaryDto> readAllLikeDiary(Long userId) {
-        List<DiaryLike> diaryLikes = this.userRepository.readLikeAllDiary(userId);
         return this.diaryLikeRepository.findDiaryLikesByUserId(userId);
-        /*
-        List<DiaryDto> diaryDtoList = new ArrayList<>();
-
-        for (DiaryLike diaryLike : diaryLikes) {
-            //해당 다이어리를 읽어서 DTo로 변환
-
-            DiaryDto diaryDto = new DiaryDto();
-            //diaryDto.setLikes(diary.getDiaryLikes());
-            //diaryLike.getDiary();
-        }
-        return diaryDtoList;*/
     }
 
+/*    public List<CommentReplyDto> readAllUserComment(Long userId) {
+
+    }*/
 
 
 }

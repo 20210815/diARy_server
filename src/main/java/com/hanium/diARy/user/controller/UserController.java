@@ -1,5 +1,6 @@
 package com.hanium.diARy.user.controller;
 
+import com.hanium.diARy.diary.dto.CommentDto;
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.service.UserService;
@@ -27,4 +28,9 @@ public class UserController {
     public List<DiaryDto> readUserLikeDiary(@PathVariable("userId") Long id) {
         return this.userService.readAllLikeDiary(id);
     }
+
+/*    @GetMapping("/{userId}/diary-comment")
+    public List<CommentDto> readUserDiaryComment(@PathVariable("userId") Long id) {
+        return this.userService.readAllCommentReply(id);
+    }*/
 }

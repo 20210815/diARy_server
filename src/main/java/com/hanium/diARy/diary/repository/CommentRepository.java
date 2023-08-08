@@ -2,10 +2,12 @@ package com.hanium.diARy.diary.repository;
 
 import com.hanium.diARy.diary.DiaryMapper;
 import com.hanium.diARy.diary.dto.CommentDto;
+import com.hanium.diARy.diary.dto.CommentReplyDto;
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.user.UserMapper;
+import com.hanium.diARy.diary.entity.Reply;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepository;
@@ -60,10 +62,24 @@ public class CommentRepository {
         return this.commentRepositoryInterface.findAll().iterator();
     }
 
-    public List<Comment> readUserCommentAll(Long userId) {
+/*
+    public List<CommentReplyDto> readUserCommentAll(Long userId) {
+        List<CommentReplyDto> commentReplyDtoList = new ArrayList<>();
+
+        this.commentRepositoryInterface.findByUser_UserId(userId);
+
+
+
+
         User user = this.userRepositoryInterface.findById(userId).get();
-        return this.commentRepositoryInterface.findByUser(user);
+        List<Comment> commentList = this.commentRepositoryInterface.findByUser(user);
+        // Reply도 해당 User만 읽히도록 해야 함
+        for (Comment comment : commentList) {
+            List<Reply> replies = comment.getReplies();
+        }
+        return commentList;
     }
+*/
 
     public List<Comment> readDiaryCommentAll(Long diaryId) {
         Diary diary = this.diaryRepositoryInterface.findById(diaryId).get();

@@ -71,7 +71,7 @@ public class CommentService {
         return commentDtoList;
     }
 
-    public List<CommentDto> readUserCommentAll(Long userId) {
+/*    public List<CommentDto> readUserCommentAll(Long userId) {
         List<Comment> commentList = this.commentRepository.readUserCommentAll(userId);
         List<CommentDto> commentDtoList = new ArrayList<>();
 
@@ -85,7 +85,7 @@ public class CommentService {
         }
 
         return commentDtoList;
-    }
+    }*/
 
     public List<CommentDto> readDiaryCommentAll(Long diaryId) {
         List<Comment> commentList = this.commentRepository.readDiaryCommentAll(diaryId);
