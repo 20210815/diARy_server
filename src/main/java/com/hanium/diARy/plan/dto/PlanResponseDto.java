@@ -13,8 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class PlanResponseDto {
     private PlanDto plan;
-    private List<LocationDto> locations;
-    private List<TagDto> tags;
+    private List<PlanLocationDto> locations;
+    private List<PlanTagDto> tags;
 
     public PlanResponseDto(Plan plan) {
         this.plan = new PlanDto();

@@ -7,7 +7,7 @@ import java.sql.Date;
 @Data
 public class PlanDto {
     private Long planId;
-    private String title;
+    private String travelDest;
     private String content;
     private Date travelStart;
     private Date travelEnd;

@@ -14,8 +14,8 @@ import java.sql.Time;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "Location")
-public class Location {
+@Table(name = "plan_location")
+public class PlanLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "location_id")
