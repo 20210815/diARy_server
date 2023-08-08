@@ -125,13 +125,36 @@ public class DiaryRepository{
     }
 
     @Transactional
-    public void updateDiary(Long id, DiaryDto diaryDto) {
+    public void updateDiary(Long id, DiaryRequestDto diaryDto) {
         Optional<Diary> targetEntity = this.diaryRepositoryInterface.findById(id);
         if (targetEntity.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         Diary diaryEntity = targetEntity.get();
-        diaryEntity.setTitle(diaryDto.getTitle() == null ? diaryEntity.getTitle() : diaryDto.getTitle());
+        diaryEntity.setTitle(diaryDto.getDiaryDto().getTitle() == null ? diaryEntity.getTitle() : diaryDto.getDiaryDto().getTitle());
+
+/*        List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
+
+        List<DiaryLocation> savedLocations = new ArrayList<>();
+        for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
+            DiaryLocation location = new DiaryLocation();
+            BeanUtils.copyProperties(diaryLocationDto, location);
+            try {
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeStart()));
+                java.util.Date parsedEndTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeEnd()));
+
+                location.setTimeStart(new Time(parsedStartTime.getTime()));
+                location.setTimeEnd(new Time(parsedEndTime.getTime()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                // Handle parsing exception if needed
+            }
+
+            location.setDiary(diaryEntity);
+            savedLocations.add(location);
+            diaryLocationRepositoryInterface.save(location);
+        }*/
 
 
         for (DiaryTag tags : diaryEntity.getTags()) {
@@ -141,7 +164,7 @@ public class DiaryRepository{
 
 
 
-        for (DiaryTagDto tagDto : diaryDto.getTags()) {
+        for (DiaryTagDto tagDto : diaryDto.getDiaryDto().getTags()) {
             //받아온 태그를 하나하나 떼어서 원래 있는 건지 비교해봐야 함
             if(tagRepositoryInterface.findByName(tagDto.getName()) == null) {
                     //없으면 만들고 / 있으면 원래 거 그대로 선택...
@@ -159,12 +182,14 @@ public class DiaryRepository{
                 }
         }
 
-        diaryEntity.setUser(diaryDto.getUser());
-        diaryEntity.setPublic(diaryDto.isPublic());
-        diaryEntity.setTravelStart(diaryDto.getTravelStart());
-        diaryEntity.setTravelEnd(diaryDto.getTravelEnd());
-        diaryEntity.setComments(this.commentMapper.toEntityList(diaryDto.getComments()));
-        diaryEntity.setSatisfaction(diaryDto.getSatisfaction() == 0 ? diaryEntity.getSatisfaction() : diaryDto.getSatisfaction());
+        diaryEntity.setUser(diaryDto.getDiaryDto().getUser());
+        diaryEntity.setPublic(diaryDto.getDiaryDto().isPublic());
+        diaryEntity.setMemo(diaryDto.getDiaryDto().getMemo());
+        diaryEntity.setTravelDest(diaryDto.getDiaryDto().getTravelDest());
+        diaryEntity.setTravelStart(diaryDto.getDiaryDto().getTravelStart());
+        diaryEntity.setTravelEnd(diaryDto.getDiaryDto().getTravelEnd());
+        diaryEntity.setComments(this.commentMapper.toEntityList(diaryDto.getDiaryDto().getComments()));
+        diaryEntity.setSatisfaction(diaryDto.getDiaryDto().getSatisfaction() == 0 ? diaryEntity.getSatisfaction() : diaryDto.getDiaryDto().getSatisfaction());
         this.diaryRepositoryInterface.save(diaryEntity);
     }
 

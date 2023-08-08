@@ -1,6 +1,7 @@
 package com.hanium.diARy.diary.controller;
 
 import com.hanium.diARy.diary.dto.DiaryRequestDto;
+import com.hanium.diARy.diary.dto.DiaryResponseDto;
 import com.hanium.diARy.diary.service.DiaryService;
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.service.TagService;
@@ -30,21 +31,21 @@ public class DiaryController {
     }
 
     @GetMapping()
-    public List<DiaryDto> readDiaryAll() {
+    public List<DiaryResponseDto> readDiaryAll() {
         return this.diaryService.readDiaryAll();
     }
 
-    @GetMapping("/public")
-    public List<DiaryDto> readPublicDiaryAll() {return this.diaryService.readPublicDiaryAll();}
+   /// @GetMapping("/public")
+   // public List<DiaryResponseDto> readPublicDiaryAll() {return this.diaryService.readPublicDiaryAll();}
 
     @GetMapping("/{diaryId}")
-    public DiaryDto readDiary(@PathVariable("diaryId") Long id) {
+    public DiaryResponseDto readDiary(@PathVariable("diaryId") Long id) {
         return this.diaryService.readDiary(id);
     }
 
     @PutMapping("/{diaryId}")
     public void updateDiary(@PathVariable("diaryId") Long id,
-                            @RequestBody DiaryDto diaryDto){
+                            @RequestBody DiaryRequestDto diaryDto){
         this.diaryService.updateDiary(id, diaryDto);
     }
 
