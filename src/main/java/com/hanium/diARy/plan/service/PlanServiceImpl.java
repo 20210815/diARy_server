@@ -1,20 +1,20 @@
 package com.hanium.diARy.plan.service;
 
 import com.hanium.diARy.plan.dto.*;
-import com.hanium.diARy.plan.entity.Location;
+import com.hanium.diARy.plan.entity.PlanLocation;
 import com.hanium.diARy.plan.entity.Plan;
 import com.hanium.diARy.plan.entity.PlanLike;
-import com.hanium.diARy.plan.entity.Tag;
-import com.hanium.diARy.plan.repository.LocationRepository;
+import com.hanium.diARy.plan.entity.PlanTag;
+import com.hanium.diARy.plan.repository.PlanLocationRepository;
 import com.hanium.diARy.plan.repository.PlanLikeRepository;
 import com.hanium.diARy.plan.repository.PlanRepository;
-import com.hanium.diARy.plan.repository.TagRepository;
+import com.hanium.diARy.plan.repository.PlanTagRepository;
 import com.hanium.diARy.user.entity.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,22 +25,22 @@ import java.util.List;
 public class PlanServiceImpl implements PlanService {
 
     private final PlanRepository planRepository;
-    private final LocationRepository locationRepository;
-    private final TagRepository tagRepository;
+    private final PlanLocationRepository planLocationRepository;
+    private final PlanTagRepository planTagRepository;
     private final PlanLikeRepository planLikeRepository;
 
-    public PlanServiceImpl(PlanRepository planRepository, LocationRepository locationRepository, TagRepository tagRepository, PlanLikeRepository planLikeRepository) {
+    public PlanServiceImpl(PlanRepository planRepository, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanLikeRepository planLikeRepository) {
         this.planRepository = planRepository;
-        this.locationRepository = locationRepository;
-        this.tagRepository = tagRepository;
+        this.planLocationRepository = planLocationRepository;
+        this.planTagRepository = planTagRepository;
         this.planLikeRepository = planLikeRepository;
     }
 
     @Override
     public Long createPlan(PlanRequestDto request) {
         PlanDto planDto = request.getPlan();
-        List<LocationDto> locationDtos = request.getLocations();
-        List<TagDto> tagDtos = request.getTags();
+        List<PlanLocationDto> planLocationDtos = request.getLocations();
+        List<PlanTagDto> planTagDtos = request.getTags();
 
         // PlanDto를 이용하여 Plan 엔티티를 생성하고 저장합니다.
         Plan plan = new Plan();
@@ -50,35 +50,39 @@ public class PlanServiceImpl implements PlanService {
         user.setUserId(1L);
         plan.setUser(user);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-        try {
-            plan.setTravelStart(new Date(dateFormat.parse(planDto.getTravelStart()).getTime()));
-            plan.setTravelEnd(new Date(dateFormat.parse(planDto.getTravelEnd()).getTime()));
-        } catch (ParseException e) {
-            // 예외 처리 필요
-        }
-
         BeanUtils.copyProperties(planDto, plan);
         Plan savedPlan = planRepository.save(plan);
 
-        // LocationDto를 이용하여 Location 엔티티를 생성하고 Plan과 연관시킨 뒤 저장합니다.
-        List<Location> savedLocations = new ArrayList<>();
-        for (LocationDto locationDto : locationDtos) {
-            Location location = new Location();
-            BeanUtils.copyProperties(locationDto, location);
+        // LocationDto를 이용하여 PlanLocation 엔티티를 생성하고 Plan과 연관시킨 뒤 저장합니다.
+        List<PlanLocation> savedLocations = new ArrayList<>();
+        for (PlanLocationDto planLocationDto : planLocationDtos) {
+            PlanLocation location = new PlanLocation();
+            BeanUtils.copyProperties(planLocationDto, location);
+            try {
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(planLocationDto.getTimeStart()));
+                java.util.Date parsedEndTime = timeFormat.parse(String.valueOf(planLocationDto.getTimeEnd()));
+
+                location.setTimeStart(new Time(parsedStartTime.getTime()));
+                location.setTimeEnd(new Time(parsedEndTime.getTime()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                // Handle parsing exception if needed
+            }
+
             location.setPlan(savedPlan);
             savedLocations.add(location);
-            locationRepository.save(location);
+            planLocationRepository.save(location);
         }
 
         // TagDto를 이용하여 Tag 엔티티를 생성하고 Plan과 연관시킨 뒤 저장합니다.
-        List<Tag> savedTags = new ArrayList<>();
-        for (TagDto tagDto : tagDtos) {
-            Tag tag = new Tag();
-            BeanUtils.copyProperties(tagDto, tag);
-            tag.setPlan(savedPlan);
-            savedTags.add(tag);
-            tagRepository.save(tag);
+        List<PlanTag> savedPlanTags = new ArrayList<>();
+        for (PlanTagDto planTagDto : planTagDtos) {
+            PlanTag planTag = new PlanTag();
+            BeanUtils.copyProperties(planTagDto, planTag);
+            planTag.setPlan(savedPlan);
+            savedPlanTags.add(planTag);
+            planTagRepository.save(planTag);
         }
 
         // 생성된 Plan 엔티티를 다시 DTO로 변환하여 반환합니다.
@@ -105,8 +109,8 @@ public class PlanServiceImpl implements PlanService {
         // 수정하고자 하는 필드들만 업데이트합니다.
         PlanDto planDto = request.getPlan();
         if (planDto != null) {
-            if (planDto.getTitle() != null) {
-                existingPlan.setTitle(planDto.getTitle());
+            if (planDto.getTravelDest() != null) {
+                existingPlan.setTravelDest(planDto.getTravelDest());
             }
             if (planDto.getContent() != null) {
                 existingPlan.setContent(planDto.getContent());
@@ -124,26 +128,29 @@ public class PlanServiceImpl implements PlanService {
             // ...
         }
 
-        // 기존의 Location 엔티티와 Tag 엔티티들은 그대로 두고 필요한 경우에만 업데이트합니다.
-        List<LocationDto> locationDtos = request.getLocations();
-        if (locationDtos != null) {
-            for (LocationDto locationDto : locationDtos) {
-                if (locationDto.getLocationId() != null) {
-                    // locationDto를 사용하여 기존 Location 엔티티를 찾습니다.
-                    Location existingLocation = locationRepository.findById(locationDto.getLocationId()).orElse(null);
+        // 기존의 PlanLocation 엔티티와 Tag 엔티티들은 그대로 두고 필요한 경우에만 업데이트합니다.
+        List<PlanLocationDto> planLocationDtos = request.getLocations();
+        if (planLocationDtos != null) {
+            for (PlanLocationDto planLocationDto : planLocationDtos) {
+                if (planLocationDto.getLocationId() != null) {
+                    // locationDto를 사용하여 기존 PlanLocation 엔티티를 찾습니다.
+                    PlanLocation existingLocation = planLocationRepository.findById(planLocationDto.getLocationId()).orElse(null);
                     if (existingLocation != null) {
-                        // locationDto의 필드들로 기존 Location 엔티티를 업데이트합니다.
-                        if (locationDto.getName() != null) {
-                            existingLocation.setName(locationDto.getName());
+                        // locationDto의 필드들로 기존 PlanLocation 엔티티를 업데이트합니다.
+                        if (planLocationDto.getName() != null) {
+                            existingLocation.setName(planLocationDto.getName());
                         }
-                        if (locationDto.getAddress() != null) {
-                            existingLocation.setAddress(locationDto.getAddress());
+                        if (planLocationDto.getAddress() != null) {
+                            existingLocation.setAddress(planLocationDto.getAddress());
                         }
-                        if (locationDto.getDate() != null) {
-                            existingLocation.setDate(locationDto.getDate());
+                        if (planLocationDto.getDate() != null) {
+                            existingLocation.setDate(planLocationDto.getDate());
                         }
-                        if (locationDto.getTime() != null) {
-                            existingLocation.setTime(locationDto.getTime());
+                        if (planLocationDto.getTimeStart() != null) {
+                            existingLocation.setTimeStart(planLocationDto.getTimeStart());
+                        }
+                        if (planLocationDto.getTimeEnd() != null) {
+                            existingLocation.setTimeEnd(planLocationDto.getTimeEnd());
                         }
                         // locationRepository.save(existingLocation);
                     }
@@ -151,15 +158,15 @@ public class PlanServiceImpl implements PlanService {
             }
         }
 
-        List<TagDto> tagDtos = request.getTags();
-        if (tagDtos != null) {
-            for (TagDto tagDto : tagDtos) {
-                if (tagDto.getTagId() != null) {
+        List<PlanTagDto> planTagDtos = request.getTags();
+        if (planTagDtos != null) {
+            for (PlanTagDto planTagDto : planTagDtos) {
+                if (planTagDto.getTagId() != null) {
                     // tagDto를 사용하여 기존 Tag 엔티티를 찾습니다.
-                    Tag existingTag = tagRepository.findById(tagDto.getTagId()).orElse(null);
-                    if (existingTag != null) {
-                        if (tagDto.getName() != null) {
-                            existingTag.setName(tagDto.getName());
+                    PlanTag existingPlanTag = planTagRepository.findById(planTagDto.getTagId()).orElse(null);
+                    if (existingPlanTag != null) {
+                        if (planTagDto.getName() != null) {
+                            existingPlanTag.setName(planTagDto.getName());
                         }
                         // tagRepository.save(existingTag);
                     }
@@ -174,22 +181,22 @@ public class PlanServiceImpl implements PlanService {
         PlanDto updatedPlanDto = new PlanDto();
         BeanUtils.copyProperties(existingPlan, updatedPlanDto);
 
-        List<LocationDto> updatedLocationDtos = new ArrayList<>();
-        for (Location location : existingPlan.getLocations()) {
-            LocationDto locationDto = new LocationDto();
-            BeanUtils.copyProperties(location, locationDto);
-            updatedLocationDtos.add(locationDto);
+        List<PlanLocationDto> updatedPlanLocationDtos = new ArrayList<>();
+        for (PlanLocation location : existingPlan.getPlanLocations()) {
+            PlanLocationDto planLocationDto = new PlanLocationDto();
+            BeanUtils.copyProperties(location, planLocationDto);
+            updatedPlanLocationDtos.add(planLocationDto);
         }
 
-        List<TagDto> updatedTagDtos = new ArrayList<>();
-        for (Tag tag : existingPlan.getTags()) {
-            TagDto tagDto = new TagDto();
-            BeanUtils.copyProperties(tag, tagDto);
-            updatedTagDtos.add(tagDto);
+        List<PlanTagDto> updatedPlanTagDtos = new ArrayList<>();
+        for (PlanTag planTag : existingPlan.getPlanTags()) {
+            PlanTagDto planTagDto = new PlanTagDto();
+            BeanUtils.copyProperties(planTag, planTagDto);
+            updatedPlanTagDtos.add(planTagDto);
         }
 
         // Return the updated PlanResponseDto
-        PlanResponseDto updatedPlanResponseDto = new PlanResponseDto(updatedPlanDto, updatedLocationDtos, updatedTagDtos);
+        PlanResponseDto updatedPlanResponseDto = new PlanResponseDto(updatedPlanDto, updatedPlanLocationDtos, updatedPlanTagDtos);
         return updatedPlanResponseDto;
     }
 
@@ -202,10 +209,10 @@ public class PlanServiceImpl implements PlanService {
             return;
         }
 
-        // Plan 엔티티와 연관된 Location 엔티티를 모두 삭제합니다.
-        List<Location> locations = plan.getLocations();
-        for (Location location : locations) {
-            locationRepository.delete(location);
+        // Plan 엔티티와 연관된 PlanLocation 엔티티를 모두 삭제합니다.
+        List<PlanLocation> locations = plan.getPlanLocations();
+        for (PlanLocation location : locations) {
+            planLocationRepository.delete(location);
         }
 
         // Plan 엔티티와 연관된 PlanLike 엔티티를 삭제합니다.
@@ -215,9 +222,9 @@ public class PlanServiceImpl implements PlanService {
         }
 
         // Plan 엔티티와 연관된 Tag 엔티티를 모두 삭제합니다.
-        List<Tag> tags = plan.getTags();
-        for (Tag tag : tags) {
-            tagRepository.delete(tag);
+        List<PlanTag> planTags = plan.getPlanTags();
+        for (PlanTag planTag : planTags) {
+            planTagRepository.delete(planTag);
         }
 
         // Plan 엔티티를 삭제합니다.
@@ -239,22 +246,22 @@ public class PlanServiceImpl implements PlanService {
         BeanUtils.copyProperties(plan, planDto);
 
         // Location과 Tag 엔티티들을 DTO로 변환하여 리스트에 담습니다.
-        List<LocationDto> locationDtos = new ArrayList<>();
-        for (Location location : plan.getLocations()) {
-            LocationDto locationDto = new LocationDto();
-            BeanUtils.copyProperties(location, locationDto);
-            locationDtos.add(locationDto);
+        List<PlanLocationDto> planLocationDtos = new ArrayList<>();
+        for (PlanLocation location : plan.getPlanLocations()) {
+            PlanLocationDto planLocationDto = new PlanLocationDto();
+            BeanUtils.copyProperties(location, planLocationDto);
+            planLocationDtos.add(planLocationDto);
         }
 
-        List<TagDto> tagDtos = new ArrayList<>();
-        for (Tag tag : plan.getTags()) {
-            TagDto tagDto = new TagDto();
-            BeanUtils.copyProperties(tag, tagDto);
-            tagDtos.add(tagDto);
+        List<PlanTagDto> planTagDtos = new ArrayList<>();
+        for (PlanTag planTag : plan.getPlanTags()) {
+            PlanTagDto planTagDto = new PlanTagDto();
+            BeanUtils.copyProperties(planTag, planTagDto);
+            planTagDtos.add(planTagDto);
         }
 
         // PlanDto, List<LocationDto>, List<TagDto>를 PlanResponseDto로 변환하여 반환
-        PlanResponseDto planResponseDto = new PlanResponseDto(planDto, locationDtos, tagDtos);
+        PlanResponseDto planResponseDto = new PlanResponseDto(planDto, planLocationDtos, planTagDtos);
         return planResponseDto;
     }
 
@@ -271,22 +278,22 @@ public class PlanServiceImpl implements PlanService {
         PlanDto planDto = new PlanDto();
         BeanUtils.copyProperties(updatedPlan, planDto);
 
-        List<LocationDto> locationDtos = new ArrayList<>();
-        for (Location location : updatedPlan.getLocations()) {
-            LocationDto locationDto = new LocationDto();
-            BeanUtils.copyProperties(location, locationDto);
-            locationDtos.add(locationDto);
+        List<PlanLocationDto> planLocationDtos = new ArrayList<>();
+        for (PlanLocation location : updatedPlan.getPlanLocations()) {
+            PlanLocationDto planLocationDto = new PlanLocationDto();
+            BeanUtils.copyProperties(location, planLocationDto);
+            planLocationDtos.add(planLocationDto);
         }
 
-        List<TagDto> tagDtos = new ArrayList<>();
-        for (Tag tag : updatedPlan.getTags()) {
-            TagDto tagDto = new TagDto();
-            BeanUtils.copyProperties(tag, tagDto);
-            tagDtos.add(tagDto);
+        List<PlanTagDto> planTagDtos = new ArrayList<>();
+        for (PlanTag planTag : updatedPlan.getPlanTags()) {
+            PlanTagDto planTagDto = new PlanTagDto();
+            BeanUtils.copyProperties(planTag, planTagDto);
+            planTagDtos.add(planTagDto);
         }
 
         // PlanDto, List<LocationDto>, List<TagDto>를 PlanResponseDto로 변환하여 반환
-        PlanResponseDto updatedPlanDto = new PlanResponseDto(planDto, locationDtos, tagDtos);
+        PlanResponseDto updatedPlanDto = new PlanResponseDto(planDto, planLocationDtos, planTagDtos);
         return updatedPlanDto;
     }
 
@@ -301,21 +308,21 @@ public class PlanServiceImpl implements PlanService {
             PlanDto planDto = new PlanDto();
             BeanUtils.copyProperties(plan, planDto);
 
-            List<LocationDto> locationDtos = new ArrayList<>();
-            for (Location location : plan.getLocations()) {
-                LocationDto locationDto = new LocationDto();
-                BeanUtils.copyProperties(location, locationDto);
-                locationDtos.add(locationDto);
+            List<PlanLocationDto> planLocationDtos = new ArrayList<>();
+            for (PlanLocation location : plan.getPlanLocations()) {
+                PlanLocationDto planLocationDto = new PlanLocationDto();
+                BeanUtils.copyProperties(location, planLocationDto);
+                planLocationDtos.add(planLocationDto);
             }
 
-            List<TagDto> tagDtos = new ArrayList<>();
-            for (Tag tag : plan.getTags()) {
-                TagDto tagDto = new TagDto();
-                BeanUtils.copyProperties(tag, tagDto);
-                tagDtos.add(tagDto);
+            List<PlanTagDto> planTagDtos = new ArrayList<>();
+            for (PlanTag planTag : plan.getPlanTags()) {
+                PlanTagDto planTagDto = new PlanTagDto();
+                BeanUtils.copyProperties(planTag, planTagDto);
+                planTagDtos.add(planTagDto);
             }
 
-            PlanResponseDto planResponseDto = new PlanResponseDto(planDto, locationDtos, tagDtos);
+            PlanResponseDto planResponseDto = new PlanResponseDto(planDto, planLocationDtos, planTagDtos);
             planResponseDtos.add(planResponseDto);
         }
 

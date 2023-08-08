@@ -1,16 +1,16 @@
 package com.hanium.diARy.plan.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 import java.sql.Date;
+import java.sql.Time;
 
 @Data
-public class LocationDto {
+public class PlanLocationDto {
     private Long locationId;
     private Date date;
-    @JsonDeserialize(using = CustomDateDeserializer.class)
-    private Date time;
+    private Time timeStart;
+    private Time timeEnd;
     private String name;
     private String address;
 }

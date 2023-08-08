@@ -1,10 +1,10 @@
 package com.hanium.diARy.plan.service;
 
 import com.hanium.diARy.plan.dto.*;
-import com.hanium.diARy.plan.entity.Location;
+import com.hanium.diARy.plan.entity.PlanLocation;
 import com.hanium.diARy.plan.entity.Plan;
 import com.hanium.diARy.plan.entity.PlanLike;
-import com.hanium.diARy.plan.entity.Tag;
+import com.hanium.diARy.plan.entity.PlanTag;
 import com.hanium.diARy.plan.repository.PlanLikeRepository;
 import com.hanium.diARy.plan.repository.PlanRepository;
 import com.hanium.diARy.user.entity.User;
@@ -70,21 +70,21 @@ public class PlanLikeServiceImpl implements PlanLikeService {
             PlanDto planDto = new PlanDto();
             BeanUtils.copyProperties(plan, planDto);
 
-            List<LocationDto> locationDtos = new ArrayList<>();
-            for (Location location : plan.getLocations()) {
-                LocationDto locationDto = new LocationDto();
-                BeanUtils.copyProperties(location, locationDto);
-                locationDtos.add(locationDto);
+            List<PlanLocationDto> planLocationDtos = new ArrayList<>();
+            for (PlanLocation location : plan.getPlanLocations()) {
+                PlanLocationDto planLocationDto = new PlanLocationDto();
+                BeanUtils.copyProperties(location, planLocationDto);
+                planLocationDtos.add(planLocationDto);
             }
 
-            List<TagDto> tagDtos = new ArrayList<>();
-            for (Tag tag : plan.getTags()) {
-                TagDto tagDto = new TagDto();
-                BeanUtils.copyProperties(tag, tagDto);
-                tagDtos.add(tagDto);
+            List<PlanTagDto> planTagDtos = new ArrayList<>();
+            for (PlanTag planTag : plan.getPlanTags()) {
+                PlanTagDto planTagDto = new PlanTagDto();
+                BeanUtils.copyProperties(planTag, planTagDto);
+                planTagDtos.add(planTagDto);
             }
 
-            PlanResponseDto planResponseDto = new PlanResponseDto(planDto, locationDtos, tagDtos);
+            PlanResponseDto planResponseDto = new PlanResponseDto(planDto, planLocationDtos, planTagDtos);
             likedPlanResponseDtos.add(planResponseDto);
         }
 

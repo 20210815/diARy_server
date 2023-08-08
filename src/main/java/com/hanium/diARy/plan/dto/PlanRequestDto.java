@@ -7,6 +7,6 @@ import java.util.List;
 @Data
 public class PlanRequestDto {
     private PlanDto plan;
-    private List<LocationDto> locations;
-    private List<TagDto> tags;
+    private List<PlanLocationDto> locations;
+    private List<PlanTagDto> tags;
 }
