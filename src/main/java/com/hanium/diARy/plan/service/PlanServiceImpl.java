@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,14 +51,6 @@ public class PlanServiceImpl implements PlanService {
         user.setUserId(1L);
         plan.setUser(user);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-        try {
-            plan.setTravelStart(new Date(dateFormat.parse(planDto.getTravelStart()).getTime()));
-            plan.setTravelEnd(new Date(dateFormat.parse(planDto.getTravelEnd()).getTime()));
-        } catch (ParseException e) {
-            // 예외 처리 필요
-        }
-
         BeanUtils.copyProperties(planDto, plan);
         Plan savedPlan = planRepository.save(plan);
 
@@ -66,6 +59,18 @@ public class PlanServiceImpl implements PlanService {
         for (LocationDto locationDto : locationDtos) {
             Location location = new Location();
             BeanUtils.copyProperties(locationDto, location);
+            try {
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(locationDto.getTimeStart()));
+                java.util.Date parsedEndTime = timeFormat.parse(String.valueOf(locationDto.getTimeEnd()));
+
+                location.setTimeStart(new Time(parsedStartTime.getTime()));
+                location.setTimeEnd(new Time(parsedEndTime.getTime()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                // Handle parsing exception if needed
+            }
+
             location.setPlan(savedPlan);
             savedLocations.add(location);
             locationRepository.save(location);
@@ -142,8 +147,11 @@ public class PlanServiceImpl implements PlanService {
                         if (locationDto.getDate() != null) {
                             existingLocation.setDate(locationDto.getDate());
                         }
-                        if (locationDto.getTime() != null) {
-                            existingLocation.setTime(locationDto.getTime());
+                        if (locationDto.getTimeStart() != null) {
+                            existingLocation.setTimeStart(locationDto.getTimeStart());
+                        }
+                        if (locationDto.getTimeEnd() != null) {
+                            existingLocation.setTimeEnd(locationDto.getTimeEnd());
                         }
                         // locationRepository.save(existingLocation);
                     }
