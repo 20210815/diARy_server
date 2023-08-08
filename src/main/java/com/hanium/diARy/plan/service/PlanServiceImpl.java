@@ -9,7 +9,9 @@ import com.hanium.diARy.plan.repository.PlanLocationRepository;
 import com.hanium.diARy.plan.repository.PlanLikeRepository;
 import com.hanium.diARy.plan.repository.PlanRepository;
 import com.hanium.diARy.plan.repository.PlanTagRepository;
+import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
+import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +30,14 @@ public class PlanServiceImpl implements PlanService {
     private final PlanLocationRepository planLocationRepository;
     private final PlanTagRepository planTagRepository;
     private final PlanLikeRepository planLikeRepository;
+    private final UserRepositoryInterface userRepositoryInterface;
 
-    public PlanServiceImpl(PlanRepository planRepository, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanLikeRepository planLikeRepository) {
+    public PlanServiceImpl(PlanRepository planRepository, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanLikeRepository planLikeRepository, UserRepositoryInterface userRepositoryInterface) {
         this.planRepository = planRepository;
         this.planLocationRepository = planLocationRepository;
         this.planTagRepository = planTagRepository;
         this.planLikeRepository = planLikeRepository;
+        this.userRepositoryInterface = userRepositoryInterface;
     }
 
     @Override
@@ -69,7 +73,7 @@ public class PlanServiceImpl implements PlanService {
                 e.printStackTrace();
                 // Handle parsing exception if needed
             }
-
+            System.out.println(location);
             location.setPlan(savedPlan);
             savedLocations.add(location);
             planLocationRepository.save(location);
@@ -85,13 +89,6 @@ public class PlanServiceImpl implements PlanService {
             planTagRepository.save(planTag);
         }
 
-        // 생성된 Plan 엔티티를 다시 DTO로 변환하여 반환합니다.
-    //    PlanDto createdPlanDto = new PlanDto();
-    //    BeanUtils.copyProperties(savedPlan, createdPlanDto);
-
-        // PlanDto, List<LocationDto>, List<TagDto>를 PlanResponseDto로 변환하여 반환
-    //    PlanResponseDto createdPlanResponseDto = new PlanResponseDto(createdPlanDto, locationDtos, tagDtos);
-    //    return createdPlanResponseDto;
         return savedPlan.getPlanId();
     }
 
@@ -194,9 +191,12 @@ public class PlanServiceImpl implements PlanService {
             BeanUtils.copyProperties(planTag, planTagDto);
             updatedPlanTagDtos.add(planTagDto);
         }
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(existingPlan.getUser(), userDto);
+
 
         // Return the updated PlanResponseDto
-        PlanResponseDto updatedPlanResponseDto = new PlanResponseDto(updatedPlanDto, updatedPlanLocationDtos, updatedPlanTagDtos);
+        PlanResponseDto updatedPlanResponseDto = new PlanResponseDto(userDto, updatedPlanDto, updatedPlanLocationDtos, updatedPlanTagDtos);
         return updatedPlanResponseDto;
     }
 
@@ -259,9 +259,12 @@ public class PlanServiceImpl implements PlanService {
             BeanUtils.copyProperties(planTag, planTagDto);
             planTagDtos.add(planTagDto);
         }
+        // User 정보도 포함한 PlanResponseDto 생성
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(plan.getUser(), userDto);
 
         // PlanDto, List<LocationDto>, List<TagDto>를 PlanResponseDto로 변환하여 반환
-        PlanResponseDto planResponseDto = new PlanResponseDto(planDto, planLocationDtos, planTagDtos);
+        PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos);
         return planResponseDto;
     }
 
@@ -291,10 +294,14 @@ public class PlanServiceImpl implements PlanService {
             BeanUtils.copyProperties(planTag, planTagDto);
             planTagDtos.add(planTagDto);
         }
+        // User 정보도 포함한 PlanResponseDto 생성
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(existingPlan.getUser(), userDto);
 
         // PlanDto, List<LocationDto>, List<TagDto>를 PlanResponseDto로 변환하여 반환
-        PlanResponseDto updatedPlanDto = new PlanResponseDto(planDto, planLocationDtos, planTagDtos);
-        return updatedPlanDto;
+        PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos);
+        return planResponseDto;
+
     }
 
     @Override
@@ -321,8 +328,12 @@ public class PlanServiceImpl implements PlanService {
                 BeanUtils.copyProperties(planTag, planTagDto);
                 planTagDtos.add(planTagDto);
             }
+            // User 정보도 포함한 PlanResponseDto 생성
+            UserDto userDto = new UserDto();
+            User user = userRepositoryInterface.findById(userId).get();
+            BeanUtils.copyProperties(user, userDto);
 
-            PlanResponseDto planResponseDto = new PlanResponseDto(planDto, planLocationDtos, planTagDtos);
+            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos);
             planResponseDtos.add(planResponseDto);
         }
 
