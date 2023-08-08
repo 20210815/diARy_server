@@ -47,6 +47,8 @@ public class DiaryService {
         DiaryDto dto = new DiaryDto();
         dto.setTitle(diaryEntity.getTitle());
         dto.setUser(diaryEntity.getUser());
+        dto.setMemo(diaryEntity.getMemo());
+        dto.setTravelDest(diaryEntity.getTravelDest());
         dto.setSatisfaction(diaryEntity.getSatisfaction());
         dto.setPublic(diaryEntity.isPublic());
         dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
@@ -69,7 +71,14 @@ public class DiaryService {
         List<DiaryLocation> diaryLocationList = this.diaryLocationRepositoryInterface.findByDiary_DiaryId(diaryEntity.getDiaryId());
         for(DiaryLocation diaryLocation : diaryLocationList) {
             DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
-            BeanUtils.copyProperties(diaryLocation,diaryLocationDto);
+            diaryLocationDto.setDiaryLocationId(diaryLocation.getDiaryLocationId());
+            diaryLocationDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
+            diaryLocationDto.setName(diaryLocation.getName());
+            diaryLocationDto.setDate(diaryLocation.getDate());
+            diaryLocationDto.setAddress(diaryLocation.getAddress());
+            diaryLocationDto.setTimeEnd(diaryLocation.getTimeEnd());
+            diaryLocationDto.setTimeStart(diaryLocation.getTimeStart());
+            diaryLocationDto.setContent(diaryLocation.getContent());
             diaryLocationDtoList.add(diaryLocationDto);
         }
         diaryResponseDto.setDiaryDto(dto);
@@ -110,33 +119,8 @@ public class DiaryService {
         return diaryDtoList;
     }*/
 
-    public List<DiaryDto> readPublicDiaryAll() {
-        Iterator<Diary> iterator = this.diaryRepository.readPublicDiaryAll();
-        List<DiaryDto> diaryDtoList = new ArrayList<>();
-        while(iterator.hasNext()) {
-            Diary diaryEntity = iterator.next();
-            DiaryDto dto = new DiaryDto();
-            dto.setTitle(diaryEntity.getTitle());
-            dto.setUser(diaryEntity.getUser());
-            dto.setSatisfaction(diaryEntity.getSatisfaction());
-            dto.setPublic(diaryEntity.isPublic());
-            dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
-            List<DiaryTagDto> tagDtos = new ArrayList<>();
-            for (DiaryTag tag : diaryEntity.getTags()) {
-                DiaryTagDto tagDto = new DiaryTagDto();
-                BeanUtils.copyProperties(tag, tagDto);
-                tagDtos.add(tagDto);
-            }
-            dto.setTags(tagDtos);
-            List<User> userList = new ArrayList<>();
-            for(DiaryLike diaryLike : diaryEntity.getDiaryLikes()) {
-                userList.add(diaryLike.getUser());
-            }
-            dto.setTravelStart(diaryEntity.getTravelStart());
-            dto.setTravelEnd(diaryEntity.getTravelEnd());
-            diaryDtoList.add(dto);
-        }
-        return diaryDtoList;
+    public List<DiaryResponseDto> readPublicDiaryAll() {
+        return this.diaryRepository.readPublicDiaryAll();
     }
 
     public void updateDiary(Long id, DiaryRequestDto diaryDto) {

@@ -1,5 +1,6 @@
 package com.hanium.diARy.diary.repository;
 
+import com.hanium.diARy.diary.dto.DiaryLocationDto;
 import com.hanium.diARy.diary.entity.DiaryLocation;
 import org.springframework.data.repository.CrudRepository;
 

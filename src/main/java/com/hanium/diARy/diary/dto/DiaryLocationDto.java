@@ -13,6 +13,7 @@ import java.sql.Time;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DiaryLocationDto {
+    private Long diaryLocationId;
     private Long diaryId;
     private Date date;
     private Time timeStart;

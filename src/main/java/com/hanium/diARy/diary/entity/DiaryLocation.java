@@ -15,7 +15,7 @@ public class DiaryLocation {
     @Column(name = "diary_location_id")
     private Long diaryLocationId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "diary_id", nullable = false)
     private Diary diary;
 

@@ -108,7 +108,7 @@ public class DiaryLikeRepository {
         List<UserDto> userDtoList = new ArrayList<>();
         for (DiaryLike like : diaryLikes) {
             User user = like.getUser();
-            UserDto userDto = new UserDto(user.getUsername(), user.getEmail(), user.getPassword(), user.getImage());
+            UserDto userDto = new UserDto(user.getUserId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getImage());
             userDtoList.add(userDto);
         }
 

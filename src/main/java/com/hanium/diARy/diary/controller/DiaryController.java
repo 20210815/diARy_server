@@ -35,8 +35,8 @@ public class DiaryController {
         return this.diaryService.readDiaryAll();
     }
 
-   /// @GetMapping("/public")
-   // public List<DiaryResponseDto> readPublicDiaryAll() {return this.diaryService.readPublicDiaryAll();}
+   @GetMapping("/public")
+   public List<DiaryResponseDto> readPublicDiaryAll() {return this.diaryService.readPublicDiaryAll();}
 
     @GetMapping("/{diaryId}")
     public DiaryResponseDto readDiary(@PathVariable("diaryId") Long id) {

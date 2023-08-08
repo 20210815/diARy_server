@@ -1,10 +1,14 @@
 package com.hanium.diARy.diary.repository;
 
 import com.hanium.diARy.diary.CommentMapper;
+import com.hanium.diARy.diary.DiaryLikeMapper;
+import com.hanium.diARy.diary.DiaryMapper;
 import com.hanium.diARy.diary.dto.*;
 import com.hanium.diARy.diary.entity.Diary;
+import com.hanium.diARy.diary.entity.DiaryLike;
 import com.hanium.diARy.diary.entity.DiaryLocation;
 import com.hanium.diARy.diary.entity.DiaryTag;
+import com.hanium.diARy.user.entity.User;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +31,24 @@ public class DiaryRepository{
     private final TagRepositoryInterface tagRepositoryInterface;
     private final CommentMapper commentMapper;
     private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
+    private final DiaryLocationRepository diaryLocationRepository;
+    private final DiaryLikeMapper diaryLikeMapper;
 
     public DiaryRepository(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired TagRepositoryInterface tagRepositoryInterface,
             @Autowired CommentMapper commentMapper,
-            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface
+            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface,
+            @Autowired DiaryLocationRepository diaryLocationRepository,
+            @Autowired DiaryLikeMapper diaryLikeMapper
 
             ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.tagRepositoryInterface = tagRepositoryInterface;
         this.commentMapper = commentMapper;
         this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;
+        this.diaryLocationRepository = diaryLocationRepository;
+        this.diaryLikeMapper = diaryLikeMapper;
     }
 
     @Transactional
@@ -116,8 +126,35 @@ public class DiaryRepository{
 
     }
 
-    public Iterator<Diary> readPublicDiaryAll() {
-        return this.diaryRepositoryInterface.findByIsPublicTrue().iterator();
+    public List<DiaryResponseDto> readPublicDiaryAll() {
+        List<DiaryResponseDto> diaryResponseDtoList = new ArrayList<>();
+
+
+
+        List<Diary> diaryList = this.diaryRepositoryInterface.findByIsPublicTrue();
+        for (Diary diary : diaryList){
+            DiaryResponseDto diaryResponseDto = new DiaryResponseDto();
+            DiaryDto diaryDto = new DiaryDto();
+            BeanUtils.copyProperties(diary, diaryDto);
+            diaryDto.setComments(this.commentMapper.toDtoList(diary.getComments()));
+            List<DiaryTagDto> tagDtos = new ArrayList<>();
+            for (DiaryTag tag : diary.getTags()) {
+                DiaryTagDto tagDto = new DiaryTagDto();
+                BeanUtils.copyProperties(tag, tagDto);
+                tagDtos.add(tagDto);
+            }
+            diaryDto.setTags(tagDtos);
+/*            List<User> userList = new ArrayList<>();
+            for(DiaryLike diaryLike : diary.getDiaryLikes()) {
+                userList.add(diaryLike.getUser());
+            }*/
+            diaryDto.setLikes(this.diaryLikeMapper.toDtoList(diary.getDiaryLikes()));
+            List<DiaryLocationDto> diaryLocationList = this.diaryLocationRepository.readPublicDiaryLocation(diary.getDiaryId());
+            diaryResponseDto.setDiaryDto(diaryDto);
+            diaryResponseDto.setDiaryLocationDtoList(diaryLocationList);
+            diaryResponseDtoList.add(diaryResponseDto);
+        }
+        return diaryResponseDtoList;
     }
 
     public Iterator<Diary> readDiaryAll() {
@@ -132,30 +169,6 @@ public class DiaryRepository{
         }
         Diary diaryEntity = targetEntity.get();
         diaryEntity.setTitle(diaryDto.getDiaryDto().getTitle() == null ? diaryEntity.getTitle() : diaryDto.getDiaryDto().getTitle());
-
-/*        List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
-
-        List<DiaryLocation> savedLocations = new ArrayList<>();
-        for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
-            DiaryLocation location = new DiaryLocation();
-            BeanUtils.copyProperties(diaryLocationDto, location);
-            try {
-                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-                java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeStart()));
-                java.util.Date parsedEndTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeEnd()));
-
-                location.setTimeStart(new Time(parsedStartTime.getTime()));
-                location.setTimeEnd(new Time(parsedEndTime.getTime()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-                // Handle parsing exception if needed
-            }
-
-            location.setDiary(diaryEntity);
-            savedLocations.add(location);
-            diaryLocationRepositoryInterface.save(location);
-        }*/
-
 
         for (DiaryTag tags : diaryEntity.getTags()) {
             tagRepositoryInterface.findByName(tags.getName()).getDiaries().remove(diaryEntity);
@@ -188,17 +201,47 @@ public class DiaryRepository{
         diaryEntity.setTravelDest(diaryDto.getDiaryDto().getTravelDest());
         diaryEntity.setTravelStart(diaryDto.getDiaryDto().getTravelStart());
         diaryEntity.setTravelEnd(diaryDto.getDiaryDto().getTravelEnd());
-        diaryEntity.setComments(this.commentMapper.toEntityList(diaryDto.getDiaryDto().getComments()));
+        if (diaryDto.getDiaryDto().getComments() != null) {
+            diaryEntity.setComments(this.commentMapper.toEntityList(diaryDto.getDiaryDto().getComments()));
+        }
         diaryEntity.setSatisfaction(diaryDto.getDiaryDto().getSatisfaction() == 0 ? diaryEntity.getSatisfaction() : diaryDto.getDiaryDto().getSatisfaction());
+
+
+        List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
+        for(DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
+            this.diaryLocationRepository.updateDiaryLocation(diaryLocationDto, diaryLocationDto.getDiaryLocationId());
+        }
+
         this.diaryRepositoryInterface.save(diaryEntity);
     }
 
+    @Transactional
     public void deleteDiary(Long id) {
         Optional<Diary> targetEntity = this.diaryRepositoryInterface.findById(id);
         if(targetEntity.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        this.diaryRepositoryInterface.delete(targetEntity.get());
+
+        Diary diaryToDelete = targetEntity.get();
+
+
+        // Remove the diary from associated tags
+        for (DiaryTag tag : diaryToDelete.getTags()) {
+            tag.getDiaries().remove(diaryToDelete);
+        }
+        diaryToDelete.getTags().clear();
+
+
+
+        List<DiaryLocation> targetDiaryLocation = this.diaryLocationRepositoryInterface.findByDiary_DiaryId(id);
+        if (!targetDiaryLocation.isEmpty()) {
+            for (DiaryLocation diaryLocation : targetDiaryLocation) {
+                this.diaryLocationRepositoryInterface.delete(diaryLocation);
+            }
+        }
+
+        this.diaryRepositoryInterface.delete(diaryToDelete);
+
     }
 
 
