@@ -1,7 +1,9 @@
 package com.hanium.diARy.diary.repository;
 
+import com.hanium.diARy.diary.dto.AddressDto;
 import com.hanium.diARy.diary.dto.DiaryLocationDto;
 import com.hanium.diARy.diary.dto.DiaryLocationImageDto;
+import com.hanium.diARy.diary.entity.Address;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryLocation;
 import com.hanium.diARy.diary.entity.DiaryLocationImage;
@@ -20,15 +22,18 @@ public class DiaryLocationRepository {
     private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final DiaryLocationImageRepository diaryLocationImageRepository;
+    private final AddressRepositoryInterface addressRepositoryInterface;
 
     public DiaryLocationRepository(
             @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
-            @Autowired DiaryLocationImageRepository diaryLocationImageRepository
+            @Autowired DiaryLocationImageRepository diaryLocationImageRepository,
+            @Autowired AddressRepositoryInterface addressRepositoryInterface
     ) {
         this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.diaryLocationImageRepository = diaryLocationImageRepository;
+        this.addressRepositoryInterface = addressRepositoryInterface;
     }
 
 
@@ -55,6 +60,11 @@ public class DiaryLocationRepository {
 
             if (diaryLocationDto.getAddress() != null) {
                 diaryLocation.setAddress(diaryLocationDto.getAddress());
+                if (addressRepositoryInterface.findByAddress(diaryLocation.getAddress()) == null) {
+                    Address address = new Address();
+                    address.setAddress(diaryLocation.getAddress());
+                    addressRepositoryInterface.save(address);
+                }
             }
 
             if (diaryLocationDto.getName() != null) {

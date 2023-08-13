@@ -31,6 +31,7 @@ public class DiaryRepository{
     private final DiaryLikeMapper diaryLikeMapper;
     private final DiaryLocationImageRepository diaryLocationImageRepository;
     private final DiaryLikeRepository diaryLikeRepository;
+    private final AddressRepositoryInterface addressRepositoryInterface;
     public DiaryRepository(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired TagRepositoryInterface tagRepositoryInterface,
@@ -39,7 +40,8 @@ public class DiaryRepository{
             @Autowired DiaryLocationRepository diaryLocationRepository,
             @Autowired DiaryLikeMapper diaryLikeMapper,
             @Autowired DiaryLocationImageRepository diaryLocationImageRepository,
-            @Autowired DiaryLikeRepository diaryLikeRepository
+            @Autowired DiaryLikeRepository diaryLikeRepository,
+            @Autowired AddressRepositoryInterface addressRepositoryInterface
 
             ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
@@ -50,6 +52,7 @@ public class DiaryRepository{
         this.diaryLikeMapper = diaryLikeMapper;
         this.diaryLocationImageRepository = diaryLocationImageRepository;
         this.diaryLikeRepository = diaryLikeRepository;
+        this.addressRepositoryInterface = addressRepositoryInterface;
     }
 
     @Transactional
@@ -80,6 +83,12 @@ public class DiaryRepository{
             for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
                 DiaryLocation location = new DiaryLocation();
                 BeanUtils.copyProperties(diaryLocationDto, location);
+                if (addressRepositoryInterface.findByAddress(location.getAddress()) == null) {
+                    Address address = new Address();
+                    address.setAddress(location.getAddress());
+                    addressRepositoryInterface.save(address);
+                }
+
                 try {
                     SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
                     java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeStart()));
