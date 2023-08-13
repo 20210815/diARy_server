@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -31,10 +33,14 @@ public class DiaryLocation {
     @Column(name = "content", nullable = false, length = 100)
     private String content;
 
-    @Column(name = "name", length = 10)
+    @Column(name = "name", length = 20)
     private String name;
 
     @Column(name = "address", length = 100)
     private String address;
+
+    @OneToMany(mappedBy = "diaryLocation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DiaryLocationImage> images = new ArrayList<>();
+
 
 }

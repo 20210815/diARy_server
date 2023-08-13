@@ -3,6 +3,8 @@ package com.hanium.diARy.diary.service;
 import com.hanium.diARy.diary.CommentMapper;
 import com.hanium.diARy.diary.dto.*;
 import com.hanium.diARy.diary.entity.*;
+import com.hanium.diARy.diary.repository.DiaryLikeRepository;
+import com.hanium.diARy.diary.repository.DiaryLocationImageRepository;
 import com.hanium.diARy.diary.repository.DiaryLocationRepositoryInterface;
 import com.hanium.diARy.diary.repository.DiaryRepository;
 import com.hanium.diARy.user.dto.UserDto;
@@ -26,15 +28,21 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final CommentMapper commentMapper;
     private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
+    private final DiaryLocationImageRepository diaryLocationImageRepository;
+    private final DiaryLikeRepository diaryLikeRepository;
 
     public DiaryService(
             @Autowired DiaryRepository diaryRepository,
             @Autowired CommentMapper commentMapper,
-            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface
+            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface,
+            @Autowired DiaryLocationImageRepository diaryLocationImageRepository,
+            @Autowired DiaryLikeRepository diaryLikeRepository
             ) {
         this.diaryRepository = diaryRepository;
         this.commentMapper = commentMapper;
         this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;
+        this.diaryLocationImageRepository = diaryLocationImageRepository;
+        this.diaryLikeRepository = diaryLikeRepository;
     }
 
     public Long createDiary(DiaryRequestDto diaryDto) {
@@ -59,10 +67,7 @@ public class DiaryService {
             tagDtos.add(tagDto);
         }
         dto.setTags(tagDtos);
-        List<User> userList = new ArrayList<>();
-        for(DiaryLike diaryLike : diaryEntity.getDiaryLikes()) {
-            userList.add(diaryLike.getUser());
-        }
+        dto.setLikes(diaryLikeRepository.readDiaryLike(diaryEntity.getDiaryId()));
         dto.setTravelStart(diaryEntity.getTravelStart());
         dto.setTravelEnd(diaryEntity.getTravelEnd());
 
@@ -79,6 +84,7 @@ public class DiaryService {
             diaryLocationDto.setTimeEnd(diaryLocation.getTimeEnd());
             diaryLocationDto.setTimeStart(diaryLocation.getTimeStart());
             diaryLocationDto.setContent(diaryLocation.getContent());
+            diaryLocationDto.setDiaryLocationImageDtoList(diaryLocationImageRepository.readImage(diaryLocation));
             diaryLocationDtoList.add(diaryLocationDto);
         }
         diaryResponseDto.setDiaryDto(dto);
@@ -165,6 +171,7 @@ public class DiaryService {
                 for(DiaryLocation diaryLocation : diaryLocationList) {
                     DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
                     BeanUtils.copyProperties(diaryLocation,diaryLocationDto);
+                    diaryLocationDto.setDiaryLocationImageDtoList(diaryLocationImageRepository.readImage(diaryLocation));
                     diaryLocationDtoList.add(diaryLocationDto);
                 }
                 diaryResponseDto.setDiaryLocationDtoList(diaryLocationDtoList);

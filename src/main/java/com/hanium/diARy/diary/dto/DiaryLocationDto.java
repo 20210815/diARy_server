@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.List;
 
 
 @Data
@@ -20,4 +21,5 @@ public class DiaryLocationDto {
     private String content;
     private String name;
     private String address;
+    private List<DiaryLocationImageDto> diaryLocationImageDtoList;
 }
