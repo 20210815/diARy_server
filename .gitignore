@@ -38,3 +38,8 @@ out/
 .vscode/
 
 *.xml
+src/main/resources/application.yml
+*.yml
+*.yml
+src/main/resources/application.yml
+src/main/resources/application.yml

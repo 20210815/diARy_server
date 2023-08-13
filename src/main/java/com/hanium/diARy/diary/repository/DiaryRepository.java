@@ -4,12 +4,11 @@ import com.hanium.diARy.diary.CommentMapper;
 import com.hanium.diARy.diary.DiaryLikeMapper;
 import com.hanium.diARy.diary.DiaryMapper;
 import com.hanium.diARy.diary.dto.*;
-import com.hanium.diARy.diary.entity.Diary;
-import com.hanium.diARy.diary.entity.DiaryLike;
-import com.hanium.diARy.diary.entity.DiaryLocation;
-import com.hanium.diARy.diary.entity.DiaryTag;
+import com.hanium.diARy.diary.entity.*;
 import com.hanium.diARy.user.entity.User;
+import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import jakarta.transaction.Transactional;
+import org.springframework.aop.scope.ScopedObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,10 +19,7 @@ import javax.swing.text.html.Option;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class DiaryRepository{
@@ -33,14 +29,19 @@ public class DiaryRepository{
     private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
     private final DiaryLocationRepository diaryLocationRepository;
     private final DiaryLikeMapper diaryLikeMapper;
-
+    private final DiaryLocationImageRepository diaryLocationImageRepository;
+    private final DiaryLikeRepository diaryLikeRepository;
+    private final AddressRepositoryInterface addressRepositoryInterface;
     public DiaryRepository(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired TagRepositoryInterface tagRepositoryInterface,
             @Autowired CommentMapper commentMapper,
             @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface,
             @Autowired DiaryLocationRepository diaryLocationRepository,
-            @Autowired DiaryLikeMapper diaryLikeMapper
+            @Autowired DiaryLikeMapper diaryLikeMapper,
+            @Autowired DiaryLocationImageRepository diaryLocationImageRepository,
+            @Autowired DiaryLikeRepository diaryLikeRepository,
+            @Autowired AddressRepositoryInterface addressRepositoryInterface
 
             ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
@@ -49,45 +50,69 @@ public class DiaryRepository{
         this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;
         this.diaryLocationRepository = diaryLocationRepository;
         this.diaryLikeMapper = diaryLikeMapper;
+        this.diaryLocationImageRepository = diaryLocationImageRepository;
+        this.diaryLikeRepository = diaryLikeRepository;
+        this.addressRepositoryInterface = addressRepositoryInterface;
     }
 
     @Transactional
     public Long createDiary(DiaryRequestDto diaryDto) {
+        // 다이어리 작성 dto -> entity
         DiaryDto diaryInfo = diaryDto.getDiaryDto();
         Diary diaryEntity = new Diary();
         diaryEntity.setUser(diaryInfo.getUser());
         diaryEntity.setPublic(diaryInfo.isPublic());
         diaryEntity.setTitle(diaryInfo.getTitle());
-        diaryEntity.setComments(this.commentMapper.toEntityList(diaryInfo.getComments()));
+
+        diaryEntity.setComments(null);
         diaryEntity.setSatisfaction(diaryInfo.getSatisfaction());
         diaryEntity.setTravelDest(diaryInfo.getTravelDest());
         diaryEntity.setMemo(diaryInfo.getMemo());
         diaryEntity.setTravelStart(diaryInfo.getTravelStart());
         diaryEntity.setTravelEnd(diaryInfo.getTravelEnd());
 
+        //entity 저장
         diaryRepositoryInterface.save(diaryEntity);
 
+
+        //DiarylocationDto는 따로 떼어서 저장
         List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
 
         List<DiaryLocation> savedLocations = new ArrayList<>();
-        for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
-            DiaryLocation location = new DiaryLocation();
-            BeanUtils.copyProperties(diaryLocationDto, location);
-            try {
-                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-                java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeStart()));
-                java.util.Date parsedEndTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeEnd()));
+        if (diaryLocationDtoList != null) {
+            for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
+                DiaryLocation location = new DiaryLocation();
+                BeanUtils.copyProperties(diaryLocationDto, location);
+                if (addressRepositoryInterface.findByAddress(location.getAddress()) == null) {
+                    Address address = new Address();
+                    address.setAddress(location.getAddress());
+                    addressRepositoryInterface.save(address);
+                }
 
-                location.setTimeStart(new Time(parsedStartTime.getTime()));
-                location.setTimeEnd(new Time(parsedEndTime.getTime()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-                // Handle parsing exception if needed
+                try {
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                    java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeStart()));
+                    java.util.Date parsedEndTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeEnd()));
+
+                    location.setTimeStart(new Time(parsedStartTime.getTime()));
+                    location.setTimeEnd(new Time(parsedEndTime.getTime()));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    // Handle parsing exception if needed
+                }
+                location.setDiary(diaryEntity);
+
+                savedLocations.add(location);
+                diaryLocationRepositoryInterface.save(location);
+
+                // DiaryLocation 저장
+                List<DiaryLocationImageDto> diaryLocationImageDtoList = diaryLocationDto.getDiaryLocationImageDtoList();
+                for(DiaryLocationImageDto diaryLocationImageDto: diaryLocationImageDtoList) {
+                    diaryLocationImageRepository.createImage(diaryLocationImageDto, location.getDiaryLocationId());
+                }
+
+
             }
-
-            location.setDiary(diaryEntity);
-            savedLocations.add(location);
-            diaryLocationRepositoryInterface.save(location);
         }
 
         for (DiaryTagDto tagDto : diaryDto.getDiaryDto().getTags()) {
@@ -143,10 +168,6 @@ public class DiaryRepository{
                 tagDtos.add(tagDto);
             }
             diaryDto.setTags(tagDtos);
-/*            List<User> userList = new ArrayList<>();
-            for(DiaryLike diaryLike : diary.getDiaryLikes()) {
-                userList.add(diaryLike.getUser());
-            }*/
             diaryDto.setLikes(this.diaryLikeMapper.toDtoList(diary.getDiaryLikes()));
             List<DiaryLocationDto> diaryLocationList = this.diaryLocationRepository.readPublicDiaryLocation(diary.getDiaryId());
             diaryResponseDto.setDiaryDto(diaryDto);
@@ -200,15 +221,11 @@ public class DiaryRepository{
         diaryEntity.setTravelDest(diaryDto.getDiaryDto().getTravelDest());
         diaryEntity.setTravelStart(diaryDto.getDiaryDto().getTravelStart());
         diaryEntity.setTravelEnd(diaryDto.getDiaryDto().getTravelEnd());
-        if (diaryDto.getDiaryDto().getComments() != null) {
-            diaryEntity.setComments(this.commentMapper.toEntityList(diaryDto.getDiaryDto().getComments()));
-        }
         diaryEntity.setSatisfaction(diaryDto.getDiaryDto().getSatisfaction() == 0 ? diaryEntity.getSatisfaction() : diaryDto.getDiaryDto().getSatisfaction());
-
 
         List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
         for(DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
-            this.diaryLocationRepository.updateDiaryLocation(diaryLocationDto, diaryLocationDto.getDiaryLocationId());
+            this.diaryLocationRepository.updateDiaryLocation(diaryLocationDto);
         }
 
         this.diaryRepositoryInterface.save(diaryEntity);

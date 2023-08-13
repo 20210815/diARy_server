@@ -10,16 +10,14 @@ import com.hanium.diARy.diary.entity.DiaryLikeId;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class DiaryLikeRepository {
@@ -45,8 +43,13 @@ public class DiaryLikeRepository {
 
     public void createDiaryLike(Long diaryId, Long userId) {
         DiaryLike diaryLike = new DiaryLike();
-        diaryLike.setDiary(this.diaryRepositoryInterface.findById(diaryId).get());
+        Diary diary = this.diaryRepositoryInterface.findById(diaryId).get();
+        diaryLike.setDiary(diary);
         diaryLike.setUser(this.userRepositoryInterface.findById(userId).get());
+        List<DiaryLike> diaryLikes = diary.getDiaryLikes();
+        diaryLikes.add(diaryLike);
+        diary.setDiaryLikes(diaryLikes);
+        this.diaryRepositoryInterface.save(diary);
         this.diaryLikeRepositoryInterface.save(diaryLike);
     }
 /*
@@ -57,12 +60,17 @@ public class DiaryLikeRepository {
         diaryLike.setUser(this.userRepositoryInterface.findById(userId).get());
         likesList.add(diaryLike);*/
 
-    public DiaryLike readDiaryLike(DiaryLikeId idDto) {
-        Optional<DiaryLike> diaryLike = this.diaryLikeRepositoryInterface.findById(idDto);
-        if(diaryLike.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    public List<DiaryLikeDto> readDiaryLike(Long diaryId) {
+        Diary diary = this.diaryRepositoryInterface.findById(diaryId).get();
+        List<DiaryLike> diaryLikes = diary.getDiaryLikes();
+        List<DiaryLikeDto> diaryLikeDtos = new ArrayList<>();
+        for(DiaryLike diaryLike : diaryLikes) {
+            DiaryLikeDto diaryLikeDto = new DiaryLikeDto();
+            diaryLikeDto.setUserId(diaryLike.getUser().getUserId());
+            diaryLikeDto.setDiaryId(diaryLike.getDiary().getDiaryId());
+            diaryLikeDtos.add(diaryLikeDto);
         }
-        return diaryLike.get();
+        return diaryLikeDtos;
     }
 
 

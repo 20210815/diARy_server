@@ -5,6 +5,7 @@ import com.hanium.diARy.diary.entity.Comment;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,9 @@ public class CommentMapper {
     }
 
     public List<Comment> toEntityList(List<CommentDto> commentDtos) {
+        if (commentDtos == null) {
+            return new ArrayList<>(); // 또는 null 처리에 따라 적절한 값 반환
+        }
         return commentDtos.stream()
                 .map(this::toEntity)
                 .collect(Collectors.toList());
