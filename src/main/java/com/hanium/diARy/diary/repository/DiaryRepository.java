@@ -26,7 +26,7 @@ public class DiaryRepository{
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final TagRepositoryInterface tagRepositoryInterface;
     private final CommentMapper commentMapper;
-    private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
+    private final DiaryLocationInterface diaryLocationRepositoryInterface;
     private final DiaryLocationRepository diaryLocationRepository;
     private final DiaryLikeMapper diaryLikeMapper;
     private final DiaryLocationImageRepository diaryLocationImageRepository;
@@ -36,7 +36,7 @@ public class DiaryRepository{
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired TagRepositoryInterface tagRepositoryInterface,
             @Autowired CommentMapper commentMapper,
-            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface,
+            @Autowired DiaryLocationInterface diaryLocationRepositoryInterface,
             @Autowired DiaryLocationRepository diaryLocationRepository,
             @Autowired DiaryLikeMapper diaryLikeMapper,
             @Autowired DiaryLocationImageRepository diaryLocationImageRepository,

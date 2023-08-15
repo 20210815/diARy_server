@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 @Repository
 public class DiaryLocationImageRepository {
     private final DiaryLocationImageRepositoryInterface diaryLocationImageRepositoryInterface;
-    private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
+    private final DiaryLocationInterface diaryLocationRepositoryInterface;
 
     public DiaryLocationImageRepository(
             @Autowired DiaryLocationImageRepositoryInterface diaryLocationImageRepositoryInterface,
-            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface
+            @Autowired DiaryLocationInterface diaryLocationRepositoryInterface
     ) {
         this.diaryLocationImageRepositoryInterface = diaryLocationImageRepositoryInterface;
         this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;

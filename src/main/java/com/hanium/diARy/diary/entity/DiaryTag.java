@@ -13,9 +13,6 @@ import java.util.List;
 
 @Data
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Table(name = "DiaryTag")
 public class DiaryTag {
     @Id

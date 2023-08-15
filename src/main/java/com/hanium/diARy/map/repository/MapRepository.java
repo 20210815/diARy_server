@@ -4,8 +4,8 @@ package com.hanium.diARy.map.repository;
 import com.hanium.diARy.diary.dto.DiaryLocationDto;
 import com.hanium.diARy.diary.entity.DiaryLocation;
 import com.hanium.diARy.diary.repository.DiaryLocationImageRepository;
+import com.hanium.diARy.diary.repository.DiaryLocationInterface;
 import com.hanium.diARy.diary.repository.DiaryLocationRepository;
-import com.hanium.diARy.diary.repository.DiaryLocationRepositoryInterface;
 import com.hanium.diARy.map.dto.MapDiaryDto;
 import com.hanium.diARy.user.dto.UserDto;
 import org.springframework.beans.BeanUtils;
@@ -19,10 +19,10 @@ import java.util.List;
 @Repository
 public class MapRepository {
 
-    private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
+    private final DiaryLocationInterface diaryLocationRepositoryInterface;
     private final DiaryLocationImageRepository diaryLocationImageRepository;
     public MapRepository(
-            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface,
+            @Autowired DiaryLocationInterface diaryLocationRepositoryInterface,
             @Autowired DiaryLocationImageRepository diaryLocationImageRepository
             ) {
         this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;

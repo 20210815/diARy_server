@@ -5,7 +5,7 @@ import com.hanium.diARy.diary.dto.*;
 import com.hanium.diARy.diary.entity.*;
 import com.hanium.diARy.diary.repository.DiaryLikeRepository;
 import com.hanium.diARy.diary.repository.DiaryLocationImageRepository;
-import com.hanium.diARy.diary.repository.DiaryLocationRepositoryInterface;
+import com.hanium.diARy.diary.repository.DiaryLocationInterface;
 import com.hanium.diARy.diary.repository.DiaryRepository;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
@@ -27,20 +27,20 @@ public class DiaryService {
 
     private final DiaryRepository diaryRepository;
     private final CommentMapper commentMapper;
-    private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
+    private final DiaryLocationInterface diaryLocationInterface;
     private final DiaryLocationImageRepository diaryLocationImageRepository;
     private final DiaryLikeRepository diaryLikeRepository;
 
     public DiaryService(
             @Autowired DiaryRepository diaryRepository,
             @Autowired CommentMapper commentMapper,
-            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface,
+            @Autowired DiaryLocationInterface diaryLocationInterface,
             @Autowired DiaryLocationImageRepository diaryLocationImageRepository,
             @Autowired DiaryLikeRepository diaryLikeRepository
             ) {
         this.diaryRepository = diaryRepository;
         this.commentMapper = commentMapper;
-        this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;
+        this.diaryLocationInterface = diaryLocationInterface;
         this.diaryLocationImageRepository = diaryLocationImageRepository;
         this.diaryLikeRepository = diaryLikeRepository;
     }
@@ -73,7 +73,7 @@ public class DiaryService {
 
 
         List<DiaryLocationDto> diaryLocationDtoList = new ArrayList<>();
-        List<DiaryLocation> diaryLocationList = this.diaryLocationRepositoryInterface.findByDiary_DiaryId(diaryEntity.getDiaryId());
+        List<DiaryLocation> diaryLocationList = this.diaryLocationInterface.findByDiary_DiaryId(diaryEntity.getDiaryId());
         for(DiaryLocation diaryLocation : diaryLocationList) {
             DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
             diaryLocationDto.setDiaryLocationId(diaryLocation.getDiaryLocationId());
@@ -167,7 +167,7 @@ public class DiaryService {
                 dto.setTravelEnd(diaryEntity.getTravelEnd());
 
                 List<DiaryLocationDto> diaryLocationDtoList = new ArrayList<>();
-                List<DiaryLocation> diaryLocationList = this.diaryLocationRepositoryInterface.findByDiary_DiaryId(diaryEntity.getDiaryId());
+                List<DiaryLocation> diaryLocationList = this.diaryLocationInterface.findByDiary_DiaryId(diaryEntity.getDiaryId());
                 for(DiaryLocation diaryLocation : diaryLocationList) {
                     DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
                     BeanUtils.copyProperties(diaryLocation,diaryLocationDto);
