@@ -9,6 +9,7 @@ import com.hanium.diARy.diary.repository.DiaryLocationInterface;
 import com.hanium.diARy.diary.repository.DiaryRepository;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
+import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.slf4j.Logger;
 import com.hanium.diARy.diary.dto.DiaryLocationDto;
 import org.slf4j.LoggerFactory;
@@ -30,22 +31,26 @@ public class DiaryService {
     private final DiaryLocationInterface diaryLocationInterface;
     private final DiaryLocationImageRepository diaryLocationImageRepository;
     private final DiaryLikeRepository diaryLikeRepository;
+    private final UserRepositoryInterface userRepositoryInterface;
 
     public DiaryService(
             @Autowired DiaryRepository diaryRepository,
             @Autowired CommentMapper commentMapper,
             @Autowired DiaryLocationInterface diaryLocationInterface,
             @Autowired DiaryLocationImageRepository diaryLocationImageRepository,
-            @Autowired DiaryLikeRepository diaryLikeRepository
+            @Autowired DiaryLikeRepository diaryLikeRepository,
+            @Autowired UserRepositoryInterface userRepositoryInterface
             ) {
         this.diaryRepository = diaryRepository;
         this.commentMapper = commentMapper;
         this.diaryLocationInterface = diaryLocationInterface;
         this.diaryLocationImageRepository = diaryLocationImageRepository;
         this.diaryLikeRepository = diaryLikeRepository;
+        this.userRepositoryInterface = userRepositoryInterface;
     }
 
     public Long createDiary(DiaryRequestDto diaryDto) {
+        //return this.diaryRepository.createDiary(diaryDto, userRepositoryInterface.findByEmail(useremail));
         return this.diaryRepository.createDiary(diaryDto);
     }
 

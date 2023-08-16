@@ -32,7 +32,7 @@ public class MapController {
         return this.mapService.readAllDiaryByAddress(address);
     }
 
-    @GetMapping()
+    @GetMapping("")
     public List<MapAllDiaryDto> readAllDiaryByAddressList() {
         return this.mapService.readAllDiary();
     }

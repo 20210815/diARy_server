@@ -58,7 +58,7 @@ public class SecurityConfig {
     }*/
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthDetailService authDetailService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("역까지 들어옴");
         http
                 .addFilter(new JwtAuthenticationFilter(authenticationManager()))
@@ -66,12 +66,13 @@ public class SecurityConfig {
                 .addFilter(corsConfig.corsFilter())
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests()
-                    .requestMatchers(HttpMethod.POST, "/**").permitAll()
-                    .anyRequest().authenticated()
+                .requestMatchers("/diary/**").authenticated()
+                .anyRequest().authenticated()
                 .and()
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable());
+        System.out.println("");
         return http.build();
     }
 }
