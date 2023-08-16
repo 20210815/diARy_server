@@ -5,6 +5,7 @@ import com.hanium.diARy.diary.DiaryLikeMapper;
 import com.hanium.diARy.diary.DiaryMapper;
 import com.hanium.diARy.diary.dto.*;
 import com.hanium.diARy.diary.entity.*;
+import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import jakarta.transaction.Transactional;
@@ -12,6 +13,8 @@ import org.springframework.aop.scope.ScopedObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,22 +29,24 @@ public class DiaryRepository{
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final TagRepositoryInterface tagRepositoryInterface;
     private final CommentMapper commentMapper;
-    private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
+    private final DiaryLocationInterface diaryLocationRepositoryInterface;
     private final DiaryLocationRepository diaryLocationRepository;
     private final DiaryLikeMapper diaryLikeMapper;
     private final DiaryLocationImageRepository diaryLocationImageRepository;
     private final DiaryLikeRepository diaryLikeRepository;
     private final AddressRepositoryInterface addressRepositoryInterface;
+    private final UserRepositoryInterface userRepositoryInterface;
     public DiaryRepository(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired TagRepositoryInterface tagRepositoryInterface,
             @Autowired CommentMapper commentMapper,
-            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface,
+            @Autowired DiaryLocationInterface diaryLocationRepositoryInterface,
             @Autowired DiaryLocationRepository diaryLocationRepository,
             @Autowired DiaryLikeMapper diaryLikeMapper,
             @Autowired DiaryLocationImageRepository diaryLocationImageRepository,
             @Autowired DiaryLikeRepository diaryLikeRepository,
-            @Autowired AddressRepositoryInterface addressRepositoryInterface
+            @Autowired AddressRepositoryInterface addressRepositoryInterface,
+            @Autowired UserRepositoryInterface userRepositoryInterface
 
             ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
@@ -53,6 +58,7 @@ public class DiaryRepository{
         this.diaryLocationImageRepository = diaryLocationImageRepository;
         this.diaryLikeRepository = diaryLikeRepository;
         this.addressRepositoryInterface = addressRepositoryInterface;
+        this.userRepositoryInterface = userRepositoryInterface;
     }
 
     @Transactional
@@ -60,7 +66,10 @@ public class DiaryRepository{
         // 다이어리 작성 dto -> entity
         DiaryDto diaryInfo = diaryDto.getDiaryDto();
         Diary diaryEntity = new Diary();
-        diaryEntity.setUser(diaryInfo.getUser());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepositoryInterface.findByEmail(email);
+        diaryEntity.setUser(user);
         diaryEntity.setPublic(diaryInfo.isPublic());
         diaryEntity.setTitle(diaryInfo.getTitle());
 

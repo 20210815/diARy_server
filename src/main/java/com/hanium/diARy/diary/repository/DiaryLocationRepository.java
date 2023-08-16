@@ -19,13 +19,13 @@ import java.util.Optional;
 
 @Repository
 public class DiaryLocationRepository {
-    private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
+    private final DiaryLocationInterface diaryLocationRepositoryInterface;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final DiaryLocationImageRepository diaryLocationImageRepository;
     private final AddressRepositoryInterface addressRepositoryInterface;
 
     public DiaryLocationRepository(
-            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface,
+            @Autowired DiaryLocationInterface diaryLocationRepositoryInterface,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired DiaryLocationImageRepository diaryLocationImageRepository,
             @Autowired AddressRepositoryInterface addressRepositoryInterface
@@ -45,6 +45,7 @@ public class DiaryLocationRepository {
             BeanUtils.copyProperties(diaryLocation, diaryLocationDto);
             diaryLocationDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
             diaryLocationDto.setDiaryLocationImageDtoList(diaryLocationImageRepository.readImage(diaryLocation));
+            diaryLocationDtoList.add(diaryLocationDto);
         }
         return Optional.of(diaryLocationDtoList).filter(list -> !list.isEmpty()).orElse(null);
     }

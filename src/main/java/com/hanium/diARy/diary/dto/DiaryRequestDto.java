@@ -1,5 +1,6 @@
 package com.hanium.diARy.diary.dto;
 
+import com.hanium.diARy.user.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

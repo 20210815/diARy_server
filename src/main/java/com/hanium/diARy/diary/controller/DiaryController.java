@@ -1,11 +1,14 @@
 package com.hanium.diARy.diary.controller;
 
+import com.hanium.diARy.auth.SecurityConfig;
 import com.hanium.diARy.diary.dto.DiaryRequestDto;
 import com.hanium.diARy.diary.dto.DiaryResponseDto;
 import com.hanium.diARy.diary.service.DiaryService;
-import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,13 +18,15 @@ import java.util.List;
 public class DiaryController {
     private final DiaryService diaryService;
     private final TagService tagService;
+    private final SecurityConfig securityConfig;
 
     public DiaryController(
             @Autowired DiaryService diaryService,
-            @Autowired TagService tagService
-    ) {
+            @Autowired TagService tagService,
+            SecurityConfig securityConfig) {
         this.diaryService = diaryService;
         this.tagService = tagService;
+        this.securityConfig = securityConfig;
     }
 
     @PostMapping()

@@ -4,13 +4,16 @@ package com.hanium.diARy.map.repository;
 import com.hanium.diARy.diary.dto.DiaryLocationDto;
 import com.hanium.diARy.diary.entity.DiaryLocation;
 import com.hanium.diARy.diary.repository.DiaryLocationImageRepository;
+import com.hanium.diARy.diary.repository.DiaryLocationInterface;
 import com.hanium.diARy.diary.repository.DiaryLocationRepository;
-import com.hanium.diARy.diary.repository.DiaryLocationRepositoryInterface;
 import com.hanium.diARy.map.dto.MapDiaryDto;
 import com.hanium.diARy.user.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,10 +22,10 @@ import java.util.List;
 @Repository
 public class MapRepository {
 
-    private final DiaryLocationRepositoryInterface diaryLocationRepositoryInterface;
+    private final DiaryLocationInterface diaryLocationRepositoryInterface;
     private final DiaryLocationImageRepository diaryLocationImageRepository;
     public MapRepository(
-            @Autowired DiaryLocationRepositoryInterface diaryLocationRepositoryInterface,
+            @Autowired DiaryLocationInterface diaryLocationRepositoryInterface,
             @Autowired DiaryLocationImageRepository diaryLocationImageRepository
             ) {
         this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;
@@ -30,7 +33,16 @@ public class MapRepository {
     }
 
 
+
+
     public List<MapDiaryDto> readAllDiaryByAddress(String address) {
+        String userId;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            userId = authentication.getName(); // 여기서 userId를 얻을 수 있습니다.
+            System.out.println("userId " + userId);
+        }
+
         List<MapDiaryDto> mapDiaryDtos = new ArrayList<>();
         List<DiaryLocation> diaryLocations = diaryLocationRepositoryInterface.findByAddress(address);
         for(DiaryLocation diaryLocation : diaryLocations) {
