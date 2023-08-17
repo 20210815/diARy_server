@@ -111,4 +111,16 @@ public class PlanLikeServiceImpl implements PlanLikeService {
         return likedPlanResponseDtos;
     }
 
+    public Long getPlanLikeCount(Long planId) {
+        List<PlanLike> planLikes = planLikeRepository.getAllByPlan_PlanId(planId);
+
+        List<UserDto> userDtos = new ArrayList<>();
+        for (PlanLike planLike : planLikes) {
+            User user = planLike.getUser();
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(user, userDto);
+            userDtos.add(userDto);
+        }
+        return Long.valueOf(planLikes.size());
+    }
 }

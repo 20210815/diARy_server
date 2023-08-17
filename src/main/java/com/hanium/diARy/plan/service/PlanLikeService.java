@@ -11,4 +11,5 @@ public interface PlanLikeService {
     void createPlanLike(Long planId, PlanLikeDto planLikeDto);
     void deletePlanLike(Long planId, Long userId);
     List<PlanResponseDto> getAllPlanLikedByUserId(Long userId);
+    Long getPlanLikeCount(Long planId);
 }
