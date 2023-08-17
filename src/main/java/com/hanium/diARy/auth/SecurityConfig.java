@@ -66,7 +66,7 @@ public class SecurityConfig {
                 .addFilter(corsConfig.corsFilter())
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests()
-                .requestMatchers("/diary/**").authenticated()
+                .requestMatchers("/diary/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
