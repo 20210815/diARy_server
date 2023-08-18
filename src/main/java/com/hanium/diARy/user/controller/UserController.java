@@ -2,6 +2,7 @@ package com.hanium.diARy.user.controller;
 
 import com.hanium.diARy.diary.dto.CommentDto;
 import com.hanium.diARy.diary.dto.DiaryDto;
+import com.hanium.diARy.diary.dto.DiaryResponseDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,4 +34,10 @@ public class UserController {
     public List<CommentDto> readUserDiaryComment(@PathVariable("userId") Long id) {
         return this.userService.readAllCommentReply(id);
     }*/
+
+
+    @GetMapping("/{userId}/diary")
+    public List<DiaryResponseDto> readUserDiary(@PathVariable("userId") Long id) {
+        return this.userService.readUserDiary(id);
+    }
 }

@@ -53,7 +53,7 @@ public class Diary {
     @Column(name = "travel_end", nullable = false)
     private Date travelEnd;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
