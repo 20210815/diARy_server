@@ -227,7 +227,6 @@ public class DiaryRepository{
                 }
         }
 
-        diaryEntity.setUser(diaryDto.getDiaryDto().getUser());
         diaryEntity.setPublic(diaryDto.getDiaryDto().isPublic());
         diaryEntity.setMemo(diaryDto.getDiaryDto().getMemo());
         diaryEntity.setTravelDest(diaryDto.getDiaryDto().getTravelDest());
