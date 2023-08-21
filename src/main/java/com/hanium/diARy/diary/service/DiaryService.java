@@ -58,10 +58,7 @@ public class DiaryService {
         DiaryResponseDto diaryResponseDto = new DiaryResponseDto();
         Diary diaryEntity = this.diaryRepository.readDiary(id);
         DiaryDto dto = new DiaryDto();
-        dto.setTitle(diaryEntity.getTitle());
-        dto.setMemo(diaryEntity.getMemo());
-        dto.setTravelDest(diaryEntity.getTravelDest());
-        dto.setPublic(diaryEntity.isPublic());
+        BeanUtils.copyProperties(diaryEntity, dto);
         dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
         List<DiaryTagDto> tagDtos = new ArrayList<>();
         for (DiaryTag tag : diaryEntity.getTags()) {
@@ -92,6 +89,11 @@ public class DiaryService {
         }
         diaryResponseDto.setDiaryDto(dto);
         diaryResponseDto.setDiaryLocationDtoList(diaryLocationDtoList);
+
+        UserDto userDto = new UserDto();
+        User user = userRepositoryInterface.findById(diaryEntity.getUser().getUserId()).get();
+        BeanUtils.copyProperties(user, userDto);
+        diaryResponseDto.setUserDto(userDto);
         return diaryResponseDto;
     }
 
@@ -148,10 +150,7 @@ public class DiaryService {
             while (diaryIterator.hasNext()) {
                 Diary diaryEntity = diaryIterator.next();
                 DiaryDto dto = new DiaryDto();
-                dto.setTitle(diaryEntity.getTitle());
-                dto.setPublic(diaryEntity.isPublic());
-                dto.setMemo(diaryEntity.getMemo());
-                dto.setTravelDest(diaryEntity.getTravelDest());
+                BeanUtils.copyProperties(diaryEntity, dto);
                 dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
                 List<DiaryTagDto> tagDtos = new ArrayList<>();
                 for (DiaryTag tag : diaryEntity.getTags()) {
