@@ -196,7 +196,13 @@ public class DiaryRepository{
             List<DiaryLocationDto> diaryLocationList = this.diaryLocationRepository.readPublicDiaryLocation(diary.getDiaryId());
             diaryResponseDto.setDiaryDto(diaryDto);
             diaryResponseDto.setDiaryLocationDtoList(diaryLocationList);
+            UserDto userDto = new UserDto();
+            User user = userRepositoryInterface.findById(diary.getUser().getUserId()).get();
+            BeanUtils.copyProperties(user, userDto);
+            diaryResponseDto.setUserDto(userDto);
             diaryResponseDtoList.add(diaryResponseDto);
+
+
         }
         return diaryResponseDtoList;
     }
