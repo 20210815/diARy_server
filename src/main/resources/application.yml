@@ -32,5 +32,3 @@ logging:
           descriptor:
             sql:
               BasicBinder: trace
-
-

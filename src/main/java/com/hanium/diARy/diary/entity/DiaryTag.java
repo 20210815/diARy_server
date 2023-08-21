@@ -26,4 +26,13 @@ public class DiaryTag {
     @Column(name = "name", length = 10)
     private String name;
 
+
+    @Override
+    public String toString() {
+        return "DiaryTag{" +
+                "tagId=" + tagId +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
 }

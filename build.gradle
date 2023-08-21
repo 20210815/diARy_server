@@ -41,7 +41,6 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test:6.0.2'
 	implementation group: 'com.auth0', name: 'java-jwt', version:'3.10.3'
 
-
 }
 
 tasks.named('test') {
