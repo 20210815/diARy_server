@@ -92,13 +92,18 @@ public class DiaryRepository{
 
         //DiarylocationDto는 따로 떼어서 저장
         List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
-
+        int score = 0;
+        int i = 0;
         List<DiaryLocation> savedLocations = new ArrayList<>();
         if (diaryLocationDtoList != null) {
             for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
                 DiaryLocation location = new DiaryLocation();
                 BeanUtils.copyProperties(diaryLocationDto, location);
-                this.clovaService.performSentimentAnalysis(diaryLocationDto.getContent());
+                Double positive = this.clovaService.performSentimentAnalysis(diaryLocationDto.getContent());
+                System.out.println(positive);
+                score += positive;
+                i++;
+                Math.round(positive);
                 if (addressRepositoryInterface.findByAddress(location.getAddress()) == null) {
                     Address address = new Address();
                     address.setAddress(location.getAddress());
@@ -129,6 +134,9 @@ public class DiaryRepository{
 
 
             }
+            score /= i;
+            System.out.println(score);
+            diaryEntity.setSatisfaction(score);
         }
 
         for (DiaryTagDto tagDto : diaryDto.getDiaryDto().getTags()) {
