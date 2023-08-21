@@ -9,12 +9,4 @@ import lombok.Data;
 public class DiaryTagDto {
     private Long tagId;
     private String name;
-
-    public DiaryTagDto(String name) {
-        this.name = name;
-    }
-
-    public DiaryTagDto() {
-
-    }
 }

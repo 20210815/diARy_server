@@ -17,7 +17,6 @@ public class DiaryDto {
     private String title;
     private String travelDest;
     private String memo;
-    private int satisfaction;
     private boolean isPublic;
     private Date travelStart;
     private Date travelEnd;

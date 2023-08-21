@@ -61,7 +61,6 @@ public class DiaryService {
         dto.setTitle(diaryEntity.getTitle());
         dto.setMemo(diaryEntity.getMemo());
         dto.setTravelDest(diaryEntity.getTravelDest());
-        dto.setSatisfaction(diaryEntity.getSatisfaction());
         dto.setPublic(diaryEntity.isPublic());
         dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
         List<DiaryTagDto> tagDtos = new ArrayList<>();
@@ -150,7 +149,6 @@ public class DiaryService {
                 Diary diaryEntity = diaryIterator.next();
                 DiaryDto dto = new DiaryDto();
                 dto.setTitle(diaryEntity.getTitle());
-                dto.setSatisfaction(diaryEntity.getSatisfaction());
                 dto.setPublic(diaryEntity.isPublic());
                 dto.setMemo(diaryEntity.getMemo());
                 dto.setTravelDest(diaryEntity.getTravelDest());

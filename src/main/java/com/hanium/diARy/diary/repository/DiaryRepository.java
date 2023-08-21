@@ -5,6 +5,7 @@ import com.hanium.diARy.diary.DiaryLikeMapper;
 import com.hanium.diARy.diary.DiaryMapper;
 import com.hanium.diARy.diary.dto.*;
 import com.hanium.diARy.diary.entity.*;
+import com.hanium.diARy.diary.service.ClovaService;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
@@ -36,6 +37,7 @@ public class DiaryRepository{
     private final DiaryLikeRepository diaryLikeRepository;
     private final AddressRepositoryInterface addressRepositoryInterface;
     private final UserRepositoryInterface userRepositoryInterface;
+    private final ClovaService clovaService;
     public DiaryRepository(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired TagRepositoryInterface tagRepositoryInterface,
@@ -46,7 +48,8 @@ public class DiaryRepository{
             @Autowired DiaryLocationImageRepository diaryLocationImageRepository,
             @Autowired DiaryLikeRepository diaryLikeRepository,
             @Autowired AddressRepositoryInterface addressRepositoryInterface,
-            @Autowired UserRepositoryInterface userRepositoryInterface
+            @Autowired UserRepositoryInterface userRepositoryInterface,
+            @Autowired ClovaService clovaService
 
             ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
@@ -59,6 +62,7 @@ public class DiaryRepository{
         this.diaryLikeRepository = diaryLikeRepository;
         this.addressRepositoryInterface = addressRepositoryInterface;
         this.userRepositoryInterface = userRepositoryInterface;
+        this.clovaService = clovaService;
     }
 
     @Transactional
@@ -77,7 +81,6 @@ public class DiaryRepository{
         diaryEntity.setTitle(diaryInfo.getTitle());
 
         diaryEntity.setComments(null);
-        diaryEntity.setSatisfaction(diaryInfo.getSatisfaction());
         diaryEntity.setTravelDest(diaryInfo.getTravelDest());
         diaryEntity.setMemo(diaryInfo.getMemo());
         diaryEntity.setTravelStart(diaryInfo.getTravelStart());
@@ -95,6 +98,7 @@ public class DiaryRepository{
             for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
                 DiaryLocation location = new DiaryLocation();
                 BeanUtils.copyProperties(diaryLocationDto, location);
+                this.clovaService.performSentimentAnalysis(diaryLocationDto.getContent());
                 if (addressRepositoryInterface.findByAddress(location.getAddress()) == null) {
                     Address address = new Address();
                     address.setAddress(location.getAddress());
@@ -232,8 +236,6 @@ public class DiaryRepository{
         diaryEntity.setTravelDest(diaryDto.getDiaryDto().getTravelDest());
         diaryEntity.setTravelStart(diaryDto.getDiaryDto().getTravelStart());
         diaryEntity.setTravelEnd(diaryDto.getDiaryDto().getTravelEnd());
-        diaryEntity.setSatisfaction(diaryDto.getDiaryDto().getSatisfaction() == 0 ? diaryEntity.getSatisfaction() : diaryDto.getDiaryDto().getSatisfaction());
-
         List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
         for(DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
             this.diaryLocationRepository.updateDiaryLocation(diaryLocationDto);
