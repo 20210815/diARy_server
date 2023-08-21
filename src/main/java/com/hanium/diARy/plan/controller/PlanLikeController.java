@@ -38,4 +38,10 @@ public class PlanLikeController {
         planLikeService.deletePlanLike(planId, userId);
         return new ResponseEntity<>("좋아요 취소", HttpStatus.OK);
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getPlanLikeCount(@PathVariable Long planId) {
+        Long planLikeCount = planLikeService.getPlanLikeCount(planId);
+        return new ResponseEntity<>(planLikeCount, HttpStatus.OK);
+    }
 }
