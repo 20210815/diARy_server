@@ -66,9 +66,12 @@ public class DiaryRepository{
         // 다이어리 작성 dto -> entity
         DiaryDto diaryInfo = diaryDto.getDiaryDto();
         Diary diaryEntity = new Diary();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        User user = userRepositoryInterface.findByEmail(email);
+        User user = new User();
+        user.setUserId(1L);
+        diaryEntity.setUser(user);
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //String email = authentication.getName();
+        //User user = userRepositoryInterface.findByEmail(email);
         diaryEntity.setUser(user);
         diaryEntity.setPublic(diaryInfo.isPublic());
         diaryEntity.setTitle(diaryInfo.getTitle());
@@ -224,7 +227,6 @@ public class DiaryRepository{
                 }
         }
 
-        diaryEntity.setUser(diaryDto.getDiaryDto().getUser());
         diaryEntity.setPublic(diaryDto.getDiaryDto().isPublic());
         diaryEntity.setMemo(diaryDto.getDiaryDto().getMemo());
         diaryEntity.setTravelDest(diaryDto.getDiaryDto().getTravelDest());

@@ -59,7 +59,6 @@ public class DiaryService {
         Diary diaryEntity = this.diaryRepository.readDiary(id);
         DiaryDto dto = new DiaryDto();
         dto.setTitle(diaryEntity.getTitle());
-        dto.setUser(diaryEntity.getUser());
         dto.setMemo(diaryEntity.getMemo());
         dto.setTravelDest(diaryEntity.getTravelDest());
         dto.setSatisfaction(diaryEntity.getSatisfaction());
@@ -151,7 +150,6 @@ public class DiaryService {
                 Diary diaryEntity = diaryIterator.next();
                 DiaryDto dto = new DiaryDto();
                 dto.setTitle(diaryEntity.getTitle());
-                dto.setUser(diaryEntity.getUser());
                 dto.setSatisfaction(diaryEntity.getSatisfaction());
                 dto.setPublic(diaryEntity.isPublic());
                 dto.setMemo(diaryEntity.getMemo());

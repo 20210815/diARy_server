@@ -21,7 +21,6 @@ public class DiaryDto {
     private boolean isPublic;
     private Date travelStart;
     private Date travelEnd;
-    private User user;
     private List<DiaryTagDto> tags;
     private List<DiaryLikeDto> likes;
     private List<CommentDto> comments;
