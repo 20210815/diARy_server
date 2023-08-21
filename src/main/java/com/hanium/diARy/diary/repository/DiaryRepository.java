@@ -134,7 +134,18 @@ public class DiaryRepository{
 
 
             }
-            score /= i;
+
+            try {
+                if (i == 0) {
+                    throw new ArithmeticException("Dividing by zero");
+                }
+                score /= i;
+            } catch (ArithmeticException e) {
+                // 0으로 나누는 오류가 발생한 경우에 대한 예외 처리 코드
+                System.err.println("Error: " + e.getMessage());
+                // 이 부분에 오류 처리 또는 메시지 출력에 필요한 로직을 추가하세요.
+                score = 0;
+            }
             System.out.println(score);
             diaryEntity.setSatisfaction(score);
         }
