@@ -13,6 +13,8 @@ import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,8 +52,9 @@ public class PlanServiceImpl implements PlanService {
         Plan plan = new Plan();
 
         // 임시 user
-        User user = new User();
-        user.setUserId(1L);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepositoryInterface.findByEmail(email);
         plan.setUser(user);
 
         BeanUtils.copyProperties(planDto, plan);
@@ -94,10 +97,8 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public PlanResponseDto updatePlan(Long planId, PlanRequestDto request) {
-        System.out.println("" + planId + "," + request);
         // PlanId로 기존 Plan 엔티티를 조회합니다.
         Plan existingPlan = planRepository.findById(planId).orElse(null);
-        System.out.println("" + existingPlan);
         if (existingPlan == null) {
             // 예외 처리 등 필요한 로직을 추가할 수 있습니다.
             return null;
@@ -112,17 +113,15 @@ public class PlanServiceImpl implements PlanService {
             if (planDto.getContent() != null) {
                 existingPlan.setContent(planDto.getContent());
             }
-//            if (planDto.getTravelStart() != null) {
-//                existingPlan.setTravelStart(planDto.getTravelStart());
-//            }
-//            if (planDto.getTravelEnd() != null) {
-//                existingPlan.setTravelEnd(planDto.getTravelEnd());
-//            }
+            if (planDto.getTravelStart() != null) {
+                existingPlan.setTravelStart(planDto.getTravelStart());
+            }
+            if (planDto.getTravelEnd() != null) {
+                existingPlan.setTravelEnd(planDto.getTravelEnd());
+            }
             if (planDto.isPublic() != existingPlan.isPublic()) {
                 existingPlan.setPublic(planDto.isPublic());
             }
-            // 그 외 필요한 필드들을 업데이트합니다.
-            // ...
         }
 
         // 기존의 PlanLocation 엔티티와 Tag 엔티티들은 그대로 두고 필요한 경우에만 업데이트합니다.
@@ -149,7 +148,7 @@ public class PlanServiceImpl implements PlanService {
                         if (planLocationDto.getTimeEnd() != null) {
                             existingLocation.setTimeEnd(planLocationDto.getTimeEnd());
                         }
-                        // locationRepository.save(existingLocation);
+                         planLocationRepository.save(existingLocation);
                     }
                 }
             }
@@ -165,7 +164,7 @@ public class PlanServiceImpl implements PlanService {
                         if (planTagDto.getName() != null) {
                             existingPlanTag.setName(planTagDto.getName());
                         }
-                        // tagRepository.save(existingTag);
+                        planTagRepository.save(existingPlanTag);
                     }
                 }
             }
@@ -193,7 +192,6 @@ public class PlanServiceImpl implements PlanService {
         }
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(existingPlan.getUser(), userDto);
-
 
         // Return the updated PlanResponseDto
         PlanResponseDto updatedPlanResponseDto = new PlanResponseDto(userDto, updatedPlanDto, updatedPlanLocationDtos, updatedPlanTagDtos);
