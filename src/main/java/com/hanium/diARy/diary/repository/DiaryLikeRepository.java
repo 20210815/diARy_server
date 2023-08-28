@@ -95,14 +95,17 @@ public class DiaryLikeRepository {
     }*/
 
     public void deleteDiaryLike(Long diaryId) {
-        DiaryLike diaryLike = new DiaryLike();
         User user = new User();
         user.setUserId(1L);
+        DiaryLike diaryLike = this.diaryLikeRepositoryInterface.findByUser_UserIdAndDiary_DiaryId(user.getUserId(), diaryId);
+
         //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //String email = authentication.getName();
         //User user = userRepositoryInterface.findByEmail(email);
-        diaryLike.setUser(user);
-        diaryLike.setDiary(this.diaryRepositoryInterface.findById(diaryId).get());
+        //diaryLike.setUser(user);
+        //Diary diary = diaryLike.getDiary();
+        //diary.getDiaryLikes().remove(diaryLike)
+        //diaryLike.setDiary(this.diaryRepositoryInterface.findById(diaryId).get());
         this.diaryLikeRepositoryInterface.delete(diaryLike);
     }
 
