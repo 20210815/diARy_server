@@ -2,10 +2,7 @@ package com.hanium.diARy.user.service;
 
 import com.hanium.diARy.diary.CommentMapper;
 import com.hanium.diARy.diary.dto.*;
-import com.hanium.diARy.diary.entity.Comment;
-import com.hanium.diARy.diary.entity.Diary;
-import com.hanium.diARy.diary.entity.DiaryLike;
-import com.hanium.diARy.diary.entity.DiaryLocation;
+import com.hanium.diARy.diary.entity.*;
 import com.hanium.diARy.diary.repository.*;
 import com.hanium.diARy.diary.service.DiaryService;
 import com.hanium.diARy.plan.dto.PlanDto;
@@ -85,6 +82,14 @@ public class UserService {
                 BeanUtils.copyProperties(diaryLocation, diaryLocationDto);
                 diaryLocationDtoList.add(diaryLocationDto);
             }
+
+            List<DiaryTagDto> tagDtos = new ArrayList<>();
+            for (DiaryTag tag : diary.getTags()) {
+                DiaryTagDto tagDto = new DiaryTagDto();
+                BeanUtils.copyProperties(tag, tagDto);
+                tagDtos.add(tagDto);
+            }
+            diaryDto.setTags(tagDtos);
 
             UserDto userDto = new UserDto();
             User user = userRepositoryInterface.findById(userId).get();
