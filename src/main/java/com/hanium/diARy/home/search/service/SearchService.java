@@ -8,6 +8,7 @@ import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryLocation;
 import com.hanium.diARy.diary.entity.DiaryTag;
 import com.hanium.diARy.diary.repository.DiaryLocationInterface;
+import com.hanium.diARy.diary.repository.DiaryRepository;
 import com.hanium.diARy.diary.repository.DiaryRepositoryInterface;
 import com.hanium.diARy.diary.repository.DiaryTagRepositoryInterface;
 import com.hanium.diARy.user.dto.UserDto;
@@ -27,17 +28,20 @@ public class SearchService {
     private final DiaryTagRepositoryInterface diaryTagRepositoryInterface;
     private final DiaryLocationInterface diaryLocationInterface;
     private final UserRepositoryInterface userRepositoryInterface;
+    private final DiaryRepository diaryRepository;
 
     public SearchService(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired DiaryTagRepositoryInterface diaryTagRepositoryInterface,
             @Autowired DiaryLocationInterface diaryLocationInterface,
-            @Autowired UserRepositoryInterface userRepositoryInterface
+            @Autowired UserRepositoryInterface userRepositoryInterface,
+            @Autowired DiaryRepository diaryRepository
             ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.diaryTagRepositoryInterface = diaryTagRepositoryInterface;
         this.diaryLocationInterface = diaryLocationInterface;
         this.userRepositoryInterface = userRepositoryInterface;
+        this.diaryRepository = diaryRepository;
     }
 
     public List<DiaryResponseDto> findDiaryByTag(String searchword) {
@@ -47,34 +51,7 @@ public class SearchService {
         List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
 
         for (Diary diary: diaries) {
-            DiaryDto diaryDto = new DiaryDto();
-            BeanUtils.copyProperties(diary, diaryDto);
-
-            List<DiaryLocationDto> diaryLocationDtoList = new ArrayList<>();
-            List<DiaryLocation> diaryLocations = this.diaryLocationInterface.findByDiary_DiaryId(diary.getDiaryId());
-            for(DiaryLocation diaryLocation: diaryLocations) {
-                DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
-                diaryLocationDto.setDiaryId(diary.getDiaryId());
-                BeanUtils.copyProperties(diaryLocation, diaryLocationDto);
-                diaryLocationDtoList.add(diaryLocationDto);
-            }
-
-            List<DiaryTagDto> tagDtos = new ArrayList<>();
-            for (DiaryTag tag : diary.getTags()) {
-                DiaryTagDto tagDto = new DiaryTagDto();
-                BeanUtils.copyProperties(tag, tagDto);
-                tagDtos.add(tagDto);
-            }
-            diaryDto.setTags(tagDtos);
-
-            UserDto userDto = new UserDto();
-            User user = userRepositoryInterface.findById(diary.getUser().getUserId()).get();
-            BeanUtils.copyProperties(user, userDto);
-
-            DiaryResponseDto diaryResponseDto = new DiaryResponseDto();
-            diaryResponseDto.setDiaryDto(diaryDto);
-            diaryResponseDto.setUserDto(userDto);
-            diaryResponseDto.setDiaryLocationDtoList(diaryLocationDtoList);
+            DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
             diaryResponseDtos.add(diaryResponseDto);
 
         }

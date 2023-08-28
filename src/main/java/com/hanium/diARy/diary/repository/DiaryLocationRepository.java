@@ -42,8 +42,14 @@ public class DiaryLocationRepository {
         List<DiaryLocationDto> diaryLocationDtoList = new ArrayList<>();
         for (DiaryLocation diaryLocation : diaryLocationList) {
             DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
-            BeanUtils.copyProperties(diaryLocation, diaryLocationDto);
+            diaryLocationDto.setDiaryLocationId(diaryLocation.getDiaryLocationId());
             diaryLocationDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
+            diaryLocationDto.setName(diaryLocation.getName());
+            diaryLocationDto.setDate(diaryLocation.getDate());
+            diaryLocationDto.setAddress(diaryLocation.getAddress());
+            diaryLocationDto.setTimeEnd(diaryLocation.getTimeEnd());
+            diaryLocationDto.setTimeStart(diaryLocation.getTimeStart());
+            diaryLocationDto.setContent(diaryLocation.getContent());
             diaryLocationDto.setDiaryLocationImageDtoList(diaryLocationImageRepository.readImage(diaryLocation));
             diaryLocationDtoList.add(diaryLocationDto);
         }
@@ -57,8 +63,9 @@ public class DiaryLocationRepository {
 
         if (optionalDiaryLocation.isPresent()) {
             DiaryLocation diaryLocation = optionalDiaryLocation.get();
-            BeanUtils.copyProperties(diaryLocationDto, diaryLocation);
+            //BeanUtils.copyProperties(diaryLocationDto, diaryLocation);
 
+            //address 있는지 없는지 확인하고 없으면 만들기
             if (diaryLocationDto.getAddress() != null) {
                 diaryLocation.setAddress(diaryLocationDto.getAddress());
                 if (addressRepositoryInterface.findByAddress(diaryLocation.getAddress()) == null) {
@@ -97,7 +104,10 @@ public class DiaryLocationRepository {
                 }
             }
 
-            diaryLocationImageRepository.updateImage(diaryLocationDto);
+            if(diaryLocationDto.getDiaryLocationImageDtoList() != null) {
+                diaryLocationImageRepository.updateImage(diaryLocationDto);
+            }
+
 
             // Save the updated diary location entity
             this.diaryLocationRepositoryInterface.save(diaryLocation);

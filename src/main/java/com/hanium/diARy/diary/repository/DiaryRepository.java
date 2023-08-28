@@ -29,40 +29,37 @@ import java.util.*;
 public class DiaryRepository{
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final TagRepositoryInterface tagRepositoryInterface;
-    private final CommentMapper commentMapper;
     private final DiaryLocationInterface diaryLocationRepositoryInterface;
     private final DiaryLocationRepository diaryLocationRepository;
-    private final DiaryLikeMapper diaryLikeMapper;
     private final DiaryLocationImageRepository diaryLocationImageRepository;
     private final DiaryLikeRepository diaryLikeRepository;
     private final AddressRepositoryInterface addressRepositoryInterface;
     private final UserRepositoryInterface userRepositoryInterface;
     private final ClovaService clovaService;
+    private final CommentRepository commentRepository;
     public DiaryRepository(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired TagRepositoryInterface tagRepositoryInterface,
-            @Autowired CommentMapper commentMapper,
             @Autowired DiaryLocationInterface diaryLocationRepositoryInterface,
             @Autowired DiaryLocationRepository diaryLocationRepository,
-            @Autowired DiaryLikeMapper diaryLikeMapper,
             @Autowired DiaryLocationImageRepository diaryLocationImageRepository,
             @Autowired DiaryLikeRepository diaryLikeRepository,
             @Autowired AddressRepositoryInterface addressRepositoryInterface,
             @Autowired UserRepositoryInterface userRepositoryInterface,
-            @Autowired ClovaService clovaService
+            @Autowired ClovaService clovaService,
+            @Autowired CommentRepository commentRepository
 
             ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.tagRepositoryInterface = tagRepositoryInterface;
-        this.commentMapper = commentMapper;
         this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;
         this.diaryLocationRepository = diaryLocationRepository;
-        this.diaryLikeMapper = diaryLikeMapper;
         this.diaryLocationImageRepository = diaryLocationImageRepository;
         this.diaryLikeRepository = diaryLikeRepository;
         this.addressRepositoryInterface = addressRepositoryInterface;
         this.userRepositoryInterface = userRepositoryInterface;
         this.clovaService = clovaService;
+        this.commentRepository = commentRepository;
     }
 
     @Transactional
@@ -178,13 +175,34 @@ public class DiaryRepository{
         return diaryEntity.getDiaryId();
     }
 
-    public Diary readDiary(Long id) {
-        Optional<Diary> diaryEntity = this.diaryRepositoryInterface.findById(id);
-        if(diaryEntity.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    public DiaryResponseDto readDiary(Long id) {
+        DiaryResponseDto diaryResponseDto = new DiaryResponseDto();
+        Diary diaryEntity = this.diaryRepositoryInterface.findById(id).get();
+        DiaryDto dto = new DiaryDto();
+        BeanUtils.copyProperties(diaryEntity, dto);
+        dto.setComments(commentRepository.readDiaryCommentAll(diaryEntity.getDiaryId()));
+        dto.setLikes(this.diaryLikeRepository.readDiaryLike(diaryEntity.getDiaryId()));
+        List<DiaryTagDto> tagDtos = new ArrayList<>();
+        for (DiaryTag tag : diaryEntity.getTags()) {
+            DiaryTagDto tagDto = new DiaryTagDto();
+            BeanUtils.copyProperties(tag, tagDto);
+            tagDtos.add(tagDto);
         }
-        return diaryEntity.get();
+        dto.setTags(tagDtos);
+        System.out.println(dto.getLikes());
+        dto.setTravelStart(diaryEntity.getTravelStart());
+        dto.setTravelEnd(diaryEntity.getTravelEnd());
 
+
+        List<DiaryLocationDto> diaryLocationDtoList = this.diaryLocationRepository.readPublicDiaryLocation(diaryEntity.getDiaryId());
+        diaryResponseDto.setDiaryDto(dto);
+        diaryResponseDto.setDiaryLocationDtoList(diaryLocationDtoList);
+
+        UserDto userDto = new UserDto();
+        User user = userRepositoryInterface.findById(diaryEntity.getUser().getUserId()).get();
+        BeanUtils.copyProperties(user, userDto);
+        diaryResponseDto.setUserDto(userDto);
+        return diaryResponseDto;
     }
 
     public List<DiaryResponseDto> readPublicDiaryAll() {
@@ -197,7 +215,7 @@ public class DiaryRepository{
             DiaryResponseDto diaryResponseDto = new DiaryResponseDto();
             DiaryDto diaryDto = new DiaryDto();
             BeanUtils.copyProperties(diary, diaryDto);
-            diaryDto.setComments(this.commentMapper.toDtoList(diary.getComments()));
+            diaryDto.setComments(commentRepository.readDiaryCommentAll(diary.getDiaryId()));
             List<DiaryTagDto> tagDtos = new ArrayList<>();
             for (DiaryTag tag : diary.getTags()) {
                 DiaryTagDto tagDto = new DiaryTagDto();
@@ -205,10 +223,12 @@ public class DiaryRepository{
                 tagDtos.add(tagDto);
             }
             diaryDto.setTags(tagDtos);
-            diaryDto.setLikes(this.diaryLikeMapper.toDtoList(diary.getDiaryLikes()));
+            diaryDto.setLikes(this.diaryLikeRepository.readDiaryLike(diary.getDiaryId()));
             List<DiaryLocationDto> diaryLocationList = this.diaryLocationRepository.readPublicDiaryLocation(diary.getDiaryId());
             diaryResponseDto.setDiaryDto(diaryDto);
             diaryResponseDto.setDiaryLocationDtoList(diaryLocationList);
+
+
             UserDto userDto = new UserDto();
             User user = userRepositoryInterface.findById(diary.getUser().getUserId()).get();
             BeanUtils.copyProperties(user, userDto);
@@ -226,47 +246,59 @@ public class DiaryRepository{
 
     @Transactional
     public void updateDiary(Long id, DiaryRequestDto diaryDto) {
-        Optional<Diary> targetEntity = this.diaryRepositoryInterface.findById(id);
-        if (targetEntity.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        Diary diaryEntity = targetEntity.get();
-        diaryEntity.setTitle(diaryDto.getDiaryDto().getTitle() == null ? diaryEntity.getTitle() : diaryDto.getDiaryDto().getTitle());
-
-        for (DiaryTag tags : diaryEntity.getTags()) {
-            tagRepositoryInterface.findByName(tags.getName()).getDiaries().remove(diaryEntity);
-        }
-        diaryEntity.getTags().clear();
-
-
-
-        for (DiaryTagDto tagDto : diaryDto.getDiaryDto().getTags()) {
-            //받아온 태그를 하나하나 떼어서 원래 있는 건지 비교해봐야 함
-            if(tagRepositoryInterface.findByName(tagDto.getName()) == null) {
-                    //없으면 만들고 / 있으면 원래 거 그대로 선택...
-                    DiaryTag tag = new DiaryTag();
-                    tag.setName(tagDto.getName());
-                    tag.getDiaries().add(diaryEntity);
-                    tagRepositoryInterface.save(tag);
-                    diaryEntity.getTags().add(tag);
+        Diary diaryEntity = this.diaryRepositoryInterface.findById(id).get();
+        if (diaryDto.getDiaryDto() != null) {
+            if (diaryDto.getDiaryDto().getTags() == null) {
+                diaryEntity.getTags().clear();
+            }
+            else {
+                for (DiaryTag tags : diaryEntity.getTags()) {
+                    tagRepositoryInterface.findByName(tags.getName()).getDiaries().remove(diaryEntity);
                 }
-                else {
-                    DiaryTag tag = tagRepositoryInterface.findByName(tagDto.getName());
-                    tag.getDiaries().add(diaryEntity);
-                    tagRepositoryInterface.save(tag);
-                    diaryEntity.getTags().add(tag);
+                diaryEntity.getTags().clear();
+                for (DiaryTagDto tagDto : diaryDto.getDiaryDto().getTags()) {
+                    //받아온 태그를 하나하나 떼어서 원래 있는 건지 비교해봐야 함
+                    if(tagRepositoryInterface.findByName(tagDto.getName()) == null) {
+                        //없으면 만들고 / 있으면 원래 거 그대로 선택...
+                        DiaryTag tag = new DiaryTag();
+                        tag.setName(tagDto.getName());
+                        tag.getDiaries().add(diaryEntity);
+                        tagRepositoryInterface.save(tag);
+                        diaryEntity.getTags().add(tag);
+                    }
+                    else {
+                        DiaryTag tag = tagRepositoryInterface.findByName(tagDto.getName());
+                        tag.getDiaries().add(diaryEntity);
+                        tagRepositoryInterface.save(tag);
+                        diaryEntity.getTags().add(tag);
+                    }
                 }
+            }
+
+            diaryEntity.setTitle(diaryDto.getDiaryDto().getTitle() == null ? diaryEntity.getTitle() : diaryDto.getDiaryDto().getTitle());
+            diaryEntity.setPublic(diaryDto.getDiaryDto().isPublic() == false ? diaryEntity.isPublic() : diaryDto.getDiaryDto().isPublic());
+            //diaryEntity.setPublic(diaryDto.getDiaryDto().isPublic());
+            diaryEntity.setMemo(diaryDto.getDiaryDto().getMemo() == null ? diaryEntity.getMemo() : diaryDto.getDiaryDto().getMemo());
+            diaryEntity.setTravelDest(diaryDto.getDiaryDto().getTravelDest() == null ? diaryEntity.getTravelDest() : diaryDto.getDiaryDto().getTravelDest());
+            diaryEntity.setTravelStart(diaryDto.getDiaryDto().getTravelStart() == null ? diaryEntity.getTravelStart() : diaryDto.getDiaryDto().getTravelStart());
+            diaryEntity.setTravelEnd(diaryDto.getDiaryDto().getTravelEnd() == null ? diaryEntity.getTravelEnd() : diaryDto.getDiaryDto().getTravelEnd());
         }
 
-        diaryEntity.setPublic(diaryDto.getDiaryDto().isPublic());
-        diaryEntity.setMemo(diaryDto.getDiaryDto().getMemo());
-        diaryEntity.setTravelDest(diaryDto.getDiaryDto().getTravelDest());
-        diaryEntity.setTravelStart(diaryDto.getDiaryDto().getTravelStart());
-        diaryEntity.setTravelEnd(diaryDto.getDiaryDto().getTravelEnd());
-        List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
-        for(DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
-            this.diaryLocationRepository.updateDiaryLocation(diaryLocationDto);
+
+
+
+        if (diaryDto.getDiaryLocationDtoList() != null) {
+            List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
+            for(DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
+                this.diaryLocationRepository.updateDiaryLocation(diaryLocationDto);
+            }
         }
+        else {
+//            그대로 가져오기
+        }
+
+
+
 
         this.diaryRepositoryInterface.save(diaryEntity);
     }

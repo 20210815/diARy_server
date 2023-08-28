@@ -20,8 +20,8 @@ public class ReplyController {
     }
 
     @PostMapping("/{diaryId}/comment/{commentId}/reply")
-    public void createReply(@RequestBody ReplyDto replyDto) {
-        replyService.createReply(replyDto);
+    public void createReply(@RequestBody ReplyDto replyDto, @PathVariable Long diaryId, @PathVariable Long commentId) {
+        replyService.createReply(replyDto, diaryId, commentId);
     }
 
     //답글 - 댓글로 조회

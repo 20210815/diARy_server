@@ -93,19 +93,7 @@ public class CommentService {
     }*/
 
     public List<CommentDto> readDiaryCommentAll(Long diaryId) {
-        List<Comment> commentList = this.commentRepository.readDiaryCommentAll(diaryId);
-        List<CommentDto> commentDtoList = new ArrayList<>();
-
-        for(Comment comment : commentList) {
-            commentDtoList.add(new CommentDto(
-                    comment.getDiary().getDiaryId(),
-                    comment.getContent(),
-                    comment.getUser().getUserId(),
-                    this.replyMapper.toDtoList(comment.getReplies())
-            ));
-        }
-
-        return commentDtoList;
+        return this.commentRepository.readDiaryCommentAll(diaryId);
     }
 
     public void updateComment(Long id, CommentDto dto) {

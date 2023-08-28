@@ -26,8 +26,8 @@ public class ReplyService {
         this.replyMapper = replyMapper;
     }
 
-    public void createReply(ReplyDto dto) {
-        replyRepository.createReply(dto);
+    public void createReply(ReplyDto dto, Long diaryId, Long commentId) {
+        replyRepository.createReply(dto, diaryId, commentId);
     }
 
 /*    public ReplyDto readReply(Long id) {
@@ -69,13 +69,7 @@ public class ReplyService {
     }*/
 
     public List<ReplyDto> readCommentReplyAll(Long id) {
-        List<Reply> replies = this.replyRepository.readCommentReplyAll(id);
-        List<ReplyDto> replyDtoList = new ArrayList<>();
-
-        for(Reply reply : replies) {
-            replyDtoList.add(replyMapper.toDto(reply));
-        }
-        return replyDtoList;
+        return this.replyRepository.readCommentReplyAll(id);
     }
 
     public void updateReply(Long id, ReplyDto dto) {
