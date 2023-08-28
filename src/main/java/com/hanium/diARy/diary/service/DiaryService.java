@@ -68,6 +68,7 @@ public class DiaryService {
         }
         dto.setTags(tagDtos);
         dto.setLikes(diaryLikeRepository.readDiaryLike(diaryEntity.getDiaryId()));
+        System.out.println(dto.getLikes());
         dto.setTravelStart(diaryEntity.getTravelStart());
         dto.setTravelEnd(diaryEntity.getTravelEnd());
 
@@ -151,6 +152,8 @@ public class DiaryService {
                 Diary diaryEntity = diaryIterator.next();
                 DiaryDto dto = new DiaryDto();
                 BeanUtils.copyProperties(diaryEntity, dto);
+                List<DiaryLikeDto> diaryLikeDtos = diaryLikeRepository.readDiaryLike(diaryEntity.getDiaryId());
+                dto.setLikes(diaryLikeDtos);
                 dto.setComments(this.commentMapper.toDtoList(diaryEntity.getComments()));
                 List<DiaryTagDto> tagDtos = new ArrayList<>();
                 for (DiaryTag tag : diaryEntity.getTags()) {

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,8 +24,8 @@ public class DiaryDto {
     private Date travelStart;
     private Date travelEnd;
     private List<DiaryTagDto> tags;
-    private List<DiaryLikeDto> likes;
-    private List<CommentDto> comments;
+    private List<DiaryLikeDto> likes = new ArrayList<>();
+    private List<CommentDto> comments = new ArrayList<>();
 
 }
 

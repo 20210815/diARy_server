@@ -22,6 +22,8 @@ public class UserRepository {
     private final UserRepositoryInterface userRepositoryInterface;
     private final ReplyRepositoryInterface replyRepositoryInterface;
     private final DiaryLikeRepositoryInterface diaryLikeRepositoryInterface;
+    private final DiaryLikeRepository diaryLikeRepository;
+    private final DiaryRepository diaryRepository;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final DiaryLocationInterface diaryLocationInterface;
 
@@ -30,13 +32,17 @@ public class UserRepository {
             @Autowired DiaryLikeRepositoryInterface diaryLikeRepositoryInterface,
             @Autowired ReplyRepositoryInterface replyRepositoryInterface,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
-            @Autowired DiaryLocationInterface diaryLocationInterface
+            @Autowired DiaryLocationInterface diaryLocationInterface,
+            @Autowired DiaryLikeRepository diaryLikeRepository,
+            @Autowired DiaryRepository diaryRepository
             ){
         this.userRepositoryInterface = userRepositoryInterface;
         this.diaryLikeRepositoryInterface = diaryLikeRepositoryInterface;
         this.replyRepositoryInterface = replyRepositoryInterface;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.diaryLocationInterface = diaryLocationInterface;
+        this.diaryLikeRepository = diaryLikeRepository;
+        this.diaryRepository = diaryRepository;
     }
 
     public List<DiaryLike> readLikeAllDiary(Long userId) {
@@ -61,6 +67,7 @@ public class UserRepository {
                 }
                 DiaryDto diaryDto = new DiaryDto();
                 BeanUtils.copyProperties(diary, diaryDto);
+                diaryDto.setLikes(diaryLikeRepository.readDiaryLike(diary.getDiaryId()));
                 diaryResponseDto.setDiaryLocationDtoList(diaryLocationDtoList);
                 diaryResponseDto.setDiaryDto(diaryDto);
                 System.out.println(diaryResponseDto);
