@@ -14,6 +14,7 @@ import com.hanium.diARy.user.repository.UserRepository;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
@@ -28,18 +29,21 @@ public class CommentRepository {
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final UserMapper userMapper;
     private final DiaryMapper diaryMapper;
+    private final ReplyRepository replyRepository;
     public CommentRepository(
             @Autowired CommentRepositoryInterface commentRepositoryInterface,
             @Autowired UserRepositoryInterface userRepositoryInterface,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired UserMapper userMapper,
-            @Autowired DiaryMapper diaryMapper
+            @Autowired DiaryMapper diaryMapper,
+            @Autowired ReplyRepository replyRepository
     ) {
         this.commentRepositoryInterface = commentRepositoryInterface;
         this.userRepositoryInterface = userRepositoryInterface;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.userMapper = userMapper;
         this.diaryMapper = diaryMapper;
+        this.replyRepository = replyRepository;
     }
 
     @Transactional
@@ -89,34 +93,23 @@ public class CommentRepository {
     }
 */
 
-    public List<Comment> readDiaryCommentAll(Long diaryId) {
+    public List<CommentDto> readDiaryCommentAll(Long diaryId) {
         Diary diary = this.diaryRepositoryInterface.findById(diaryId).get();
-        return this.commentRepositoryInterface.findByDiary(diary);
+        List<CommentDto> commentDtoList = new ArrayList<>();
+        for(Comment comment: this.commentRepositoryInterface.findByDiary(diary)) {
+            CommentDto commentDto = new CommentDto();
+            commentDto.setDiaryId(comment.getDiary().getDiaryId());
+            commentDto.setUserId(comment.getUser().getUserId());
+            commentDto.setReplyDtos(replyRepository.readCommentReplyAll(comment.getCommentId()));//해야 함
+            commentDto.setContent(comment.getContent());
+            commentDtoList.add(commentDto);
+        }
+        return commentDtoList;
     }
 
     public void updateComment(Long id, CommentDto dto) {
-        Optional<Comment> targetComment = this.commentRepositoryInterface.findById(id);
-        if (targetComment.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        Comment comment = targetComment.get();
-        String content = dto.getContent();
-        if (content != null) {
-            comment.setContent(content);
-        }
-
-        Diary diary = this.diaryRepositoryInterface.findById(dto.getDiaryId()).get();
-        if(diary != null) {
-            comment.setDiary(diary);
-        }
-        else {
-            comment.setDiary(targetComment.get().getDiary());
-        }
-
-        User user = this.userRepositoryInterface.findById(dto.getUserId()).get();
-        if(user != null) {
-            comment.setUser(user);
-        }
+        Comment comment = this.commentRepositoryInterface.findById(id).get();
+        comment.setContent(dto.getContent());
         this.commentRepositoryInterface.save(comment);
     }
 

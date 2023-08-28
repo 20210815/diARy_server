@@ -32,6 +32,7 @@ public class UserService {
     private final DiaryLikeRepository diaryLikeRepository;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     //private final DiaryRepositoryInterface diaryRepositoryInterface;
+    private final DiaryRepository diaryRepository;
     private final CommentRepository commentRepository;
     //private final CommentMapper commentMapper;
     private final DiaryLocationInterface diaryLocationInterface;
@@ -43,16 +44,17 @@ public class UserService {
             @Autowired CommentRepository commentRepository,
             //@Autowired CommentMapper commentMapper,
             @Autowired UserRepositoryInterface userRepositoryInterface,
-            @Autowired DiaryLocationInterface diaryLocationInterface
+            @Autowired DiaryLocationInterface diaryLocationInterface,
+            @Autowired DiaryRepository diaryRepository
 
             ) {
         this.userRepository = userRepository;
         this.diaryLikeRepository = diaryLikeRepository;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.commentRepository = commentRepository;
-        //this.commentMapper = commentMapper;
         this.userRepositoryInterface = userRepositoryInterface;
         this.diaryLocationInterface = diaryLocationInterface;
+        this.diaryRepository = diaryRepository;
     }
 
     //좋아요 누른 다이어리 확인
@@ -74,39 +76,7 @@ public class UserService {
         for (Diary diary: diaries) {
             DiaryDto diaryDto = new DiaryDto();
             BeanUtils.copyProperties(diary, diaryDto);
-
-            List<DiaryLocationDto> diaryLocationDtoList = new ArrayList<>();
-            List<DiaryLocation> diaryLocations = this.diaryLocationInterface.findByDiary_DiaryId(diary.getDiaryId());
-            for(DiaryLocation diaryLocation: diaryLocations) {
-                DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
-                diaryLocationDto.setDiaryId(diary.getDiaryId());
-                BeanUtils.copyProperties(diaryLocation, diaryLocationDto);
-                diaryLocationDtoList.add(diaryLocationDto);
-            }
-
-            List<DiaryTagDto> tagDtos = new ArrayList<>();
-            for (DiaryTag tag : diary.getTags()) {
-                DiaryTagDto tagDto = new DiaryTagDto();
-                BeanUtils.copyProperties(tag, tagDto);
-                tagDtos.add(tagDto);
-            }
-            diaryDto.setTags(tagDtos);
-
-            UserDto userDto = new UserDto();
-            User user = userRepositoryInterface.findById(userId).get();
-            BeanUtils.copyProperties(user, userDto);
-            diaryDto.setLikes(diaryLikeRepository.readDiaryLike(diary.getDiaryId()));
-            List<CommentDto> commentDtoList = new ArrayList<>();
-            for (Comment comment : commentRepository.readDiaryCommentAll(diary.getDiaryId())) {
-                CommentDto commentDto = new CommentDto();
-                BeanUtils.copyProperties(comment, commentDto);
-                commentDtoList.add(commentDto);
-            }
-            diaryDto.setComments(commentDtoList);
-            DiaryResponseDto diaryResponseDto = new DiaryResponseDto();
-            diaryResponseDto.setDiaryDto(diaryDto);
-            diaryResponseDto.setUserDto(userDto);
-            diaryResponseDto.setDiaryLocationDtoList(diaryLocationDtoList);
+            DiaryResponseDto diaryResponseDto = this.diaryRepository.readDiary(diary.getDiaryId());
             diaryResponseDtos.add(diaryResponseDto);
 
         }

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -40,38 +41,52 @@ public class ReplyRepository {
 
     }
 
-    public void createReply(ReplyDto dto) {
+    public void createReply(ReplyDto dto, Long diaryId, Long commentId) {
         Reply reply = new Reply();
-        Diary diary = this.diaryRepositoryInterface.findById(dto.getDiaryId()).get();
-        User user = this.userRepositoryInterface.findById(dto.getUserId()).get();
-        Comment comment = this.commentRepositoryInterface.findById(dto.getCommentId())
+        Diary diary = this.diaryRepositoryInterface.findById(diaryId).get();
+        //User user = this.userRepositoryInterface.findById(dto.getUserId()).get();
+        Comment comment = this.commentRepositoryInterface.findById(commentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         reply.setDiary(diary);
         reply.setComment(comment);
+        User user = new User();
+        user.setUserId(1L);
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //String email = authentication.getName();
+        //User user = userRepositoryInterface.findByEmail(email);
         reply.setUser(user);
         reply.setContent(dto.getContent());
-        comment.getReplies().add(this.replyMapper.toEntity(dto));
+        comment.getReplies().add(reply);
 
 
         this.replyRepositoryInterface.save(reply);
     }
 
-    public Reply readReply(Long id) {
-        Optional<Reply> reply = this.replyRepositoryInterface.findById(id);
-        if(reply.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return reply.get();
-    }
+//    public Reply readReply(Long id) {
+//        Optional<Reply> reply = this.replyRepositoryInterface.findById(id);
+//        if(reply.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//        }
+//        return reply.get();
+//    }
 
     public Iterator<Reply> readReplyAll() {
         return this.replyRepositoryInterface.findAll().iterator();
     }
 
-    public List<Reply> readCommentReplyAll(Long id) {
+    public List<ReplyDto> readCommentReplyAll(Long id) {
         Comment comment = this.commentRepositoryInterface.findByCommentId(id);
-        return comment.getReplies();
+        List<ReplyDto> replyDtos = new ArrayList<>();
+        for(Reply reply: this.replyRepositoryInterface.findByComment(comment)) {
+            ReplyDto replyDto = new ReplyDto();
+            replyDto.setCommentId(id);
+            replyDto.setDiaryId(reply.getReplyId());
+            replyDto.setUserId(reply.getUser().getUserId());
+            replyDto.setContent(reply.getContent());
+            replyDtos.add(replyDto);
+        }
+        return replyDtos;
     }
 
     public List<Reply> readUserReplyAll(Long id) {
