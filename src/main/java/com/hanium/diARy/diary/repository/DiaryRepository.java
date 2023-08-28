@@ -1,8 +1,5 @@
 package com.hanium.diARy.diary.repository;
 
-import com.hanium.diARy.diary.CommentMapper;
-import com.hanium.diARy.diary.DiaryLikeMapper;
-import com.hanium.diARy.diary.DiaryMapper;
 import com.hanium.diARy.diary.dto.*;
 import com.hanium.diARy.diary.entity.*;
 import com.hanium.diARy.diary.service.ClovaService;
@@ -10,16 +7,12 @@ import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import jakarta.transaction.Transactional;
-import org.springframework.aop.scope.ScopedObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.Option;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

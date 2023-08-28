@@ -1,6 +1,5 @@
 package com.hanium.diARy.diary.repository;
 
-import com.hanium.diARy.diary.ReplyMapper;
 import com.hanium.diARy.diary.dto.ReplyDto;
 import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Diary;
@@ -9,7 +8,6 @@ import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,18 +22,15 @@ public class ReplyRepository {
     private final CommentRepositoryInterface commentRepositoryInterface;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final UserRepositoryInterface userRepositoryInterface;
-    private final ReplyMapper replyMapper;
 
     public ReplyRepository(
         @Autowired ReplyRepositoryInterface replyRepositoryInterface,
         @Autowired CommentRepositoryInterface commentRepositoryInterface,
-        @Autowired ReplyMapper replyMapper,
         @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
         @Autowired UserRepositoryInterface userRepositoryInterface
         ){
         this.replyRepositoryInterface = replyRepositoryInterface;
         this.commentRepositoryInterface = commentRepositoryInterface;
-        this.replyMapper = replyMapper;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.userRepositoryInterface = userRepositoryInterface;
 
@@ -89,8 +84,18 @@ public class ReplyRepository {
         return replyDtos;
     }
 
-    public List<Reply> readUserReplyAll(Long id) {
-        return this.replyRepositoryInterface.findByUser_UserId(id);
+    public List<ReplyDto> readUserReplyAll(Long id, Long commentId) {
+        List<Reply> replies = this.replyRepositoryInterface.findByUser_UserIdAndComment_CommentId(id, commentId);
+        List<ReplyDto> replyDtos = new ArrayList<>();
+        for(Reply reply: replies) {
+            ReplyDto replyDto = new ReplyDto();
+            replyDto.setCommentId(id);
+            replyDto.setDiaryId(reply.getReplyId());
+            replyDto.setUserId(reply.getUser().getUserId());
+            replyDto.setContent(reply.getContent());
+            replyDtos.add(replyDto);
+        }
+        return replyDtos;
     }
 
     public void updateReply(Long id, ReplyDto dto) {
