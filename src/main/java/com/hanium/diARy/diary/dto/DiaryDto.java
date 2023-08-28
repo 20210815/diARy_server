@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DiaryDto {
+    private Long diaryId;
     private String title;
     private String travelDest;
     private String memo;
