@@ -5,7 +5,9 @@ import com.hanium.diARy.diary.entity.*;
 import com.hanium.diARy.diary.repository.*;
 import com.hanium.diARy.user.dto.UserCommentDto;
 import com.hanium.diARy.user.dto.UserCommentReplyDto;
+import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.dto.UserReplyDto;
+import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepository;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.BeanUtils;
@@ -98,6 +100,14 @@ public class UserService {
 
         }
        return diaryResponseDtos;
+    }
+
+    public UserDto readUser(Long userId) {
+        User user = this.userRepositoryInterface.findById(userId).get();
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(user, userDto);
+        userDto.setUserId(user.getUserId());
+        return userDto;
     }
 
 }

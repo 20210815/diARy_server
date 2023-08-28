@@ -5,6 +5,7 @@ import com.hanium.diARy.diary.dto.CommentReplyDto;
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.dto.DiaryResponseDto;
 import com.hanium.diARy.user.dto.UserCommentReplyDto;
+import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import com.hanium.diARy.user.service.UserService;
@@ -56,5 +57,10 @@ public class UserController {
         String email = authentication.getName();
         User user = userRepositoryInterface.findByEmail(email);
         return this.userService.readUserDiary(user.getUserId());
+    }
+
+    @GetMapping("/{userId}/mypage")
+    public UserDto readUser(@PathVariable Long userId) {
+        return this.userService.readUser(userId);
     }
 }
