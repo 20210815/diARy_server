@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.hanium.diARy.user.dto.UserDto;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.ArrayList;
 import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class DiaryResponseDto {
     private UserDto userDto;
     private DiaryDto diaryDto;

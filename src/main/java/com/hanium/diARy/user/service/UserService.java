@@ -79,6 +79,7 @@ public class UserService {
             List<DiaryLocation> diaryLocations = this.diaryLocationInterface.findByDiary_DiaryId(diary.getDiaryId());
             for(DiaryLocation diaryLocation: diaryLocations) {
                 DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
+                diaryLocationDto.setDiaryId(diary.getDiaryId());
                 BeanUtils.copyProperties(diaryLocation, diaryLocationDto);
                 diaryLocationDtoList.add(diaryLocationDto);
             }
