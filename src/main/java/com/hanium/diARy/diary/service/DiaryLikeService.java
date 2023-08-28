@@ -29,8 +29,9 @@ public class DiaryLikeService {
         this.diaryLikeRepositoryInterface = diaryLikeRepositoryInterface;
     }
 
-    public void createDiaryLike(DiaryLikeDto dto) {
-        this.diaryLikeRepository.createDiaryLike(dto.getDiaryId(), dto.getUserId());
+    public void createDiaryLike(Long diaryId
+    ) {
+        this.diaryLikeRepository.createDiaryLike(diaryId);
     }
 
     public DiaryLikeDto readDiaryLike(DiaryLikeId id) {
@@ -59,8 +60,8 @@ public class DiaryLikeService {
         diaryLikeRepository.updateDiaryLike(id, dto);
     }*/
 
-    public void deleteDiaryLike(DiaryLikeDto diaryLikeDto) {
-        diaryLikeRepository.deleteDiaryLike(diaryLikeDto);
+    public void deleteDiaryLike(Long diaryId) {
+        diaryLikeRepository.deleteDiaryLike(diaryId);
     }
 
 
