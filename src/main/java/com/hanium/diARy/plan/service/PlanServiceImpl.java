@@ -1,14 +1,8 @@
 package com.hanium.diARy.plan.service;
 
 import com.hanium.diARy.plan.dto.*;
-import com.hanium.diARy.plan.entity.PlanLocation;
-import com.hanium.diARy.plan.entity.Plan;
-import com.hanium.diARy.plan.entity.PlanLike;
-import com.hanium.diARy.plan.entity.PlanTag;
-import com.hanium.diARy.plan.repository.PlanLocationRepository;
-import com.hanium.diARy.plan.repository.PlanLikeRepository;
-import com.hanium.diARy.plan.repository.PlanRepository;
-import com.hanium.diARy.plan.repository.PlanTagRepository;
+import com.hanium.diARy.plan.entity.*;
+import com.hanium.diARy.plan.repository.*;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
@@ -23,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -33,13 +28,15 @@ public class PlanServiceImpl implements PlanService {
     private final PlanTagRepository planTagRepository;
     private final PlanLikeRepository planLikeRepository;
     private final UserRepositoryInterface userRepositoryInterface;
+    private final PlanTagMapRepository planTagMapRepository;
 
-    public PlanServiceImpl(PlanRepository planRepository, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanLikeRepository planLikeRepository, UserRepositoryInterface userRepositoryInterface) {
+    public PlanServiceImpl(PlanRepository planRepository, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanLikeRepository planLikeRepository, UserRepositoryInterface userRepositoryInterface, PlanTagMapRepository planTagMapRepository) {
         this.planRepository = planRepository;
         this.planLocationRepository = planLocationRepository;
         this.planTagRepository = planTagRepository;
         this.planLikeRepository = planLikeRepository;
         this.userRepositoryInterface = userRepositoryInterface;
+        this.planTagMapRepository = planTagMapRepository;
     }
 
     @Override
@@ -82,14 +79,21 @@ public class PlanServiceImpl implements PlanService {
             planLocationRepository.save(location);
         }
 
-        // TagDto를 이용하여 Tag 엔티티를 생성하고 Plan과 연관시킨 뒤 저장합니다.
-        List<PlanTag> savedPlanTags = new ArrayList<>();
+        List<PlanTagMap> savedPlanTags = new ArrayList<>();
         for (PlanTagDto planTagDto : planTagDtos) {
-            PlanTag planTag = new PlanTag();
-            BeanUtils.copyProperties(planTagDto, planTag);
-            planTag.setPlan(savedPlan);
-            savedPlanTags.add(planTag);
-            planTagRepository.save(planTag);
+            // PlanTag 엔티티 생성 또는 가져오기
+            PlanTag planTag = planTagRepository.findByName(planTagDto.getName());
+            if (planTag == null) {
+                planTag = new PlanTag();
+                planTag.setName(planTagDto.getName());
+                planTag = planTagRepository.save(planTag);
+            }
+
+            PlanTagMap planTagMap = new PlanTagMap();
+            planTagMap.setPlan(savedPlan);
+            planTagMap.setPlanTag(planTag);
+            savedPlanTags.add(planTagMap);
+            planTagMapRepository.save(planTagMap);
         }
 
         return savedPlan.getPlanId();
@@ -185,9 +189,9 @@ public class PlanServiceImpl implements PlanService {
         }
 
         List<PlanTagDto> updatedPlanTagDtos = new ArrayList<>();
-        for (PlanTag planTag : existingPlan.getPlanTags()) {
+        for (PlanTagMap planTagMap : existingPlan.getPlanTagMaps()) {
             PlanTagDto planTagDto = new PlanTagDto();
-            BeanUtils.copyProperties(planTag, planTagDto);
+            BeanUtils.copyProperties(planTagMap, planTagDto);
             updatedPlanTagDtos.add(planTagDto);
         }
         UserDto userDto = new UserDto();
@@ -220,9 +224,10 @@ public class PlanServiceImpl implements PlanService {
         }
 
         // Plan 엔티티와 연관된 Tag 엔티티를 모두 삭제합니다.
-        List<PlanTag> planTags = plan.getPlanTags();
-        for (PlanTag planTag : planTags) {
-            planTagRepository.delete(planTag);
+//        List<PlanTag> planTags = plan.getPlanTags();
+        List<PlanTagMap> planTagMaps = plan.getPlanTagMaps();
+        for (PlanTagMap planTag : planTagMaps) {
+            planTagMapRepository.delete(planTag);
         }
 
         // Plan 엔티티를 삭제합니다.
@@ -252,9 +257,9 @@ public class PlanServiceImpl implements PlanService {
         }
 
         List<PlanTagDto> planTagDtos = new ArrayList<>();
-        for (PlanTag planTag : plan.getPlanTags()) {
+        for (PlanTagMap planTagMap : plan.getPlanTagMaps()) {
             PlanTagDto planTagDto = new PlanTagDto();
-            BeanUtils.copyProperties(planTag, planTagDto);
+            BeanUtils.copyProperties(planTagMap.getPlanTag(), planTagDto);
             planTagDtos.add(planTagDto);
         }
         // User 정보도 포함한 PlanResponseDto 생성
@@ -287,9 +292,9 @@ public class PlanServiceImpl implements PlanService {
         }
 
         List<PlanTagDto> planTagDtos = new ArrayList<>();
-        for (PlanTag planTag : updatedPlan.getPlanTags()) {
+        for (PlanTagMap planTagMap : updatedPlan.getPlanTagMaps()) {
             PlanTagDto planTagDto = new PlanTagDto();
-            BeanUtils.copyProperties(planTag, planTagDto);
+            BeanUtils.copyProperties(planTagMap, planTagDto);
             planTagDtos.add(planTagDto);
         }
         // User 정보도 포함한 PlanResponseDto 생성
@@ -321,9 +326,9 @@ public class PlanServiceImpl implements PlanService {
             }
 
             List<PlanTagDto> planTagDtos = new ArrayList<>();
-            for (PlanTag planTag : plan.getPlanTags()) {
+            for (PlanTagMap planTagMap : plan.getPlanTagMaps()) {
                 PlanTagDto planTagDto = new PlanTagDto();
-                BeanUtils.copyProperties(planTag, planTagDto);
+                BeanUtils.copyProperties(planTagMap, planTagDto);
                 planTagDtos.add(planTagDto);
             }
             // User 정보도 포함한 PlanResponseDto 생성
