@@ -43,13 +43,15 @@ public class CommentRepository {
     }
 
     @Transactional
-    public void createComment(CommentDto commentDto) {
+    public void createComment(CommentDto commentDto, Long diaryId) {
         Comment comment = new Comment();
-        User user = this.userRepositoryInterface.findById(commentDto.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + commentDto.getUserId()));
-        Diary diary = this.diaryRepositoryInterface.findById(commentDto.getDiaryId())
-                .orElseThrow(() -> new EntityNotFoundException("Diary not found with ID: " + commentDto.getDiaryId()));
+        Diary diary = this.diaryRepositoryInterface.findById(diaryId).get();
 
+        User user = new User();
+        user.setUserId(1L);
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //String email = authentication.getName();
+        //User user = userRepositoryInterface.findByEmail(email);
         comment.setUser(user);
         comment.setDiary(diary);
         comment.setContent(commentDto.getContent());

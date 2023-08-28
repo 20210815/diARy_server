@@ -25,8 +25,8 @@ public class DiaryLikeController {
     }
 
     @PostMapping("/{diaryId}/diary-like")
-    public void createDiaryLike(@RequestBody DiaryLikeDto dto) {
-        diaryLikeService.createDiaryLike(dto);
+    public void createDiaryLike(@PathVariable Long diaryId) {
+        diaryLikeService.createDiaryLike(diaryId);
     }
 
 /*    @GetMapping("/{diaryId}/{userId}")
@@ -53,13 +53,9 @@ public class DiaryLikeController {
         diaryLikeService.updateDiaryLike(id, dto);
     }*/
 
-    @DeleteMapping("/{diaryId}/diary-like/{userId}")
-    public void deleteDiaryLike(@PathVariable Long diaryId,
-                                @PathVariable Long userId)
+    @DeleteMapping("/{diaryId}/diary-like")
+    public void deleteDiaryLike(@PathVariable Long diaryId)
     {
-        DiaryLikeDto diaryLikeDto = new DiaryLikeDto();
-        diaryLikeDto.setDiaryId(diaryId);
-        diaryLikeDto.setUserId(userId);
-        this.diaryLikeService.deleteDiaryLike(diaryLikeDto);
+        this.diaryLikeService.deleteDiaryLike(diaryId);
     }
 }

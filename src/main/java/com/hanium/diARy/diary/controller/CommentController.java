@@ -24,8 +24,8 @@ public class CommentController {
     }
 
     @PostMapping("/{diaryId}/comment")
-    public void createComment(@RequestBody CommentDto commentDto) {
-        commentService.createComment(commentDto);
+    public void createComment(@RequestBody CommentDto commentDto, @PathVariable Long diaryId) {
+        commentService.createComment(commentDto, diaryId);
     }
 
 /*
