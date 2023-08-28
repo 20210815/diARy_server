@@ -72,7 +72,6 @@ public class DiaryRepository{
         Diary diaryEntity = new Diary();
         User user = new User();
         user.setUserId(1L);
-        diaryEntity.setUser(user);
         //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //String email = authentication.getName();
         //User user = userRepositoryInterface.findByEmail(email);

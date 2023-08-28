@@ -46,8 +46,8 @@ public class CommentService {
     }
 
     @Transactional
-    public void createComment(CommentDto commentDto) {
-        this.commentRepository.createComment(commentDto);
+    public void createComment(CommentDto commentDto, Long diaryId) {
+        this.commentRepository.createComment(commentDto, diaryId);
     }
 
     public CommentDto readComment(Long id) {

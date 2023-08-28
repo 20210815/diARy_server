@@ -41,11 +41,16 @@ public class DiaryLikeRepository {
         this.diaryLikeMapper = diaryLikeMapper;
     }
 
-    public void createDiaryLike(Long diaryId, Long userId) {
+    public void createDiaryLike(Long diaryId) {
         DiaryLike diaryLike = new DiaryLike();
         Diary diary = this.diaryRepositoryInterface.findById(diaryId).get();
         diaryLike.setDiary(diary);
-        diaryLike.setUser(this.userRepositoryInterface.findById(userId).get());
+        User user = new User();
+        user.setUserId(1L);
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //String email = authentication.getName();
+        //User user = userRepositoryInterface.findByEmail(email);
+        diaryLike.setUser(user);
         List<DiaryLike> diaryLikes = diary.getDiaryLikes();
         diaryLikes.add(diaryLike);
         diary.setDiaryLikes(diaryLikes);
@@ -89,10 +94,15 @@ public class DiaryLikeRepository {
         this.diaryLikeRepositoryInterface.save(diaryLike);
     }*/
 
-    public void deleteDiaryLike(DiaryLikeDto diaryLikeDto) {
+    public void deleteDiaryLike(Long diaryId) {
         DiaryLike diaryLike = new DiaryLike();
-        diaryLike.setUser(this.userRepositoryInterface.findById(diaryLikeDto.getUserId()).get());
-        diaryLike.setDiary(this.diaryRepositoryInterface.findById(diaryLikeDto.getDiaryId()).get());
+        User user = new User();
+        user.setUserId(1L);
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //String email = authentication.getName();
+        //User user = userRepositoryInterface.findByEmail(email);
+        diaryLike.setUser(user);
+        diaryLike.setDiary(this.diaryRepositoryInterface.findById(diaryId).get());
         this.diaryLikeRepositoryInterface.delete(diaryLike);
     }
 
