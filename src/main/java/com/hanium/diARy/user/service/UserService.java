@@ -1,28 +1,18 @@
 package com.hanium.diARy.user.service;
 
-import com.hanium.diARy.diary.CommentMapper;
 import com.hanium.diARy.diary.dto.*;
 import com.hanium.diARy.diary.entity.*;
 import com.hanium.diARy.diary.repository.*;
-import com.hanium.diARy.diary.service.DiaryService;
-import com.hanium.diARy.plan.dto.PlanDto;
-import com.hanium.diARy.plan.dto.PlanLocationDto;
-import com.hanium.diARy.plan.dto.PlanResponseDto;
-import com.hanium.diARy.plan.dto.PlanTagDto;
-import com.hanium.diARy.plan.entity.Plan;
-import com.hanium.diARy.plan.entity.PlanLocation;
-import com.hanium.diARy.plan.entity.PlanTag;
-import com.hanium.diARy.user.dto.UserDto;
-import com.hanium.diARy.user.entity.User;
+import com.hanium.diARy.user.dto.UserCommentDto;
+import com.hanium.diARy.user.dto.UserCommentReplyDto;
+import com.hanium.diARy.user.dto.UserReplyDto;
 import com.hanium.diARy.user.repository.UserRepository;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,28 +23,29 @@ public class UserService {
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     //private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final DiaryRepository diaryRepository;
-    private final CommentRepository commentRepository;
-    //private final CommentMapper commentMapper;
+    private final CommentRepositoryInterface commentRepositoryInterface;
     private final DiaryLocationInterface diaryLocationInterface;
+    private final ReplyRepository replyRepository;
 
     public UserService(
             @Autowired UserRepository userRepository,
             @Autowired DiaryLikeRepository diaryLikeRepository,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
-            @Autowired CommentRepository commentRepository,
-            //@Autowired CommentMapper commentMapper,
+            @Autowired CommentRepositoryInterface commentRepositoryInterface,
             @Autowired UserRepositoryInterface userRepositoryInterface,
             @Autowired DiaryLocationInterface diaryLocationInterface,
-            @Autowired DiaryRepository diaryRepository
+            @Autowired DiaryRepository diaryRepository,
+            @Autowired ReplyRepository replyRepository
 
             ) {
         this.userRepository = userRepository;
         this.diaryLikeRepository = diaryLikeRepository;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
-        this.commentRepository = commentRepository;
+        this.commentRepositoryInterface = commentRepositoryInterface;
         this.userRepositoryInterface = userRepositoryInterface;
         this.diaryLocationInterface = diaryLocationInterface;
         this.diaryRepository = diaryRepository;
+        this.replyRepository = replyRepository;
     }
 
     //좋아요 누른 다이어리 확인
@@ -64,9 +55,35 @@ public class UserService {
         return this.diaryLikeRepository.findDiaryLikesByUserId(userId);
     }
 
-/*    public List<CommentReplyDto> readAllUserComment(Long userId) {
+    public List<UserCommentReplyDto> readAllUserComment(Long userId) {
+        List<Comment> comments = commentRepositoryInterface.findByUser_UserId(userId);
+        List<UserCommentReplyDto> userCommentReplyDtos = new ArrayList<>();
+        for(Comment comment : comments) {
+            UserCommentReplyDto userCommentReplyDto = new UserCommentReplyDto();
+            //comment 디티오 그대로 그냥 가져가고///
+            //아니면 따로 그냥 user에 쓸 comment를 만드는 것도 방법이 될 듯;;;;
+            UserCommentDto userCommentDto = new UserCommentDto();
+            userCommentDto.setCommentId(comment.getCommentId());
+            userCommentDto.setContent(comment.getContent());
+            userCommentDto.setDiaryId(comment.getDiary().getDiaryId());
+            userCommentReplyDto.setUserCommentDto(userCommentDto);
+            //댓글 추가
 
-    }*/
+
+            List<ReplyDto> replyDtos = this.replyRepository.readUserReplyAll(userId, comment.getCommentId());
+            List<UserReplyDto> userReplyDtos = new ArrayList<>();
+            for(ReplyDto replyDto : replyDtos) {
+                UserReplyDto userReplyDto = new UserReplyDto();
+                userReplyDto.setCommentId(replyDto.getCommentId());
+                userReplyDto.setContent(replyDto.getContent());
+                userReplyDto.setDiaryId(replyDto.getDiaryId());
+                userReplyDtos.add(userReplyDto);
+            }
+            userCommentReplyDto.setUserReplyDtos(userReplyDtos);
+            userCommentReplyDtos.add(userCommentReplyDto);
+        }
+        return userCommentReplyDtos;
+    }
 
     public List<DiaryResponseDto> readUserDiary(Long userId) {
         System.out.println("service");

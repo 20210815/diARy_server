@@ -10,4 +10,5 @@ public interface ReplyRepositoryInterface extends CrudRepository<Reply, Long> {
     public List<Reply> findByComment(Comment comment);
     public List<Reply> findByUser(User user);
     public List<Reply> findByUser_UserId(Long userId);
+    public List<Reply> findByUser_UserIdAndComment_CommentId(Long userId, Long commentId);
 }

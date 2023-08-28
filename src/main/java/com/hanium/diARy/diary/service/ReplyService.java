@@ -1,14 +1,11 @@
 package com.hanium.diARy.diary.service;
 
-import com.hanium.diARy.diary.ReplyMapper;
 import com.hanium.diARy.diary.dto.ReplyDto;
-import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Reply;
 import com.hanium.diARy.diary.repository.ReplyRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,13 +14,10 @@ import java.util.List;
 @Service
 public class ReplyService {
     private final ReplyRepository replyRepository;
-    private final ReplyMapper replyMapper;
 
     @Autowired
-    public ReplyService(ReplyRepository replyRepository,
-                        ReplyMapper replyMapper) {
+    public ReplyService(ReplyRepository replyRepository) {
         this.replyRepository = replyRepository;
-        this.replyMapper = replyMapper;
     }
 
     public void createReply(ReplyDto dto, Long diaryId, Long commentId) {
@@ -46,7 +40,12 @@ public class ReplyService {
 
         while (iterator.hasNext()) {
             Reply reply = iterator.next();
-            replyDtoList.add(this.replyMapper.toDto(reply));
+            ReplyDto replyDto = new ReplyDto();
+            BeanUtils.copyProperties(reply, replyDto);
+            replyDto.setUserId(reply.getUser().getUserId());
+            replyDto.setCommentId(reply.getComment().getCommentId());
+            replyDto.setDiaryId(reply.getDiary().getDiaryId());
+            replyDtoList.add(replyDto);
         }
 
         return replyDtoList;

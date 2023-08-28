@@ -1,18 +1,12 @@
 package com.hanium.diARy.diary.service;
 
-import com.hanium.diARy.diary.CommentMapper;
 import com.hanium.diARy.diary.dto.*;
 import com.hanium.diARy.diary.entity.*;
 import com.hanium.diARy.diary.repository.*;
-import com.hanium.diARy.user.dto.UserDto;
-import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.slf4j.Logger;
-import com.hanium.diARy.diary.dto.DiaryLocationDto;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

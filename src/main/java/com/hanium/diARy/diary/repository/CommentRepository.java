@@ -1,20 +1,12 @@
 package com.hanium.diARy.diary.repository;
 
-import com.hanium.diARy.diary.DiaryMapper;
 import com.hanium.diARy.diary.dto.CommentDto;
-import com.hanium.diARy.diary.dto.CommentReplyDto;
-import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.user.UserMapper;
-import com.hanium.diARy.diary.entity.Reply;
-import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
-import com.hanium.diARy.user.repository.UserRepository;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
@@ -28,21 +20,18 @@ public class CommentRepository {
     private final UserRepositoryInterface userRepositoryInterface;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final UserMapper userMapper;
-    private final DiaryMapper diaryMapper;
     private final ReplyRepository replyRepository;
     public CommentRepository(
             @Autowired CommentRepositoryInterface commentRepositoryInterface,
             @Autowired UserRepositoryInterface userRepositoryInterface,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired UserMapper userMapper,
-            @Autowired DiaryMapper diaryMapper,
             @Autowired ReplyRepository replyRepository
     ) {
         this.commentRepositoryInterface = commentRepositoryInterface;
         this.userRepositoryInterface = userRepositoryInterface;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.userMapper = userMapper;
-        this.diaryMapper = diaryMapper;
         this.replyRepository = replyRepository;
     }
 

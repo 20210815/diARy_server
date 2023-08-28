@@ -1,24 +1,16 @@
 package com.hanium.diARy.diary.repository;
 
-import com.hanium.diARy.diary.DiaryLikeMapper;
-import com.hanium.diARy.diary.DiaryMapper;
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.dto.DiaryLikeDto;
-import com.hanium.diARy.diary.dto.DiaryResponseDto;
 import com.hanium.diARy.diary.dto.DiaryTagDto;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryLike;
-import com.hanium.diARy.diary.entity.DiaryLikeId;
 import com.hanium.diARy.diary.entity.DiaryTag;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
-import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
