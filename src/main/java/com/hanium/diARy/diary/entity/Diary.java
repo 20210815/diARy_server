@@ -41,7 +41,7 @@ public class Diary {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<DiaryTag> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DiaryLike> diaryLikes;
 
     @Column(name = "public", nullable = false)
@@ -58,7 +58,7 @@ public class Diary {
     private User user;
 
 
-    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Column(name = "comment_id")
     private List<Comment> comments = new ArrayList<>();
 

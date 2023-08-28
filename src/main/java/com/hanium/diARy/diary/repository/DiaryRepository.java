@@ -78,8 +78,6 @@ public class DiaryRepository{
         diaryEntity.setUser(user);
         diaryEntity.setPublic(diaryInfo.isPublic());
         diaryEntity.setTitle(diaryInfo.getTitle());
-
-        diaryEntity.setComments(null);
         diaryEntity.setTravelDest(diaryInfo.getTravelDest());
         diaryEntity.setMemo(diaryInfo.getMemo());
         diaryEntity.setTravelStart(diaryInfo.getTravelStart());
@@ -166,6 +164,11 @@ public class DiaryRepository{
                 tagRepositoryInterface.save(tag);
                 diaryEntity.getTags().add(tag);
             }
+        }
+
+        for (DiaryLikeDto diaryLikeDto : diaryDto.getDiaryDto().getLikes()) {
+            //받아온 태그를 하나하나 떼어서 원래 있는 건지 비교해봐야 함
+            diaryLikeRepository.createDiaryLike(diaryLikeDto.getDiaryId());
         }
 
         // Perform validation if needed (e.g., check for required fields in diaryDto)

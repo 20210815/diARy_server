@@ -32,7 +32,7 @@ public class UserService {
     private final DiaryLikeRepository diaryLikeRepository;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     //private final DiaryRepositoryInterface diaryRepositoryInterface;
-    //private final CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
     //private final CommentMapper commentMapper;
     private final DiaryLocationInterface diaryLocationInterface;
 
@@ -40,7 +40,7 @@ public class UserService {
             @Autowired UserRepository userRepository,
             @Autowired DiaryLikeRepository diaryLikeRepository,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
-            //@Autowired CommentRepository commentRepository,
+            @Autowired CommentRepository commentRepository,
             //@Autowired CommentMapper commentMapper,
             @Autowired UserRepositoryInterface userRepositoryInterface,
             @Autowired DiaryLocationInterface diaryLocationInterface
@@ -49,7 +49,7 @@ public class UserService {
         this.userRepository = userRepository;
         this.diaryLikeRepository = diaryLikeRepository;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
-        //this.commentRepository = commentRepository;
+        this.commentRepository = commentRepository;
         //this.commentMapper = commentMapper;
         this.userRepositoryInterface = userRepositoryInterface;
         this.diaryLocationInterface = diaryLocationInterface;
@@ -95,7 +95,14 @@ public class UserService {
             UserDto userDto = new UserDto();
             User user = userRepositoryInterface.findById(userId).get();
             BeanUtils.copyProperties(user, userDto);
-
+            diaryDto.setLikes(diaryLikeRepository.readDiaryLike(diary.getDiaryId()));
+            List<CommentDto> commentDtoList = new ArrayList<>();
+            for (Comment comment : commentRepository.readDiaryCommentAll(diary.getDiaryId())) {
+                CommentDto commentDto = new CommentDto();
+                BeanUtils.copyProperties(comment, commentDto);
+                commentDtoList.add(commentDto);
+            }
+            diaryDto.setComments(commentDtoList);
             DiaryResponseDto diaryResponseDto = new DiaryResponseDto();
             diaryResponseDto.setDiaryDto(diaryDto);
             diaryResponseDto.setUserDto(userDto);
