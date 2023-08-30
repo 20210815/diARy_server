@@ -9,6 +9,8 @@ import com.hanium.diARy.user.repository.UserRepository;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -49,11 +51,11 @@ public class ReplyRepository {
 
         reply.setDiary(diary);
         reply.setComment(comment);
-        User user = new User();
-        user.setUserId(1L);
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //String email = authentication.getName();
-        //User user = userRepositoryInterface.findByEmail(email);
+        //User user = new User();
+        //user.setUserId(1L);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepositoryInterface.findByEmail(email);
         reply.setUser(user);
         reply.setContent(dto.getContent());
         comment.getReplies().add(reply);
@@ -90,7 +92,7 @@ public class ReplyRepository {
         return replyDtos;
     }
 
-    public List<ReplyDto> readUserReplyAll(Long id, Long commentId) {
+/*    public List<ReplyDto> readUserReplyAll(Long id, Long commentId) {
         List<Reply> replies = this.replyRepositoryInterface.findByUser_UserIdAndComment_CommentId(id, commentId);
         List<ReplyDto> replyDtos = new ArrayList<>();
         for(Reply reply: replies) {
@@ -104,7 +106,7 @@ public class ReplyRepository {
             replyDtos.add(replyDto);
         }
         return replyDtos;
-    }
+    }*/
 
     public void updateReply(Long id, ReplyDto dto) {
         if (id == null) {

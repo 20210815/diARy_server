@@ -27,6 +27,7 @@ public class DiaryDto {
     private Date updatedAt;
     private List<DiaryTagDto> tags;
     private List<DiaryLikeDto> likes = new ArrayList<>();
+    private int likesCount;
     private List<CommentDto> comments = new ArrayList<>();
 
 }

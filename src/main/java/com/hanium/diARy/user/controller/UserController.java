@@ -35,21 +35,30 @@ public class UserController {
         this.userRepositoryInterface = userRepositoryInterface;
     }
 
-    @GetMapping("/{userId}/diary-like")
-    public List<DiaryDto> readUserLikeDiary(@PathVariable("userId") Long id) {
-        return this.userService.readAllLikeDiary(id);
+    @GetMapping("/diary-like")
+    public List<DiaryDto> readUserLikeDiary() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepositoryInterface.findByEmail(email);
+        return this.userService.readAllLikeDiary(user.getUserId());
     }
 
-    @GetMapping("/{userId}/comment")
-    public List<UserCommentReplyDto> readUserDiaryComment(@PathVariable("userId") Long id) {
-        return this.userService.readAllUserComment(id);
+    @GetMapping("/comment")
+    public List<UserCommentReplyDto> readUserDiaryComment() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepositoryInterface.findByEmail(email);
+        return this.userService.readAllUserComment(user.getUserId());
     }
 
 
-    @GetMapping("/{userId}/diary")
-    public List<DiaryResponseDto> readUserDiary(@PathVariable("userId") Long id) {
-        return this.userService.readUserDiary(id);
-    }
+//    @GetMapping("/diary")
+//    public List<DiaryResponseDto> readUserDiary() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String email = authentication.getName();
+//        User user = userRepositoryInterface.findByEmail(email);
+//        return this.userService.readUserDiary(user.getUserId());
+//    }
 
     @GetMapping("/diary")
     public List<DiaryResponseDto> readUserDiary() {
@@ -59,8 +68,11 @@ public class UserController {
         return this.userService.readUserDiary(user.getUserId());
     }
 
-    @GetMapping("/{userId}/mypage")
-    public UserDto readUser(@PathVariable Long userId) {
-        return this.userService.readUser(userId);
+    @GetMapping("/mypage")
+    public UserDto readUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepositoryInterface.findByEmail(email);
+        return this.userService.readUser(user.getUserId());
     }
 }
