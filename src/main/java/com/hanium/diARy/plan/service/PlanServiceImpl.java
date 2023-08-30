@@ -48,7 +48,6 @@ public class PlanServiceImpl implements PlanService {
         // PlanDto를 이용하여 Plan 엔티티를 생성하고 저장합니다.
         Plan plan = new Plan();
 
-        // 임시 user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userRepositoryInterface.findByEmail(email);
@@ -71,7 +70,6 @@ public class PlanServiceImpl implements PlanService {
                 location.setTimeEnd(new Time(parsedEndTime.getTime()));
             } catch (ParseException e) {
                 e.printStackTrace();
-                // Handle parsing exception if needed
             }
             System.out.println(location);
             location.setPlan(savedPlan);
@@ -99,6 +97,7 @@ public class PlanServiceImpl implements PlanService {
         return savedPlan.getPlanId();
     }
 
+    @Transactional
     @Override
     public PlanResponseDto updatePlan(Long planId, PlanRequestDto request) {
         // PlanId로 기존 Plan 엔티티를 조회합니다.
@@ -128,49 +127,46 @@ public class PlanServiceImpl implements PlanService {
             }
         }
 
-        // 기존의 PlanLocation 엔티티와 Tag 엔티티들은 그대로 두고 필요한 경우에만 업데이트합니다.
         List<PlanLocationDto> planLocationDtos = request.getLocations();
         if (planLocationDtos != null) {
+            existingPlan.getPlanLocations().clear();
+            List<PlanLocation> savedLocations = new ArrayList<>();
             for (PlanLocationDto planLocationDto : planLocationDtos) {
-                if (planLocationDto.getLocationId() != null) {
-                    // locationDto를 사용하여 기존 PlanLocation 엔티티를 찾습니다.
-                    PlanLocation existingLocation = planLocationRepository.findById(planLocationDto.getLocationId()).orElse(null);
-                    if (existingLocation != null) {
-                        // locationDto의 필드들로 기존 PlanLocation 엔티티를 업데이트합니다.
-                        if (planLocationDto.getName() != null) {
-                            existingLocation.setName(planLocationDto.getName());
-                        }
-                        if (planLocationDto.getAddress() != null) {
-                            existingLocation.setAddress(planLocationDto.getAddress());
-                        }
-                        if (planLocationDto.getDate() != null) {
-                            existingLocation.setDate(planLocationDto.getDate());
-                        }
-                        if (planLocationDto.getTimeStart() != null) {
-                            existingLocation.setTimeStart(planLocationDto.getTimeStart());
-                        }
-                        if (planLocationDto.getTimeEnd() != null) {
-                            existingLocation.setTimeEnd(planLocationDto.getTimeEnd());
-                        }
-                         planLocationRepository.save(existingLocation);
-                    }
+                PlanLocation location = new PlanLocation();
+                BeanUtils.copyProperties(planLocationDto, location);
+                try {
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                    java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(planLocationDto.getTimeStart()));
+                    java.util.Date parsedEndTime = timeFormat.parse(String.valueOf(planLocationDto.getTimeEnd()));
+
+                    location.setTimeStart(new Time(parsedStartTime.getTime()));
+                    location.setTimeEnd(new Time(parsedEndTime.getTime()));
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
+                location.setPlan(existingPlan);
+                savedLocations.add(location);
+                planLocationRepository.save(location);
             }
         }
 
         List<PlanTagDto> planTagDtos = request.getTags();
-        if (planTagDtos != null) {
+        if(planTagDtos != null){
+            existingPlan.getPlanTagMaps().clear();
+            List<PlanTagMap> savedPlanTags = new ArrayList<>();
             for (PlanTagDto planTagDto : planTagDtos) {
-                if (planTagDto.getTagId() != null) {
-                    // tagDto를 사용하여 기존 Tag 엔티티를 찾습니다.
-                    PlanTag existingPlanTag = planTagRepository.findById(planTagDto.getTagId()).orElse(null);
-                    if (existingPlanTag != null) {
-                        if (planTagDto.getName() != null) {
-                            existingPlanTag.setName(planTagDto.getName());
-                        }
-                        planTagRepository.save(existingPlanTag);
-                    }
+                PlanTag planTag = planTagRepository.findByName(planTagDto.getName());
+                if (planTag == null) {
+                    planTag = new PlanTag();
+                    planTag.setName(planTagDto.getName());
+                    planTag = planTagRepository.save(planTag);
                 }
+
+                PlanTagMap planTagMap = new PlanTagMap();
+                planTagMap.setPlan(existingPlan);
+                planTagMap.setPlanTag(planTag);
+                savedPlanTags.add(planTagMap);
+                planTagMapRepository.save(planTagMap);
             }
         }
 
@@ -191,7 +187,7 @@ public class PlanServiceImpl implements PlanService {
         List<PlanTagDto> updatedPlanTagDtos = new ArrayList<>();
         for (PlanTagMap planTagMap : existingPlan.getPlanTagMaps()) {
             PlanTagDto planTagDto = new PlanTagDto();
-            BeanUtils.copyProperties(planTagMap, planTagDto);
+            BeanUtils.copyProperties(planTagMap.getPlanTag(), planTagDto);
             updatedPlanTagDtos.add(planTagDto);
         }
         UserDto userDto = new UserDto();
@@ -233,8 +229,6 @@ public class PlanServiceImpl implements PlanService {
         // Plan 엔티티를 삭제합니다.
         planRepository.delete(plan);
     }
-
-
 
     @Override
     public PlanResponseDto getPlanById(Long planId) {
@@ -328,7 +322,7 @@ public class PlanServiceImpl implements PlanService {
             List<PlanTagDto> planTagDtos = new ArrayList<>();
             for (PlanTagMap planTagMap : plan.getPlanTagMaps()) {
                 PlanTagDto planTagDto = new PlanTagDto();
-                BeanUtils.copyProperties(planTagMap, planTagDto);
+                BeanUtils.copyProperties(planTagMap.getPlanTag(), planTagDto);
                 planTagDtos.add(planTagDto);
             }
             // User 정보도 포함한 PlanResponseDto 생성
