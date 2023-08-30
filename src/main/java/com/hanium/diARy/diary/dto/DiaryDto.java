@@ -23,6 +23,8 @@ public class DiaryDto {
     private boolean isPublic;
     private Date travelStart;
     private Date travelEnd;
+    private Date createdAt;
+    private Date updatedAt;
     private List<DiaryTagDto> tags;
     private List<DiaryLikeDto> likes = new ArrayList<>();
     private List<CommentDto> comments = new ArrayList<>();

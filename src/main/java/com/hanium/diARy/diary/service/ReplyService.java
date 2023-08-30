@@ -3,6 +3,7 @@ package com.hanium.diARy.diary.service;
 import com.hanium.diARy.diary.dto.ReplyDto;
 import com.hanium.diARy.diary.entity.Reply;
 import com.hanium.diARy.diary.repository.ReplyRepository;
+import com.hanium.diARy.user.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,13 @@ import java.util.List;
 @Service
 public class ReplyService {
     private final ReplyRepository replyRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ReplyService(ReplyRepository replyRepository) {
+    public ReplyService(ReplyRepository replyRepository,
+    UserRepository userRepository) {
         this.replyRepository = replyRepository;
+        this.userRepository = userRepository;
     }
 
     public void createReply(ReplyDto dto, Long diaryId, Long commentId) {
@@ -42,7 +46,8 @@ public class ReplyService {
             Reply reply = iterator.next();
             ReplyDto replyDto = new ReplyDto();
             BeanUtils.copyProperties(reply, replyDto);
-            replyDto.setUserId(reply.getUser().getUserId());
+            //replyDto.setUserId(reply.getUser().getUserId());
+            replyDto.setUserDto(userRepository.makeUserDto(reply.getUser().getUserId()));
             replyDto.setCommentId(reply.getComment().getCommentId());
             replyDto.setDiaryId(reply.getDiary().getDiaryId());
             replyDtoList.add(replyDto);

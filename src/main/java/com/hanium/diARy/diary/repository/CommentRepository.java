@@ -5,6 +5,7 @@ import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.user.UserMapper;
 import com.hanium.diARy.user.entity.User;
+import com.hanium.diARy.user.repository.UserRepository;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +18,19 @@ import java.util.*;
 @Repository
 public class CommentRepository {
     private final CommentRepositoryInterface commentRepositoryInterface;
-    private final UserRepositoryInterface userRepositoryInterface;
+    private final UserRepository userRepository;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final UserMapper userMapper;
     private final ReplyRepository replyRepository;
     public CommentRepository(
             @Autowired CommentRepositoryInterface commentRepositoryInterface,
-            @Autowired UserRepositoryInterface userRepositoryInterface,
+            @Autowired UserRepository userRepository,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired UserMapper userMapper,
             @Autowired ReplyRepository replyRepository
     ) {
         this.commentRepositoryInterface = commentRepositoryInterface;
-        this.userRepositoryInterface = userRepositoryInterface;
+        this.userRepository = userRepository;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.userMapper = userMapper;
         this.replyRepository = replyRepository;
@@ -88,9 +89,12 @@ public class CommentRepository {
         for(Comment comment: this.commentRepositoryInterface.findByDiary(diary)) {
             CommentDto commentDto = new CommentDto();
             commentDto.setDiaryId(comment.getDiary().getDiaryId());
-            commentDto.setUserId(comment.getUser().getUserId());
             commentDto.setReplyDtos(replyRepository.readCommentReplyAll(comment.getCommentId()));//해야 함
             commentDto.setContent(comment.getContent());
+            commentDto.setUpdatedAt(comment.getUpdatedAt());
+            commentDto.setCreatedAt(comment.getCreatedAt());
+            //userDto넣기
+            commentDto.setUserDto(userRepository.makeUserDto(comment.getUser().getUserId()));
             commentDtoList.add(commentDto);
         }
         return commentDtoList;

@@ -5,6 +5,7 @@ import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.Reply;
 import com.hanium.diARy.user.entity.User;
+import com.hanium.diARy.user.repository.UserRepository;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,17 +23,20 @@ public class ReplyRepository {
     private final CommentRepositoryInterface commentRepositoryInterface;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final UserRepositoryInterface userRepositoryInterface;
+    private final UserRepository userRepository;
 
     public ReplyRepository(
         @Autowired ReplyRepositoryInterface replyRepositoryInterface,
         @Autowired CommentRepositoryInterface commentRepositoryInterface,
         @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
-        @Autowired UserRepositoryInterface userRepositoryInterface
+        @Autowired UserRepositoryInterface userRepositoryInterface,
+        @Autowired UserRepository userRepository
         ){
         this.replyRepositoryInterface = replyRepositoryInterface;
         this.commentRepositoryInterface = commentRepositoryInterface;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.userRepositoryInterface = userRepositoryInterface;
+        this.userRepository = userRepository;
 
     }
 
@@ -77,8 +81,10 @@ public class ReplyRepository {
             ReplyDto replyDto = new ReplyDto();
             replyDto.setCommentId(id);
             replyDto.setDiaryId(reply.getReplyId());
-            replyDto.setUserId(reply.getUser().getUserId());
             replyDto.setContent(reply.getContent());
+            replyDto.setUpdatedAt(reply.getUpdatedAt());
+            replyDto.setCreatedAt(reply.getCreatedAt());
+            replyDto.setUserDto(userRepository.makeUserDto(reply.getUser().getUserId()));
             replyDtos.add(replyDto);
         }
         return replyDtos;
@@ -91,8 +97,10 @@ public class ReplyRepository {
             ReplyDto replyDto = new ReplyDto();
             replyDto.setCommentId(id);
             replyDto.setDiaryId(reply.getReplyId());
-            replyDto.setUserId(reply.getUser().getUserId());
             replyDto.setContent(reply.getContent());
+            replyDto.setUpdatedAt(reply.getUpdatedAt());
+            replyDto.setCreatedAt(reply.getCreatedAt());
+            replyDto.setUserDto(userRepository.makeUserDto(reply.getUser().getUserId()));
             replyDtos.add(replyDto);
         }
         return replyDtos;
@@ -116,12 +124,12 @@ public class ReplyRepository {
         }
 
         // Update user if dto.getUserId() is not null
-        if (dto.getUserId() != null) {
-            User newUser = this.userRepositoryInterface.findById(dto.getUserId()).orElse(null);
-            if (newUser != null) {
-                reply.setUser(newUser);
-            }
-        }
+//        if (dto.getUserId() != null) {
+//            User newUser = this.userRepositoryInterface.findById(dto.getUserId()).orElse(null);
+//            if (newUser != null) {
+//                reply.setUser(newUser);
+//            }
+//        }
 
         // Update comment if dto.getCommentId() is not null
         if (dto.getCommentId() != null) {
