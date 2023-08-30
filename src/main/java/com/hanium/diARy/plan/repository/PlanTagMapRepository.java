@@ -1,6 +1,5 @@
 package com.hanium.diARy.plan.repository;
 
-import com.hanium.diARy.plan.entity.PlanTag;
 import com.hanium.diARy.plan.entity.PlanTagMap;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
