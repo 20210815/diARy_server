@@ -44,6 +44,9 @@ public class Diary {
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DiaryLike> diaryLikes;
 
+    @Column(name="likes_count")
+    private int likesCount = 0;
+
     @Column(name = "public", nullable = false)
     private boolean isPublic;
 

@@ -10,6 +10,8 @@ import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,20 +22,20 @@ public class CommentRepository {
     private final CommentRepositoryInterface commentRepositoryInterface;
     private final UserRepository userRepository;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
-    private final UserMapper userMapper;
     private final ReplyRepository replyRepository;
+    private final UserRepositoryInterface userRepositoryInterface;
     public CommentRepository(
             @Autowired CommentRepositoryInterface commentRepositoryInterface,
             @Autowired UserRepository userRepository,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
-            @Autowired UserMapper userMapper,
-            @Autowired ReplyRepository replyRepository
+            @Autowired ReplyRepository replyRepository,
+            @Autowired UserRepositoryInterface userRepositoryInterface
     ) {
         this.commentRepositoryInterface = commentRepositoryInterface;
         this.userRepository = userRepository;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
-        this.userMapper = userMapper;
         this.replyRepository = replyRepository;
+        this.userRepositoryInterface = userRepositoryInterface;
     }
 
     @Transactional
@@ -41,11 +43,11 @@ public class CommentRepository {
         Comment comment = new Comment();
         Diary diary = this.diaryRepositoryInterface.findById(diaryId).get();
 
-        User user = new User();
-        user.setUserId(1L);
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //String email = authentication.getName();
-        //User user = userRepositoryInterface.findByEmail(email);
+//        User user = new User();
+//        user.setUserId(1L);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepositoryInterface.findByEmail(email);
         comment.setUser(user);
         comment.setDiary(diary);
         comment.setContent(commentDto.getContent());

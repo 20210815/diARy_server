@@ -10,6 +10,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -60,11 +62,11 @@ public class DiaryRepository{
         // 다이어리 작성 dto -> entity
         DiaryDto diaryInfo = diaryDto.getDiaryDto();
         Diary diaryEntity = new Diary();
-        User user = new User();
-        user.setUserId(1L);
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //String email = authentication.getName();
-        //User user = userRepositoryInterface.findByEmail(email);
+        //User user = new User();
+        //user.setUserId(1L);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepositoryInterface.findByEmail(email);
         diaryEntity.setUser(user);
         diaryEntity.setPublic(diaryInfo.isPublic());
         diaryEntity.setTitle(diaryInfo.getTitle());

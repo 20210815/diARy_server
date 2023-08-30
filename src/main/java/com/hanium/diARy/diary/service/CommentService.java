@@ -16,24 +16,15 @@ import java.util.List;
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final CommentRepositoryInterface commentRepositoryInterface;
-    private final DiaryRepositoryInterface diaryRepositoryInterface;
-    private final UserRepositoryInterface userRepositoryInterface;
     private final UserRepository userRepository;
 
     @Autowired
     public CommentService(
             CommentRepository commentRepository,
-            CommentRepositoryInterface commentRepositoryInterface,
-            DiaryRepositoryInterface diaryRepositoryInterface,
-            UserRepositoryInterface userRepositoryInterface,
             UserRepository userRepository
 
     ) {
         this.commentRepository = commentRepository;
-        this.commentRepositoryInterface = commentRepositoryInterface;
-        this.diaryRepositoryInterface = diaryRepositoryInterface;
-        this.userRepositoryInterface = userRepositoryInterface;
         this.userRepository = userRepository;
     }
 

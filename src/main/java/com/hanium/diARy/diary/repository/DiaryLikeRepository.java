@@ -8,8 +8,11 @@ import com.hanium.diARy.diary.entity.DiaryLike;
 import com.hanium.diARy.diary.entity.DiaryTag;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
+import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -19,30 +22,34 @@ public class DiaryLikeRepository {
     private final DiaryLikeRepositoryInterface diaryLikeRepositoryInterface;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final CommentRepository commentRepository;
+    private final UserRepositoryInterface userRepositoryInterface;
 
     public DiaryLikeRepository(
             @Autowired DiaryLikeRepositoryInterface diaryLikeRepositoryInterface,
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
-            @Autowired CommentRepository commentRepository
+            @Autowired CommentRepository commentRepository,
+            @Autowired UserRepositoryInterface userRepositoryInterface
             ){
         this.diaryLikeRepositoryInterface = diaryLikeRepositoryInterface;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.commentRepository = commentRepository;
+        this.userRepositoryInterface = userRepositoryInterface;
     }
 
     public void createDiaryLike(Long diaryId) {
         DiaryLike diaryLike = new DiaryLike();
         Diary diary = this.diaryRepositoryInterface.findById(diaryId).get();
         diaryLike.setDiary(diary);
-        User user = new User();
-        user.setUserId(1L);
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //String email = authentication.getName();
-        //User user = userRepositoryInterface.findByEmail(email);
+        //User user = new User();
+        //user.setUserId(1L);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepositoryInterface.findByEmail(email);
         diaryLike.setUser(user);
         List<DiaryLike> diaryLikes = diary.getDiaryLikes();
         diaryLikes.add(diaryLike);
         diary.setDiaryLikes(diaryLikes);
+        diary.setLikesCount(diary.getDiaryLikes().size());
         this.diaryRepositoryInterface.save(diary);
         this.diaryLikeRepositoryInterface.save(diaryLike);
     }
@@ -88,6 +95,9 @@ public class DiaryLikeRepository {
         user.setUserId(1L);
         DiaryLike diaryLike = this.diaryLikeRepositoryInterface.findByUser_UserIdAndDiary_DiaryId(user.getUserId(), diaryId);
         this.diaryLikeRepositoryInterface.delete(diaryLike);
+        Diary diary = diaryRepositoryInterface.findById(diaryId).get();
+        diary.setLikesCount(diary.getDiaryLikes().size());
+        this.diaryRepositoryInterface.save(diary);
     }
 
     public List<DiaryDto> findDiaryLikesByUserId(Long userId) {

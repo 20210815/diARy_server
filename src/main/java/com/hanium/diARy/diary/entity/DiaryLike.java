@@ -19,4 +19,13 @@ public class DiaryLike {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+
+    @Override
+    public String toString() {
+        return "DiaryLike{" +
+                "diary=" + (diary != null ? diary.getDiaryId() : null) +
+                ", user=" + (user != null ? user.getUserId() : null) +
+                '}';
+    }
+
 }

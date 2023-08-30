@@ -50,4 +50,18 @@ public class Comment {
     protected void onUpdate() {
         this.updatedAt = new java.sql.Date(Instant.now().toEpochMilli());
     }
+
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "commentId=" + commentId +
+                ", diaryId=" + (diary != null ? diary.getDiaryId() : null) +
+                ", content='" + content + '\'' +
+                ", createdAt=" + createdAt +
+                ", userId=" + (user != null ? user.getUserId() : null) +
+                ", updatedAt=" + updatedAt +
+                ", numReplies=" + replies.size() + // 여기서는 댓글의 개수만 표시
+                '}';
+    }
 }
