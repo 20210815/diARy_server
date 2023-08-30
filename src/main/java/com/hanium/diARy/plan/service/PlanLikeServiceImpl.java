@@ -44,13 +44,13 @@ public class PlanLikeServiceImpl implements PlanLikeService {
     }
 
     @Override
-    public void createPlanLike(Long planId, PlanLikeDto planLikeDto) {
+    public void createPlanLike(Long planId, Long userId) {
         PlanLike planLike = new PlanLike();
-        // 임시 userId 설정 (요청 바디에서 받아오도록 변경 필요)
+
         User user = new User();
-        user.setUserId(planLikeDto.getUserId());
+        user.setUserId(userId);
         planLike.setUser(user);
-        BeanUtils.copyProperties(planLikeDto, planLike);
+//        BeanUtils.copyProperties(planLikeDto, planLike);
 
         // PlanId로 Plan 객체를 찾아서 설정합니다.
         Plan plan = planRepository.findById(planId).orElse(null);
