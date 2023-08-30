@@ -12,5 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MapAllDiaryDto {
+    private String address;
     private List<MapDiaryDto> diaryDtoList = new ArrayList<>();
 }
