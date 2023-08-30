@@ -7,6 +7,7 @@ import com.hanium.diARy.diary.repository.AddressRepositoryInterface;
 import com.hanium.diARy.map.dto.MapAllDiaryDto;
 import com.hanium.diARy.map.dto.MapDiaryDto;
 import com.hanium.diARy.map.repository.MapRepository;
+import com.hanium.diARy.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,16 +28,19 @@ public class MapService {
         this.addressRepositoryInterface = addressRepositoryInterface;
     }
 
-    public List<MapDiaryDto> readAllDiaryByAddress(String address) {
-        return this.mapRepository.readAllDiaryByAddress(address);
+    public List<MapDiaryDto> readAllDiaryByAddress(String address, User user) {
+        return this.mapRepository.readAllDiaryByAddress(address, user);
     }
 
-    public List<MapAllDiaryDto> readAllDiary() {
+    public List<MapAllDiaryDto> readAllDiary(User user) {
         Iterator<Address> address = addressRepositoryInterface.findAll().iterator();
         List<MapAllDiaryDto> mapAllDiaryDtos = new ArrayList<>();
+        Address add;
         while(address.hasNext()) {
-            List<MapDiaryDto> mapDiaryDtos = this.mapRepository.readAllDiaryByAddress(address.next().getAddress());
+            add = address.next();
+            List<MapDiaryDto> mapDiaryDtos = this.mapRepository.readAllDiaryByAddress(add.getAddress(), user);
             mapAllDiaryDtos.add(new MapAllDiaryDto(
+                    add.getAddress().toString(),
                     mapDiaryDtos
             ));
 

@@ -8,6 +8,7 @@ import com.hanium.diARy.diary.repository.DiaryLocationInterface;
 import com.hanium.diARy.diary.repository.DiaryLocationRepository;
 import com.hanium.diARy.map.dto.MapDiaryDto;
 import com.hanium.diARy.user.dto.UserDto;
+import com.hanium.diARy.user.entity.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -35,16 +36,31 @@ public class MapRepository {
 
 
 
-    public List<MapDiaryDto> readAllDiaryByAddress(String address) {
-        String userId;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            userId = authentication.getName(); // 여기서 userId를 얻을 수 있습니다.
-            System.out.println("userId " + userId);
-        }
-
+    public List<MapDiaryDto> readAllDiaryByAddress(String address, User user) {
+        List<DiaryLocation> diaryLocations_user = diaryLocationRepositoryInterface.findByAddressAndDiary_User(address, user);
         List<MapDiaryDto> mapDiaryDtos = new ArrayList<>();
         List<DiaryLocation> diaryLocations = diaryLocationRepositoryInterface.findByAddress(address);
+        diaryLocations.removeAll(diaryLocations_user);
+        for(DiaryLocation diaryLocation : diaryLocations_user) {
+            System.out.println(diaryLocation.getDiary().getDiaryId());
+            if(diaryLocation.getDiary().isPublic()){
+                MapDiaryDto mapDiaryDto = new MapDiaryDto();
+                DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
+                BeanUtils.copyProperties(diaryLocation, diaryLocationDto);
+                diaryLocationDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
+                diaryLocationDto.setDiaryLocationImageDtoList(diaryLocationImageRepository.readImage(diaryLocation));
+                mapDiaryDto.setDiaryLocationDto(diaryLocationDto);
+                mapDiaryDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
+                mapDiaryDto.setSatisfaction(diaryLocation.getDiary().getSatisfaction());
+                UserDto userDto = new UserDto();
+                BeanUtils.copyProperties(diaryLocation.getDiary().getUser(), userDto);
+                mapDiaryDto.setUserDto(userDto);
+                mapDiaryDto.setTravelStart(diaryLocation.getDiary().getTravelStart());
+                mapDiaryDto.setTravelEnd(diaryLocation.getDiary().getTravelEnd());
+                mapDiaryDtos.add(mapDiaryDto);
+            }
+        }
+
         for(DiaryLocation diaryLocation : diaryLocations) {
             System.out.println(diaryLocation.getDiary().getDiaryId());
             if(diaryLocation.getDiary().isPublic()){
