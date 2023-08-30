@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PlanLikeService {
     List<UserDto> getAllUserIdsLikesByPlanId(Long planId);
-    void createPlanLike(Long planId, PlanLikeDto planLikeDto);
+    void createPlanLike(Long planId, Long userId);
     void deletePlanLike(Long planId, Long userId);
     List<PlanResponseDto> getAllPlanLikedByUserId(Long userId);
     Long getPlanLikeCount(Long planId);
