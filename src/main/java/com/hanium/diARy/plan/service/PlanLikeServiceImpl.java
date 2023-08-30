@@ -1,10 +1,7 @@
 package com.hanium.diARy.plan.service;
 
 import com.hanium.diARy.plan.dto.*;
-import com.hanium.diARy.plan.entity.PlanLocation;
-import com.hanium.diARy.plan.entity.Plan;
-import com.hanium.diARy.plan.entity.PlanLike;
-import com.hanium.diARy.plan.entity.PlanTag;
+import com.hanium.diARy.plan.entity.*;
 import com.hanium.diARy.plan.repository.PlanLikeRepository;
 import com.hanium.diARy.plan.repository.PlanRepository;
 import com.hanium.diARy.user.dto.UserDto;
@@ -93,7 +90,7 @@ public class PlanLikeServiceImpl implements PlanLikeService {
             }
 
             List<PlanTagDto> planTagDtos = new ArrayList<>();
-            for (PlanTag planTag : plan.getPlanTags()) {
+            for (PlanTagMap planTag : plan.getPlanTagMaps()) {
                 PlanTagDto planTagDto = new PlanTagDto();
                 BeanUtils.copyProperties(planTag, planTagDto);
                 planTagDtos.add(planTagDto);
