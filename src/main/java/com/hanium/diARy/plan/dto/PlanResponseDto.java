@@ -15,4 +15,5 @@ public class PlanResponseDto {
     private PlanDto plan;
     private List<PlanLocationDto> locations;
     private List<PlanTagDto> tags;
+    private List<PlanLikeDto> likes;
 }

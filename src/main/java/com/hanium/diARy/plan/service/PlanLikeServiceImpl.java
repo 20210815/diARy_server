@@ -73,6 +73,7 @@ public class PlanLikeServiceImpl implements PlanLikeService {
     public List<PlanResponseDto> getAllPlanLikedByUserId(Long userId) {
         // 특정 사용자가 좋아요한 모든 PlanLike를 조회합니다.
         List<PlanLike> planLikes = planLikeRepository.findByUser_UserId(userId);
+        List<PlanLikeDto> planLikeDtos = new ArrayList<>();
 
         // 조회된 PlanLike를 토대로 각 Plan을 조회하고 PlanResponseDto 리스트로 변환합니다.
         List<PlanResponseDto> likedPlanResponseDtos = new ArrayList<>();
@@ -96,12 +97,18 @@ public class PlanLikeServiceImpl implements PlanLikeService {
                 planTagDtos.add(planTagDto);
             }
 
+            PlanLikeDto planLikeDto = new PlanLikeDto();
+            planLikeDto.setPlanId(planLike.getPlan().getPlanId());
+            planLikeDto.setUserId(planLike.getUser().getUserId());
+            planLikeDtos.add(planLikeDto);
+
+
             // User 정보도 포함한 PlanResponseDto 생성
             UserDto userDto = new UserDto();
             User user = userRepositoryInterface.findById(userId).get();
             BeanUtils.copyProperties(user, userDto);
 
-            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos);
+            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
             likedPlanResponseDtos.add(planResponseDto);
         }
 
