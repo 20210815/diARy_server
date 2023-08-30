@@ -53,7 +53,7 @@ public class Plan {
     private List<PlanLocation> planLocations;
 
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PlanTag> planTags;
+    private List<PlanTagMap> planTagMaps;
 
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlanLike> planLikes;

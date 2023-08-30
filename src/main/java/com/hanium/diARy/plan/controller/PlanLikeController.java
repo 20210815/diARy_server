@@ -3,8 +3,10 @@ package com.hanium.diARy.plan.controller;
 import com.hanium.diARy.plan.dto.PlanLikeDto;
 import com.hanium.diARy.plan.service.PlanLikeService;
 import com.hanium.diARy.user.dto.UserDto;
+import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,9 +16,11 @@ import java.util.List;
 public class PlanLikeController {
 
     private final PlanLikeService planLikeService;
+    private final UserRepositoryInterface userRepositoryInterface;
 
-    public PlanLikeController(PlanLikeService planLikeService) {
+    public PlanLikeController(PlanLikeService planLikeService, UserRepositoryInterface userRepositoryInterface) {
         this.planLikeService = planLikeService;
+        this.userRepositoryInterface = userRepositoryInterface;
     }
 
     @GetMapping
@@ -26,15 +30,20 @@ public class PlanLikeController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createPlanLike(@PathVariable Long planId, @RequestBody PlanLikeDto planLikeDto) {
-        // PlanId를 설정합니다.
-        planLikeDto.setPlanId(planId);
-        planLikeService.createPlanLike(planId, planLikeDto);
+    public ResponseEntity<String> createPlanLike(@PathVariable Long planId) {
+
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = userRepositoryInterface.findByEmail(userEmail).getUserId();
+
+        planLikeService.createPlanLike(planId, userId);
         return new ResponseEntity<>("좋아요", HttpStatus.OK);
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deletePlanLike(@PathVariable Long planId, @PathVariable Long userId) {
+    @DeleteMapping()
+    public ResponseEntity<String> deletePlanLike(@PathVariable Long planId) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = userRepositoryInterface.findByEmail(userEmail).getUserId();
+
         planLikeService.deletePlanLike(planId, userId);
         return new ResponseEntity<>("좋아요 취소", HttpStatus.OK);
     }

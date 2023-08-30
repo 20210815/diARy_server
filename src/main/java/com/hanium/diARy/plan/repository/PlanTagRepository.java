@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface PlanTagRepository extends JpaRepository<PlanTag, Long> {
-    List<PlanTag> findByPlan_PlanId(Long planId);
+    PlanTag findByName(String name);
+//    List<PlanTag> findByPlan_PlanId(Long planId);
 }
