@@ -190,11 +190,21 @@ public class PlanServiceImpl implements PlanService {
             BeanUtils.copyProperties(planTagMap.getPlanTag(), planTagDto);
             updatedPlanTagDtos.add(planTagDto);
         }
+
+        List<PlanLike> planLikes = planLikeRepository.getAllByPlan_PlanId(planId);
+        List<PlanLikeDto> planLikeDtos = new ArrayList<>();
+        for (PlanLike planLike : planLikes) {
+            PlanLikeDto planLikeDto = new PlanLikeDto();
+            planLikeDto.setPlanId(planLike.getPlan().getPlanId());
+            planLikeDto.setUserId(planLike.getUser().getUserId());
+            planLikeDtos.add(planLikeDto);
+        }
+
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(existingPlan.getUser(), userDto);
 
         // Return the updated PlanResponseDto
-        PlanResponseDto updatedPlanResponseDto = new PlanResponseDto(userDto, updatedPlanDto, updatedPlanLocationDtos, updatedPlanTagDtos);
+        PlanResponseDto updatedPlanResponseDto = new PlanResponseDto(userDto, updatedPlanDto, updatedPlanLocationDtos, updatedPlanTagDtos, planLikeDtos);
         return updatedPlanResponseDto;
     }
 
@@ -256,12 +266,22 @@ public class PlanServiceImpl implements PlanService {
             BeanUtils.copyProperties(planTagMap.getPlanTag(), planTagDto);
             planTagDtos.add(planTagDto);
         }
+
+        List<PlanLike> planLikes = planLikeRepository.getAllByPlan_PlanId(planId);
+        List<PlanLikeDto> planLikeDtos = new ArrayList<>();
+        for (PlanLike planLike : planLikes) {
+            PlanLikeDto planLikeDto = new PlanLikeDto();
+            planLikeDto.setPlanId(planLike.getPlan().getPlanId());
+            planLikeDto.setUserId(planLike.getUser().getUserId());
+            planLikeDtos.add(planLikeDto);
+        }
+
         // User 정보도 포함한 PlanResponseDto 생성
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(plan.getUser(), userDto);
 
         // PlanDto, List<LocationDto>, List<TagDto>를 PlanResponseDto로 변환하여 반환
-        PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos);
+        PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
         return planResponseDto;
     }
 
@@ -291,12 +311,22 @@ public class PlanServiceImpl implements PlanService {
             BeanUtils.copyProperties(planTagMap, planTagDto);
             planTagDtos.add(planTagDto);
         }
+
+        List<PlanLike> planLikes = planLikeRepository.getAllByPlan_PlanId(planId);
+        List<PlanLikeDto> planLikeDtos = new ArrayList<>();
+        for (PlanLike planLike : planLikes) {
+            PlanLikeDto planLikeDto = new PlanLikeDto();
+            planLikeDto.setPlanId(planLike.getPlan().getPlanId());
+            planLikeDto.setUserId(planLike.getUser().getUserId());
+            planLikeDtos.add(planLikeDto);
+        }
+
         // User 정보도 포함한 PlanResponseDto 생성
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(existingPlan.getUser(), userDto);
 
         // PlanDto, List<LocationDto>, List<TagDto>를 PlanResponseDto로 변환하여 반환
-        PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos);
+        PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
         return planResponseDto;
 
     }
@@ -325,12 +355,25 @@ public class PlanServiceImpl implements PlanService {
                 BeanUtils.copyProperties(planTagMap.getPlanTag(), planTagDto);
                 planTagDtos.add(planTagDto);
             }
+
+            Long planId = plan.getPlanId();
+
+            List<PlanLike> planLikes = planLikeRepository.getAllByPlan_PlanId(planId);
+            List<PlanLikeDto> planLikeDtos = new ArrayList<>();
+            for (PlanLike planLike : planLikes) {
+                PlanLikeDto planLikeDto = new PlanLikeDto();
+                planLikeDto.setPlanId(planLike.getPlan().getPlanId());
+                planLikeDto.setUserId(planLike.getUser().getUserId());
+                planLikeDtos.add(planLikeDto);
+            }
+
+
             // User 정보도 포함한 PlanResponseDto 생성
             UserDto userDto = new UserDto();
             User user = userRepositoryInterface.findById(userId).get();
             BeanUtils.copyProperties(user, userDto);
 
-            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos);
+            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
             planResponseDtos.add(planResponseDto);
         }
 
