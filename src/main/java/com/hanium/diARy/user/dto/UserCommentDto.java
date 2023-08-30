@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -15,4 +16,6 @@ public class UserCommentDto {
     private Long diaryId;
     private Long commentId;
     private String content;
+    private Date createdAt;
+    private Date updatedAt;
 }

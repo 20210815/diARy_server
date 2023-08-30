@@ -28,6 +28,7 @@ public class UserService {
     private final CommentRepositoryInterface commentRepositoryInterface;
     private final DiaryLocationInterface diaryLocationInterface;
     private final ReplyRepository replyRepository;
+    private final ReplyRepositoryInterface replyRepositoryInterface;
 
     public UserService(
             @Autowired UserRepository userRepository,
@@ -37,7 +38,8 @@ public class UserService {
             @Autowired UserRepositoryInterface userRepositoryInterface,
             @Autowired DiaryLocationInterface diaryLocationInterface,
             @Autowired DiaryRepository diaryRepository,
-            @Autowired ReplyRepository replyRepository
+            @Autowired ReplyRepository replyRepository,
+            @Autowired ReplyRepositoryInterface replyRepositoryInterface
 
             ) {
         this.userRepository = userRepository;
@@ -48,6 +50,7 @@ public class UserService {
         this.diaryLocationInterface = diaryLocationInterface;
         this.diaryRepository = diaryRepository;
         this.replyRepository = replyRepository;
+        this.replyRepositoryInterface = replyRepositoryInterface;
     }
 
     //좋아요 누른 다이어리 확인
@@ -68,17 +71,22 @@ public class UserService {
             userCommentDto.setCommentId(comment.getCommentId());
             userCommentDto.setContent(comment.getContent());
             userCommentDto.setDiaryId(comment.getDiary().getDiaryId());
+            userCommentDto.setCreatedAt(comment.getCreatedAt());
+            userCommentDto.setUpdatedAt(comment.getUpdatedAt());
             userCommentReplyDto.setUserCommentDto(userCommentDto);
             //댓글 추가
 
 
-            List<ReplyDto> replyDtos = this.replyRepository.readUserReplyAll(userId, comment.getCommentId());
+            List<Reply> replies = this.replyRepositoryInterface.findByUser_UserIdAndComment_CommentId(userId, comment.getCommentId());
+            //List<ReplyDto> replyDtos = this.replyRepository.readUserReplyAll(userId, comment.getCommentId());
             List<UserReplyDto> userReplyDtos = new ArrayList<>();
-            for(ReplyDto replyDto : replyDtos) {
+            for(Reply reply: replies) {
                 UserReplyDto userReplyDto = new UserReplyDto();
-                userReplyDto.setCommentId(replyDto.getCommentId());
-                userReplyDto.setContent(replyDto.getContent());
-                userReplyDto.setDiaryId(replyDto.getDiaryId());
+                userReplyDto.setUpdatedAt(reply.getUpdatedAt());
+                userReplyDto.setCommentId(reply.getComment().getCommentId());
+                userReplyDto.setContent(reply.getContent());
+                userReplyDto.setCreatedAt(reply.getCreatedAt());
+                userReplyDto.setDiaryId(reply.getDiary().getDiaryId());
                 userReplyDtos.add(userReplyDto);
             }
             userCommentReplyDto.setUserReplyDtos(userReplyDtos);

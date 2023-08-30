@@ -27,5 +27,16 @@ public class UserRepository {
         this.userRepositoryInterface = userRepositoryInterface;
     }
 
+    public UserDto makeUserDto(Long userId) {
+        User user = userRepositoryInterface.findById(userId).get();
+        UserDto userDto = new UserDto();
+        userDto.setUserId(user.getUserId());
+        userDto.setPassword(user.getPassword());
+        userDto.setEmail(user.getEmail());
+        userDto.setImage(user.getImage());
+        userDto.setUsername(user.getUsername());
+        return userDto;
+    }
+
 
 }

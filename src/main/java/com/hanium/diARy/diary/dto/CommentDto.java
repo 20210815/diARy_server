@@ -17,6 +17,8 @@ import java.util.List;
 public class CommentDto {
     private Long diaryId;
     private String content;
-    private Long userId;
+    private Date createdAt;
+    private Date updatedAt;
     private List<ReplyDto> replyDtos;
+    private UserDto userDto;
 }

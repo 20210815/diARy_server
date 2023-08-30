@@ -3,6 +3,7 @@ package com.hanium.diARy.diary.service;
 import com.hanium.diARy.diary.dto.CommentDto;
 import com.hanium.diARy.diary.entity.Comment;
 import com.hanium.diARy.diary.repository.*;
+import com.hanium.diARy.user.repository.UserRepository;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +19,22 @@ public class CommentService {
     private final CommentRepositoryInterface commentRepositoryInterface;
     private final DiaryRepositoryInterface diaryRepositoryInterface;
     private final UserRepositoryInterface userRepositoryInterface;
+    private final UserRepository userRepository;
 
     @Autowired
     public CommentService(
             CommentRepository commentRepository,
             CommentRepositoryInterface commentRepositoryInterface,
             DiaryRepositoryInterface diaryRepositoryInterface,
-            UserRepositoryInterface userRepositoryInterface
+            UserRepositoryInterface userRepositoryInterface,
+            UserRepository userRepository
 
     ) {
         this.commentRepository = commentRepository;
         this.commentRepositoryInterface = commentRepositoryInterface;
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.userRepositoryInterface = userRepositoryInterface;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -56,7 +60,10 @@ public class CommentService {
             Comment comment = iterator.next();
             CommentDto dto = new CommentDto();
             dto.setContent(comment.getContent());
-            dto.setUserId(comment.getUser().getUserId());
+            //dto.setUserId(comment.getUser().getUserId());
+            dto.setUserDto(userRepository.makeUserDto(comment.getUser().getUserId()));
+            dto.setCreatedAt(comment.getCreatedAt());
+            dto.setUpdatedAt(comment.getUpdatedAt());
             dto.setDiaryId(comment.getDiary().getDiaryId());
             commentDtoList.add(dto);
         }
