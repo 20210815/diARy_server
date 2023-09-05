@@ -1,23 +1,24 @@
 package com.hanium.diARy.home.search.service;
 
-import com.hanium.diARy.diary.dto.DiaryDto;
-import com.hanium.diARy.diary.dto.DiaryLocationDto;
 import com.hanium.diARy.diary.dto.DiaryResponseDto;
-import com.hanium.diARy.diary.dto.DiaryTagDto;
 import com.hanium.diARy.diary.entity.Diary;
-import com.hanium.diARy.diary.entity.DiaryLocation;
 import com.hanium.diARy.diary.entity.DiaryTag;
 import com.hanium.diARy.diary.repository.DiaryLocationInterface;
 import com.hanium.diARy.diary.repository.DiaryRepository;
 import com.hanium.diARy.diary.repository.DiaryRepositoryInterface;
 import com.hanium.diARy.diary.repository.DiaryTagRepositoryInterface;
+import com.hanium.diARy.plan.dto.*;
+import com.hanium.diARy.plan.entity.*;
+import com.hanium.diARy.plan.repository.PlanLikeRepository;
+import com.hanium.diARy.plan.repository.PlanRepository;
+import com.hanium.diARy.plan.repository.PlanTagMapRepository;
+import com.hanium.diARy.plan.repository.PlanTagRepository;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,19 +30,25 @@ public class SearchService {
     private final DiaryLocationInterface diaryLocationInterface;
     private final UserRepositoryInterface userRepositoryInterface;
     private final DiaryRepository diaryRepository;
+    private final PlanTagRepository planTagRepository;
+    private final PlanRepository planRepository;
+    private final PlanLikeRepository planLikeRepository;
 
     public SearchService(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired DiaryTagRepositoryInterface diaryTagRepositoryInterface,
             @Autowired DiaryLocationInterface diaryLocationInterface,
             @Autowired UserRepositoryInterface userRepositoryInterface,
-            @Autowired DiaryRepository diaryRepository
-            ) {
+            @Autowired DiaryRepository diaryRepository,
+            PlanTagRepository planTagRepository, PlanRepository planRepository, PlanTagMapRepository planTagMapRepository, PlanLikeRepository planLikeRepository) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
         this.diaryTagRepositoryInterface = diaryTagRepositoryInterface;
         this.diaryLocationInterface = diaryLocationInterface;
         this.userRepositoryInterface = userRepositoryInterface;
         this.diaryRepository = diaryRepository;
+        this.planTagRepository = planTagRepository;
+        this.planRepository = planRepository;
+        this.planLikeRepository = planLikeRepository;
     }
 
     public List<DiaryResponseDto> findDiaryByTag(String searchword) {
@@ -56,5 +63,54 @@ public class SearchService {
 
         }
         return diaryResponseDtos;
+    }
+
+    public List<PlanResponseDto> findPlanByTag(String searchword) {
+        PlanTag planTag = planTagRepository.findByName(searchword);
+        List<Long> planIds = planRepository.findPlanIdsByTagId(planTag.getTagId());
+        List<Plan> plans = planRepository.findAllById(planIds);
+        List<PlanResponseDto> planResponseDtos = new ArrayList<>();
+
+        for (Plan plan : plans) {
+            Long userId = plan.getUser().getUserId();
+            PlanDto planDto = new PlanDto();
+            BeanUtils.copyProperties(plan, planDto);
+
+            List<PlanLocationDto> planLocationDtos = new ArrayList<>();
+            for (PlanLocation location : plan.getPlanLocations()) {
+                PlanLocationDto planLocationDto = new PlanLocationDto();
+                BeanUtils.copyProperties(location, planLocationDto);
+                planLocationDtos.add(planLocationDto);
+            }
+
+            List<PlanTagDto> planTagDtos = new ArrayList<>();
+            for (PlanTagMap planTagMap : plan.getPlanTagMaps()) {
+                PlanTagDto planTagDto = new PlanTagDto();
+                BeanUtils.copyProperties(planTagMap.getPlanTag(), planTagDto);
+                planTagDtos.add(planTagDto);
+            }
+
+            Long planId = plan.getPlanId();
+
+            List<PlanLike> planLikes = planLikeRepository.getAllByPlan_PlanId(planId);
+            List<PlanLikeDto> planLikeDtos = new ArrayList<>();
+            for (PlanLike planLike : planLikes) {
+                PlanLikeDto planLikeDto = new PlanLikeDto();
+                planLikeDto.setPlanId(planLike.getPlan().getPlanId());
+                planLikeDto.setUserId(planLike.getUser().getUserId());
+                planLikeDtos.add(planLikeDto);
+            }
+
+
+            // User 정보도 포함한 PlanResponseDto 생성
+            UserDto userDto = new UserDto();
+            User user = userRepositoryInterface.findById(userId).get();
+            BeanUtils.copyProperties(user, userDto);
+
+            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
+            planResponseDtos.add(planResponseDto);
+        }
+
+        return planResponseDtos;
     }
 }
