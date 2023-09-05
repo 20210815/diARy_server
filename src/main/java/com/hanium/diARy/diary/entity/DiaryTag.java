@@ -26,7 +26,7 @@ public class DiaryTag {
     private List<Diary> diaries = new ArrayList<>();
 
     @Column(name="number_of_diaries")
-    private Integer number;
+    private Integer number = 0;
 
     @Column(name = "name", length = 10)
     private String name;

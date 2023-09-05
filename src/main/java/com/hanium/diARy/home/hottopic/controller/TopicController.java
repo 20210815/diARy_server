@@ -4,6 +4,7 @@ import com.hanium.diARy.diary.dto.DiaryResponseDto;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryTag;
 import com.hanium.diARy.diary.repository.TagRepository;
+import com.hanium.diARy.home.hottopic.dto.HottopicDto;
 import com.hanium.diARy.home.hottopic.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,7 +27,7 @@ public class TopicController {
     }
 
     @GetMapping("/topic")
-    public List<DiaryResponseDto> readAllDiaryOrderByLike() {
+    public List<HottopicDto> readAllDiaryOrderByLike() {
         return topicService.readBestDiaryTag();
     }
 

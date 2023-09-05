@@ -259,12 +259,14 @@ public class DiaryRepository{
                         DiaryTag tag = new DiaryTag();
                         tag.setName(tagDto.getName());
                         tag.getDiaries().add(diaryEntity);
+                        tag.setNumber(tag.getDiaries().size());
                         tagRepositoryInterface.save(tag);
                         diaryEntity.getTags().add(tag);
                     }
                     else {
                         DiaryTag tag = tagRepositoryInterface.findByName(tagDto.getName());
                         tag.getDiaries().add(diaryEntity);
+                        tag.setNumber(tag.getDiaries().size());
                         tagRepositoryInterface.save(tag);
                         diaryEntity.getTags().add(tag);
                     }

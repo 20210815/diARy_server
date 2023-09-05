@@ -6,10 +6,10 @@ import com.hanium.diARy.diary.entity.DiaryTag;
 import com.hanium.diARy.diary.repository.DiaryRepository;
 import com.hanium.diARy.diary.repository.DiaryRepositoryInterface;
 import com.hanium.diARy.diary.repository.TagRepository;
+import com.hanium.diARy.home.hottopic.dto.HottopicDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.HTML;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,23 +29,35 @@ public class TopicService {
         this.tagRepository = tagRepository;
     }
 
-    public List<DiaryResponseDto> readBestDiaryTag() {
-        List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
-        List<DiaryTag> diaryTags = tagRepository.DescDiaryTag();
-        List<Diary> diaries = diaryTags.get(0).getDiaries();
-        System.out.println("제일 많은 다이어리 태그" + diaryTags.get(0));
-            for(Diary diary : diaries) {
-                DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
-                diaryResponseDtos.add(diaryResponseDto);
+    public List<HottopicDto> readBestDiaryTag() {
+        List<DiaryTag> diaryTags = tagRepository.DescDiaryTag().subList(0, 3);
+        List<HottopicDto> hottopicDtos = new ArrayList<>();
+
+        for (DiaryTag diaryTag : diaryTags) {
+            HottopicDto hottopicDto = new HottopicDto();
+            List<Diary> diaries = diaryTag.getDiaries();
+            // 공개된 것만 고르기
+
+            List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>(); // 이 부분을 수정
+
+            for (Diary diary : diaries) {
+                if(diaryResponseDtos.size() < 4) {
+                    if (diary.isPublic() == true) {
+                        DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+                        diaryResponseDtos.add(diaryResponseDto);
+                    }
+                }
+                else break;
             }
 
-//        List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
-//        for(Diary diary : diaries) {
-//            DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
-//            diaryResponseDtos.add(diaryResponseDto);
-//        }
-        return diaryResponseDtos;
+            hottopicDto.setTagname(diaryTag.getName());
+            hottopicDto.setDiaryResponseDtoList(diaryResponseDtos);
+            hottopicDtos.add(hottopicDto);
+        }
+
+        return hottopicDtos;
     }
+
 
 //    public List<DiaryResponseDto> readSecondDiaryTag() {
 //        List<>
