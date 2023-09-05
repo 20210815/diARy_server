@@ -3,20 +3,13 @@ package com.hanium.diARy.home.search.service;
 import com.hanium.diARy.diary.dto.DiaryResponseDto;
 import com.hanium.diARy.diary.entity.Diary;
 import com.hanium.diARy.diary.entity.DiaryTag;
-<<<<<<< HEAD
 import com.hanium.diARy.diary.repository.*;
-=======
-import com.hanium.diARy.diary.repository.DiaryLocationInterface;
-import com.hanium.diARy.diary.repository.DiaryRepository;
-import com.hanium.diARy.diary.repository.DiaryRepositoryInterface;
-import com.hanium.diARy.diary.repository.DiaryTagRepositoryInterface;
 import com.hanium.diARy.plan.dto.*;
 import com.hanium.diARy.plan.entity.*;
 import com.hanium.diARy.plan.repository.PlanLikeRepository;
 import com.hanium.diARy.plan.repository.PlanRepository;
 import com.hanium.diARy.plan.repository.PlanTagMapRepository;
 import com.hanium.diARy.plan.repository.PlanTagRepository;
->>>>>>> 2a44d688549e45670eb74e66e9a707bc840dd616
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
