@@ -1,5 +1,6 @@
 package com.hanium.diARy.diary.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,11 @@ public class DiaryTag {
     private Long tagId;
 
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Diary> diaries = new ArrayList<>();
+
+    @Column(name="number_of_diaries")
+    private Integer number;
 
     @Column(name = "name", length = 10)
     private String name;

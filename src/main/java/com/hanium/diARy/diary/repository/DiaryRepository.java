@@ -146,6 +146,7 @@ public class DiaryRepository{
                 DiaryTag tag = new DiaryTag();
                 tag.setName(tagDto.getName());
                 tag.getDiaries().add(diaryEntity);
+                tag.setNumber(tag.getDiaries().size());
                 tagRepositoryInterface.save(tag);
                 System.out.println("" + tag);
                 diaryEntity.getTags().add(tag);
