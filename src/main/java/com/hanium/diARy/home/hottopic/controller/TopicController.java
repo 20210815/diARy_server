@@ -31,9 +31,4 @@ public class TopicController {
         return topicService.readBestDiaryTag();
     }
 
-//    @GetMapping("/best")
-//    public List<DiaryTag> getBestDiaryTag() {
-//        return topicService.readBestDiaryTag();
-//    }
-
 }

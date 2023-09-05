@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TopicService {
@@ -36,11 +38,14 @@ public class TopicService {
         for (DiaryTag diaryTag : diaryTags) {
             HottopicDto hottopicDto = new HottopicDto();
             List<Diary> diaries = diaryTag.getDiaries();
+            List<Diary> sortedDiaries = diaries.stream()
+                    .sorted(Comparator.comparingInt(Diary::getLikesCount).reversed())
+                    .collect(Collectors.toList());
             // 공개된 것만 고르기
 
             List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>(); // 이 부분을 수정
 
-            for (Diary diary : diaries) {
+            for (Diary diary : sortedDiaries) {
                 if(diaryResponseDtos.size() < 4) {
                     if (diary.isPublic() == true) {
                         DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
