@@ -37,29 +37,35 @@ public class MapRepository {
 
 
     public List<MapDiaryDto> readAllDiaryByAddress(String address, User user) {
-        List<DiaryLocation> diaryLocations_user = diaryLocationRepositoryInterface.findByAddressAndDiary_User(address, user);
         List<MapDiaryDto> mapDiaryDtos = new ArrayList<>();
-        List<DiaryLocation> diaryLocations = diaryLocationRepositoryInterface.findByAddress(address);
-        diaryLocations.removeAll(diaryLocations_user);
-        for(DiaryLocation diaryLocation : diaryLocations_user) {
-            System.out.println(diaryLocation.getDiary().getDiaryId());
-            if(diaryLocation.getDiary().isPublic()){
-                MapDiaryDto mapDiaryDto = new MapDiaryDto();
-                DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
-                BeanUtils.copyProperties(diaryLocation, diaryLocationDto);
-                diaryLocationDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
-                diaryLocationDto.setDiaryLocationImageDtoList(diaryLocationImageRepository.readImage(diaryLocation));
-                mapDiaryDto.setDiaryLocationDto(diaryLocationDto);
-                mapDiaryDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
-                mapDiaryDto.setSatisfaction(diaryLocation.getDiary().getSatisfaction());
-                UserDto userDto = new UserDto();
-                BeanUtils.copyProperties(diaryLocation.getDiary().getUser(), userDto);
-                mapDiaryDto.setUserDto(userDto);
-                mapDiaryDto.setTravelStart(diaryLocation.getDiary().getTravelStart());
-                mapDiaryDto.setTravelEnd(diaryLocation.getDiary().getTravelEnd());
-                mapDiaryDtos.add(mapDiaryDto);
+        List<DiaryLocation> diaryLocations = diaryLocationRepositoryInterface.findByAddressOrderByDiaryLikesCountDesc(address);
+
+
+        if (user != null) {
+            List<DiaryLocation> diaryLocations_user = diaryLocationRepositoryInterface.findByAddressAndDiary_UserOrderByDiaryLikesCountDesc(address, user);
+            for(DiaryLocation diaryLocation : diaryLocations_user) {
+                System.out.println(diaryLocation.getDiary().getDiaryId());
+                if(diaryLocation.getDiary().isPublic()){
+                    MapDiaryDto mapDiaryDto = new MapDiaryDto();
+                    DiaryLocationDto diaryLocationDto = new DiaryLocationDto();
+                    BeanUtils.copyProperties(diaryLocation, diaryLocationDto);
+                    diaryLocationDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
+                    diaryLocationDto.setDiaryLocationImageDtoList(diaryLocationImageRepository.readImage(diaryLocation));
+                    mapDiaryDto.setDiaryLocationDto(diaryLocationDto);
+                    mapDiaryDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
+                    mapDiaryDto.setSatisfaction(diaryLocation.getDiary().getSatisfaction());
+                    UserDto userDto = new UserDto();
+                    BeanUtils.copyProperties(diaryLocation.getDiary().getUser(), userDto);
+                    mapDiaryDto.setUserDto(userDto);
+                    mapDiaryDto.setTravelStart(diaryLocation.getDiary().getTravelStart());
+                    mapDiaryDto.setTravelEnd(diaryLocation.getDiary().getTravelEnd());
+                    mapDiaryDtos.add(mapDiaryDto);
+                }
             }
+            diaryLocations.removeAll(diaryLocations_user);
         }
+
+
 
         for(DiaryLocation diaryLocation : diaryLocations) {
             System.out.println(diaryLocation.getDiary().getDiaryId());

@@ -36,18 +36,30 @@ public class MapController {
     //로그인을 해서 현재 내 일기가 먼저 나오도록 수정 필요
     @GetMapping("/{address}")
     public List<MapDiaryDto> readAllDiaryByAddress(@PathVariable("address") String address) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //null일 때도 추가로 만들어야 함
-        String email = authentication.getName();
-        User user = userRepositoryInterface.findByEmail(email);
-        return this.mapService.readAllDiaryByAddress(address, user);
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            //null일 때도 추가로 만들어야 함
+            String email = authentication.getName();
+            User user = userRepositoryInterface.findByEmail(email);
+            return this.mapService.readAllDiaryByAddress(address, user);
+        }
+        else {
+            return this.mapService.readAllDiaryByAddress(address, null);
+        }
+
     }
 
     @GetMapping("")
     public List<MapAllDiaryDto> readAllDiaryByAddressList() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        User user = userRepositoryInterface.findByEmail(email);
-        return this.mapService.readAllDiary(user);
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            //null일 때도 추가로 만들어야 함
+            String email = authentication.getName();
+            User user = userRepositoryInterface.findByEmail(email);
+            return this.mapService.readAllDiary(user);
+        }
+        else {
+            return this.mapService.readAllDiary(null);
+        }
     }
 }

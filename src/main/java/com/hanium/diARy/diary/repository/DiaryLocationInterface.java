@@ -9,5 +9,7 @@ import java.util.List;
 public interface DiaryLocationInterface extends CrudRepository<DiaryLocation, Long> {
     public List<DiaryLocation> findByDiary_DiaryId(Long diaryId);
     public List<DiaryLocation> findByAddress(String address);
-    public List<DiaryLocation> findByAddressAndDiary_User(String address, User user);
+    public List<DiaryLocation> findByAddressAndDiary_UserOrderByDiaryLikesCountDesc(String address, User user);
+    public List<DiaryLocation> findByAddressOrderByDiaryLikesCountDesc(String address);
+
 }
