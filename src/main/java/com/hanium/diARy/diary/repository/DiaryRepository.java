@@ -9,6 +9,7 @@ import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -95,7 +96,7 @@ public class DiaryRepository{
                 Math.round(positive);
                 if (addressRepositoryInterface.findByAddress(location.getAddress()) == null) {
                     Address address = new Address();
-                    address.setAddress(location.getAddress());
+                    BeanUtils.copyProperties(location.getAddress(), address);
                     addressRepositoryInterface.save(address);
                 }
 

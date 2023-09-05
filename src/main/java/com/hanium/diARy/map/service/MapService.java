@@ -28,7 +28,7 @@ public class MapService {
         this.addressRepositoryInterface = addressRepositoryInterface;
     }
 
-    public List<MapDiaryDto> readAllDiaryByAddress(String address, User user) {
+    public List<MapDiaryDto> readAllDiaryByAddress(Address address, User user) {
         return this.mapRepository.readAllDiaryByAddress(address, user);
     }
 
@@ -38,7 +38,7 @@ public class MapService {
         Address add;
         while(address.hasNext()) {
             add = address.next();
-            List<MapDiaryDto> mapDiaryDtos = this.mapRepository.readAllDiaryByAddress(add.getAddress(), user);
+            List<MapDiaryDto> mapDiaryDtos = this.mapRepository.readAllDiaryByAddress(add, user);
             mapAllDiaryDtos.add(new MapAllDiaryDto(
                     add.getAddress().toString(),
                     mapDiaryDtos
