@@ -2,10 +2,15 @@ package com.hanium.diARy.diary.repository;
 
 import com.hanium.diARy.diary.dto.DiaryDto;
 import com.hanium.diARy.diary.entity.Diary;
+import com.hanium.diARy.diary.entity.DiaryTag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+@Repository
 public class TagRepository {
     private final TagRepositoryInterface tagRepositoryInterface;
 
@@ -13,5 +18,48 @@ public class TagRepository {
             @Autowired TagRepositoryInterface tagRepositoryInterface
             ){
         this.tagRepositoryInterface = tagRepositoryInterface;
+    }
+    public DiaryTag findBestTag() {
+        // 다이어리 태그의 다이어리스 개수를 알아야 함
+
+        // 온 다이어리 태그를 불러옴
+        // 다이어리스의 count를 중에서 제일 큰 걸 찾아야 함
+        Iterator<DiaryTag> diaryTagIterator = allTagList().iterator();
+        DiaryTag bestTag = null;
+        int maxNumber = 0; // 가장 큰 개수를 추적하는 변수를 추가하고 0으로 초기화합니다.
+
+        while (diaryTagIterator.hasNext()) {
+            DiaryTag diaryTag = diaryTagIterator.next();
+            int currentDiaryCount = diaryTag.getDiaries().size(); // 현재 다이어리 개수를 가져옵니다.
+
+            // 현재 다이어리 개수가 최대 개수보다 크면 최대 개수를 업데이트하고 bestTag를 설정합니다.
+            if (currentDiaryCount > maxNumber) {
+                maxNumber = currentDiaryCount;
+                bestTag = diaryTag;
+            }
+        }
+
+        if (bestTag != null) {
+            System.out.println("Best Tag Name: " + bestTag.getName());
+        } else {
+            System.out.println("No Best Tag Found");
+        }
+
+        return bestTag;
+    }
+
+    //정렬
+    public List<DiaryTag> DescDiaryTag() {
+        List<DiaryTag> diaryTags = tagRepositoryInterface.findAllByOrderByNumberDesc();
+        System.out.println(diaryTags);
+        return diaryTags;
+    }
+
+    //태그를 통해서 다이어리 반환
+    //public List<DiaryTag>
+
+
+    public Iterable<DiaryTag> allTagList() {
+        return tagRepositoryInterface.findAll();
     }
 }

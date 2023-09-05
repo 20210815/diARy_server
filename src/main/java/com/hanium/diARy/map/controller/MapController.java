@@ -37,6 +37,7 @@ public class MapController {
     @GetMapping("/{address}")
     public List<MapDiaryDto> readAllDiaryByAddress(@PathVariable("address") String address) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //null일 때도 추가로 만들어야 함
         String email = authentication.getName();
         User user = userRepositoryInterface.findByEmail(email);
         return this.mapService.readAllDiaryByAddress(address, user);
