@@ -2,6 +2,7 @@ package com.hanium.diARy.home.search.controller;
 
 import com.hanium.diARy.diary.dto.DiaryResponseDto;
 import com.hanium.diARy.home.search.service.SearchService;
+import com.hanium.diARy.plan.dto.PlanResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
@@ -27,5 +28,10 @@ public class SearchController {
     @GetMapping("/search/{searchword}/diary-tag")
     public List<DiaryResponseDto> findDiaryByTag(@PathVariable String searchword){
         return searchService.findDiaryByTag(searchword);
+    }
+
+    @GetMapping("/search/{searchword}/plan-tag")
+    public List<PlanResponseDto> findPlanByTag(@PathVariable String searchword){
+        return searchService.findPlanByTag(searchword);
     }
 }
