@@ -20,6 +20,6 @@ public class DiaryLocationDto {
     private Time timeEnd;
     private String content;
     private String name;
-    private String address;
+    private DiaryAddressDto addressDto;
     private List<DiaryLocationImageDto> diaryLocationImageDtoList;
 }

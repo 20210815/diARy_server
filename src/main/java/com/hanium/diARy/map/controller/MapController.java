@@ -1,6 +1,8 @@
 package com.hanium.diARy.map.controller;
 
 import com.hanium.diARy.diary.dto.DiaryLocationDto;
+import com.hanium.diARy.diary.entity.Address;
+import com.hanium.diARy.diary.repository.AddressRepositoryInterface;
 import com.hanium.diARy.map.dto.MapAllDiaryDto;
 import com.hanium.diARy.map.dto.MapDiaryDto;
 import com.hanium.diARy.map.service.MapService;
@@ -22,20 +24,24 @@ public class MapController {
 
     private final MapService mapService;
     private final UserRepositoryInterface userRepositoryInterface;
+    private final AddressRepositoryInterface addressRepositoryInterface;
 
     public MapController(
             @Autowired MapService mapService,
-            @Autowired UserRepositoryInterface userRepositoryInterface
+            @Autowired UserRepositoryInterface userRepositoryInterface,
+            @Autowired AddressRepositoryInterface addressRepositoryInterface
     ) {
         this.mapService = mapService;
         this.userRepositoryInterface = userRepositoryInterface;
+        this.addressRepositoryInterface = addressRepositoryInterface;
     }
 
     //지도에서 같은 장소에 다른 사람들의 일기 표현
 
     //로그인을 해서 현재 내 일기가 먼저 나오도록 수정 필요
-    @GetMapping("/{address}")
-    public List<MapDiaryDto> readAllDiaryByAddress(@PathVariable("address") String address) {
+    @GetMapping("/{x}/{y}")
+    public List<MapDiaryDto> readAllDiaryByAddress(@PathVariable("x") String x, @PathVariable("y") String y) {
+        Address address = addressRepositoryInterface.findByXAndY(x, y);
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             //null일 때도 추가로 만들어야 함

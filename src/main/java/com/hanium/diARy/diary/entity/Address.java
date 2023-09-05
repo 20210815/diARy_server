@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -20,6 +21,12 @@ public class Address {
 
     @Column(unique = true)
     private String address;
+
+    private String x;
+    private String y;
+
+    @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DiaryLocation> diaryLocations = new ArrayList<>();
 
     @Override
     public String toString() {

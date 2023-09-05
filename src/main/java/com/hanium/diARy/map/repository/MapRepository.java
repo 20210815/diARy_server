@@ -2,6 +2,7 @@ package com.hanium.diARy.map.repository;
 
 
 import com.hanium.diARy.diary.dto.DiaryLocationDto;
+import com.hanium.diARy.diary.entity.Address;
 import com.hanium.diARy.diary.entity.DiaryLocation;
 import com.hanium.diARy.diary.repository.DiaryLocationImageRepository;
 import com.hanium.diARy.diary.repository.DiaryLocationInterface;
@@ -36,7 +37,7 @@ public class MapRepository {
 
 
 
-    public List<MapDiaryDto> readAllDiaryByAddress(String address, User user) {
+    public List<MapDiaryDto> readAllDiaryByAddress(Address address, User user) {
         List<MapDiaryDto> mapDiaryDtos = new ArrayList<>();
         List<DiaryLocation> diaryLocations = diaryLocationRepositoryInterface.findByAddressOrderByDiaryLikesCountDesc(address);
 

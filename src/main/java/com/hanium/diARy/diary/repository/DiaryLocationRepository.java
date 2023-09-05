@@ -1,6 +1,7 @@
 package com.hanium.diARy.diary.repository;
 
 import com.hanium.diARy.diary.dto.AddressDto;
+import com.hanium.diARy.diary.dto.DiaryAddressDto;
 import com.hanium.diARy.diary.dto.DiaryLocationDto;
 import com.hanium.diARy.diary.dto.DiaryLocationImageDto;
 import com.hanium.diARy.diary.entity.Address;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static javax.management.Query.and;
 
 @Repository
 public class DiaryLocationRepository {
@@ -46,7 +49,9 @@ public class DiaryLocationRepository {
             diaryLocationDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
             diaryLocationDto.setName(diaryLocation.getName());
             diaryLocationDto.setDate(diaryLocation.getDate());
-            diaryLocationDto.setAddress(diaryLocation.getAddress());
+            DiaryAddressDto diaryAddressDto = new DiaryAddressDto();
+            BeanUtils.copyProperties(diaryLocation.getAddress(), diaryAddressDto);
+            diaryLocationDto.setAddressDto(diaryAddressDto);
             diaryLocationDto.setTimeEnd(diaryLocation.getTimeEnd());
             diaryLocationDto.setTimeStart(diaryLocation.getTimeStart());
             diaryLocationDto.setContent(diaryLocation.getContent());
@@ -66,13 +71,21 @@ public class DiaryLocationRepository {
             //BeanUtils.copyProperties(diaryLocationDto, diaryLocation);
 
             //address 있는지 없는지 확인하고 없으면 만들기
-            if (diaryLocationDto.getAddress() != null) {
-                diaryLocation.setAddress(diaryLocationDto.getAddress());
-                if (addressRepositoryInterface.findByAddress(diaryLocation.getAddress()) == null) {
-                    Address address = new Address();
-                    address.setAddress(diaryLocation.getAddress());
-                    addressRepositoryInterface.save(address);
-                }
+            if (addressRepositoryInterface.existsByXAndY(diaryLocationDto.getAddressDto().getX(), diaryLocationDto.getAddressDto().getY())) {
+                Address address = addressRepositoryInterface.findByXAndY(diaryLocationDto.getAddressDto().getX(), diaryLocationDto.getAddressDto().getY());
+                Address before = diaryLocation.getAddress();
+                before.getDiaryLocations().remove(diaryLocation);
+                addressRepositoryInterface.save(before);
+
+                diaryLocation.setAddress(address);
+                address.getDiaryLocations().add(diaryLocation);
+                //diaryLocation.setAddress(diaryLocationDto.getAddress());
+
+//                if (addressRepositoryInterface.findByAddress(diaryLocation.getAddress()) == null) {
+//                    Address address = new Address();
+//                    address.setAddress(diaryLocation.getAddress());
+//                    addressRepositoryInterface.save(address);
+//                }
             }
 
             if (diaryLocationDto.getName() != null) {
