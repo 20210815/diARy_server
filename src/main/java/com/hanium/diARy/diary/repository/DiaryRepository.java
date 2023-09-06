@@ -96,44 +96,12 @@ public class DiaryRepository{
             for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
                 DiaryLocation location = new DiaryLocation();
                 BeanUtils.copyProperties(diaryLocationDto, location);
-                Double positive = this.clovaService.performSentimentAnalysis(diaryLocationDto.getContent());
-                System.out.println(positive);
-                score += positive;
-                i++;
-                Math.round(positive);
-
-                //address
-                if(!(addressRepositoryInterface.existsByXAndY(diaryLocationDto.getX(), diaryLocationDto.getY()))) {
-                    Address address = new Address();
-                    address.setX(diaryLocationDto.getX());
-                    address.setY(diaryLocationDto.getY());
-                    address.setAddress(diaryLocationDto.getAddress());
-                    addressRepositoryInterface.save(address);
+                if (diaryLocationDto.getContent() == null) {
+                    location.setContent("");
                 }
                 location.setDiary(diaryEntity);
                 savedLocations.add(location);
 
-                try {
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-                    java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeStart()));
-                    java.util.Date parsedEndTime = timeFormat.parse(String.valueOf(diaryLocationDto.getTimeEnd()));
-
-                    location.setTimeStart(new Time(parsedStartTime.getTime()));
-                    location.setTimeEnd(new Time(parsedEndTime.getTime()));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    // Handle parsing exception if needed
-                }
-                location.setDiary(diaryEntity);
-
-                savedLocations.add(location);
-                diaryLocationRepositoryInterface.save(location);
-
-                // DiaryLocation 저장
-                List<DiaryLocationImageDto> diaryLocationImageDtoList = diaryLocationDto.getDiaryLocationImageDtoList();
-                for(DiaryLocationImageDto diaryLocationImageDto: diaryLocationImageDtoList) {
-                    diaryLocationImageRepository.createImage(diaryLocationImageDto, location.getDiaryLocationId());
-                }
             }
             diaryEntity.setDiaryLocations(savedLocations);
 
