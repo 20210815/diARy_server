@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SearchService {
@@ -54,7 +56,12 @@ public class SearchService {
         List<Diary> diaries = diaryTag.getDiaries();
         List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
 
-        for (Diary diary: diaries) {
+        //좋아요 많은 순서대로 출력
+        List<Diary> sortedDiaries = diaries.stream()
+                .sorted(Comparator.comparingInt(Diary::getLikesCount).reversed())
+                .collect(Collectors.toList());
+
+        for (Diary diary: sortedDiaries) {
             DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
             diaryResponseDtos.add(diaryResponseDto);
 
@@ -109,5 +116,35 @@ public class SearchService {
         }
 
         return planResponseDtos;
+    }
+
+    public List<DiaryResponseDto> findDiaryByWriter(String searchword) {
+        List<Diary> diaries = diaryRepositoryInterface.findByUserUsernameContaining(searchword);
+        List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
+        List<Diary> sortedDiaries = diaries.stream()
+                .sorted(Comparator.comparingInt(Diary::getLikesCount).reversed())
+                .collect(Collectors.toList());
+
+        for (Diary diary: sortedDiaries) {
+            DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+            diaryResponseDtos.add(diaryResponseDto);
+
+        }
+        return diaryResponseDtos;
+    }
+
+    public List<DiaryResponseDto> findDiaryByDest(String searchword) {
+        List<Diary> diaries = diaryRepositoryInterface.findByTravelDestContaining(searchword);
+        List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
+        List<Diary> sortedDiaries = diaries.stream()
+                .sorted(Comparator.comparingInt(Diary::getLikesCount).reversed())
+                .collect(Collectors.toList());
+
+        for (Diary diary: sortedDiaries) {
+            DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+            diaryResponseDtos.add(diaryResponseDto);
+
+        }
+        return diaryResponseDtos;
     }
 }
