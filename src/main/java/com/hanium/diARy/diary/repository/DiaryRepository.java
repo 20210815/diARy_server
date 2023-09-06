@@ -110,6 +110,8 @@ public class DiaryRepository{
                     address.setAddress(diaryLocationDto.getAddress());
                     addressRepositoryInterface.save(address);
                 }
+                location.setDiary(diaryEntity);
+                savedLocations.add(location);
 
                 try {
                     SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
