@@ -47,7 +47,7 @@ public class DiaryController {
         return this.diaryService.readDiary(id);
     }
 
-    @PutMapping("/{diaryId}")
+    @PatchMapping("/{diaryId}")
     public void updateDiary(@PathVariable("diaryId") Long id,
                             @RequestBody DiaryRequestDto diaryDto){
         this.diaryService.updateDiary(id, diaryDto);

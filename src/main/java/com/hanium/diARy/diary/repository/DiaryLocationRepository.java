@@ -49,9 +49,11 @@ public class DiaryLocationRepository {
             diaryLocationDto.setDiaryId(diaryLocation.getDiary().getDiaryId());
             diaryLocationDto.setName(diaryLocation.getName());
             diaryLocationDto.setDate(diaryLocation.getDate());
-            DiaryAddressDto diaryAddressDto = new DiaryAddressDto();
-            BeanUtils.copyProperties(diaryLocation.getAddress(), diaryAddressDto);
-            diaryLocationDto.setAddressDto(diaryAddressDto);
+            //address 자리
+            diaryLocationDto.setAddress(diaryLocation.getAddress());
+            diaryLocationDto.setX(diaryLocation.getX());
+            diaryLocationDto.setY(diaryLocation.getY());
+
             diaryLocationDto.setTimeEnd(diaryLocation.getTimeEnd());
             diaryLocationDto.setTimeStart(diaryLocation.getTimeStart());
             diaryLocationDto.setContent(diaryLocation.getContent());
@@ -61,71 +63,76 @@ public class DiaryLocationRepository {
         return Optional.of(diaryLocationDtoList).filter(list -> !list.isEmpty()).orElse(null);
     }
 
-
-    //찾아서 들어와 해당 diary에 해당하는 LocationDto만
-    public void updateDiaryLocation(DiaryLocationDto diaryLocationDto) {
-        Optional<DiaryLocation> optionalDiaryLocation = this.diaryLocationRepositoryInterface.findById(diaryLocationDto.getDiaryLocationId());
-
-        if (optionalDiaryLocation.isPresent()) {
-            DiaryLocation diaryLocation = optionalDiaryLocation.get();
-            //BeanUtils.copyProperties(diaryLocationDto, diaryLocation);
-
-            //address 있는지 없는지 확인하고 없으면 만들기
-            if (addressRepositoryInterface.existsByXAndY(diaryLocationDto.getAddressDto().getX(), diaryLocationDto.getAddressDto().getY())) {
-                Address address = addressRepositoryInterface.findByXAndY(diaryLocationDto.getAddressDto().getX(), diaryLocationDto.getAddressDto().getY());
-                Address before = diaryLocation.getAddress();
-                before.getDiaryLocations().remove(diaryLocation);
-                addressRepositoryInterface.save(before);
-
-                diaryLocation.setAddress(address);
-                address.getDiaryLocations().add(diaryLocation);
-                //diaryLocation.setAddress(diaryLocationDto.getAddress());
-
-//                if (addressRepositoryInterface.findByAddress(diaryLocation.getAddress()) == null) {
-//                    Address address = new Address();
-//                    address.setAddress(diaryLocation.getAddress());
-//                    addressRepositoryInterface.save(address);
+//
+//    //찾아서 들어와 해당 diary에 해당하는 LocationDto만
+//    public void updateDiaryLocation(DiaryLocationDto diaryLocationDto) {
+//        Optional<DiaryLocation> optionalDiaryLocation = this.diaryLocationRepositoryInterface.findById(diaryLocationDto.getDiaryLocationId());
+//
+//        if (optionalDiaryLocation.isPresent()) {
+//            DiaryLocation diaryLocation = optionalDiaryLocation.get();
+//            //BeanUtils.copyProperties(diaryLocationDto, diaryLocation);
+//
+//            //address 있는지 없는지 확인하고 없으면 만들기
+//            if (addressRepositoryInterface.existsByXAndY(diaryLocationDto.getX(), diaryLocationDto.getY())) {
+//                Address address = addressRepositoryInterface.findByXAndY(diaryLocationDto.getX(), diaryLocationDto.getY());
+//                //있다면 해당 address의 정보들을 가져옴
+//                diaryLocation.setAddress(address.getAddress());
+//                diaryLocation.setX(address.getX());
+//                diaryLocation.setY(address.getY());
+//                //diaryLocation.setAddress(diaryLocationDto.getAddress());
+//
+////                if (addressRepositoryInterface.findByAddress(diaryLocation.getAddress()) == null) {
+////                    Address address = new Address();
+////                    address.setAddress(diaryLocation.getAddress());
+////                    addressRepositoryInterface.save(address);
+////                }
+//            }
+//            else {
+//                Address address = new Address();
+//                address.setAddress(diaryLocationDto.getAddress());
+//                address.setX(diaryLocationDto.getX());
+//                address.setY(diaryLocationDto.getY());
+//                addressRepositoryInterface.save(address);
+//            }
+//
+//            if (diaryLocationDto.getName() != null) {
+//                diaryLocation.setName(diaryLocationDto.getName());
+//            }
+//
+//            if (diaryLocationDto.getDate() != null) {
+//                diaryLocation.setDate(diaryLocationDto.getDate());
+//            }
+//
+//            if (diaryLocationDto.getTimeStart() != null) {
+//                diaryLocation.setTimeStart(diaryLocationDto.getTimeStart());
+//            }
+//
+//            if (diaryLocationDto.getTimeEnd() != null) {
+//                diaryLocation.setTimeEnd(diaryLocationDto.getTimeEnd());
+//            }
+//
+//            if (diaryLocationDto.getContent() != null) {
+//                diaryLocation.setContent(diaryLocationDto.getContent());
+//            }
+//
+//            if (diaryLocationDto.getDiaryId() != null) {
+//                Optional<Diary> optionalDiary = this.diaryRepositoryInterface.findById(diaryLocationDto.getDiaryId());
+//                if (optionalDiary.isPresent()) {
+//                    diaryLocation.setDiary(optionalDiary.get());
+//                } else {
+//                    throw new EntityNotFoundException("Diary with ID " + diaryLocationDto.getDiaryId() + " not found");
 //                }
-            }
-
-            if (diaryLocationDto.getName() != null) {
-                diaryLocation.setName(diaryLocationDto.getName());
-            }
-
-            if (diaryLocationDto.getDate() != null) {
-                diaryLocation.setDate(diaryLocationDto.getDate());
-            }
-
-            if (diaryLocationDto.getTimeStart() != null) {
-                diaryLocation.setTimeStart(diaryLocationDto.getTimeStart());
-            }
-
-            if (diaryLocationDto.getTimeEnd() != null) {
-                diaryLocation.setTimeEnd(diaryLocationDto.getTimeEnd());
-            }
-
-            if (diaryLocationDto.getContent() != null) {
-                diaryLocation.setContent(diaryLocationDto.getContent());
-            }
-
-            if (diaryLocationDto.getDiaryId() != null) {
-                Optional<Diary> optionalDiary = this.diaryRepositoryInterface.findById(diaryLocationDto.getDiaryId());
-                if (optionalDiary.isPresent()) {
-                    diaryLocation.setDiary(optionalDiary.get());
-                } else {
-                    throw new EntityNotFoundException("Diary with ID " + diaryLocationDto.getDiaryId() + " not found");
-                }
-            }
-
-            if(diaryLocationDto.getDiaryLocationImageDtoList() != null) {
-                diaryLocationImageRepository.updateImage(diaryLocationDto);
-            }
-
-
-            // Save the updated diary location entity
-            this.diaryLocationRepositoryInterface.save(diaryLocation);
-        } else {
-            throw new EntityNotFoundException("DiaryLocation with ID " + " not found");
-        }
-    }
+//            }
+//
+//            if(diaryLocationDto.getDiaryLocationImageDtoList() != null) {
+//                diaryLocationImageRepository.updateImage(diaryLocationDto);
+//            }
+//
+//
+//            // Save the updated diary location entity
+//            this.diaryLocationRepositoryInterface.save(diaryLocation);
+//        } else {
+//            throw new EntityNotFoundException("DiaryLocation with ID " + " not found");
+//        }
+//    }
 }

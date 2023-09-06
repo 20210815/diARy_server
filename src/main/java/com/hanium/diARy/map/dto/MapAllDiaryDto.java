@@ -13,5 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class MapAllDiaryDto {
     private String address;
+    private String x;
+    private String y;
     private List<MapDiaryDto> diaryDtoList = new ArrayList<>();
 }

@@ -41,16 +41,15 @@ public class MapController {
     //로그인을 해서 현재 내 일기가 먼저 나오도록 수정 필요
     @GetMapping("/{x}/{y}")
     public List<MapDiaryDto> readAllDiaryByAddress(@PathVariable("x") String x, @PathVariable("y") String y) {
-        Address address = addressRepositoryInterface.findByXAndY(x, y);
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             //null일 때도 추가로 만들어야 함
             String email = authentication.getName();
             User user = userRepositoryInterface.findByEmail(email);
-            return this.mapService.readAllDiaryByAddress(address, user);
+            return this.mapService.readAllDiaryByAddress(x, y, user);
         }
         else {
-            return this.mapService.readAllDiaryByAddress(address, null);
+            return this.mapService.readAllDiaryByAddress(x, y, null);
         }
 
     }

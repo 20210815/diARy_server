@@ -19,14 +19,10 @@ public class Address {
     @Column(name = "address_id")
     private Long addressId;
 
-    @Column(unique = true)
     private String address;
 
     private String x;
     private String y;
-
-    @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DiaryLocation> diaryLocations = new ArrayList<>();
 
     @Override
     public String toString() {
