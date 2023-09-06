@@ -37,13 +37,13 @@ public class MapRepository {
 
 
 
-    public List<MapDiaryDto> readAllDiaryByAddress(Address address, User user) {
+    public List<MapDiaryDto> readAllDiaryByAddress(String x, String y, User user) {
         List<MapDiaryDto> mapDiaryDtos = new ArrayList<>();
-        List<DiaryLocation> diaryLocations = diaryLocationRepositoryInterface.findByAddressOrderByDiaryLikesCountDesc(address);
+        List<DiaryLocation> diaryLocations = diaryLocationRepositoryInterface.findByXAndYOrderByDiaryLikesCountDesc(x, y);
 
 
         if (user != null) {
-            List<DiaryLocation> diaryLocations_user = diaryLocationRepositoryInterface.findByAddressAndDiary_UserOrderByDiaryLikesCountDesc(address, user);
+            List<DiaryLocation> diaryLocations_user = diaryLocationRepositoryInterface.findByXAndYAndDiary_UserOrderByDiaryLikesCountDesc(x, y, user);
             for(DiaryLocation diaryLocation : diaryLocations_user) {
                 System.out.println(diaryLocation.getDiary().getDiaryId());
                 if(diaryLocation.getDiary().isPublic()){

@@ -36,9 +36,9 @@ public class DiaryLocation {
     @Column(name = "name", length = 20)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id")
-    private Address address;
+    private String address;
+    private String x;
+    private String y;
 
     @OneToMany(mappedBy = "diaryLocation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DiaryLocationImage> images = new ArrayList<>();

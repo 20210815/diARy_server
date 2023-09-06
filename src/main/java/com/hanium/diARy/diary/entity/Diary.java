@@ -1,6 +1,7 @@
 package com.hanium.diARy.diary.entity;
 
 import com.hanium.diARy.plan.entity.Plan;
+import com.hanium.diARy.plan.entity.PlanLocation;
 import com.hanium.diARy.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -59,6 +60,9 @@ public class Diary {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DiaryLocation> diaryLocations;
 
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
