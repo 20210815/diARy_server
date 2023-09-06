@@ -86,7 +86,7 @@ public class DiaryRepository{
         //entity 저장
         diaryRepositoryInterface.save(diaryEntity);
 
-
+        System.out.println("createDiary" + diaryDto.getDiaryLocationDtoList());
         //DiarylocationDto는 따로 떼어서 저장
         List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
         int score = 0;
@@ -95,13 +95,42 @@ public class DiaryRepository{
         if (diaryLocationDtoList != null) {
             for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
                 DiaryLocation location = new DiaryLocation();
-                BeanUtils.copyProperties(diaryLocationDto, location);
-                if (diaryLocationDto.getContent() == null) {
+                Double positive = 0.0;
+                if((diaryLocationDto.getContent() == "")&&(diaryLocationDto.getContent() == null)) {
+                    BeanUtils.copyProperties(diaryLocationDto, location);
                     location.setContent("");
+                    positive = 0.0;
+                }
+                else {
+                    BeanUtils.copyProperties(diaryLocationDto, location);
+                    positive = this.clovaService.performSentimentAnalysis(diaryLocationDto.getContent());
                 }
                 location.setDiary(diaryEntity);
                 savedLocations.add(location);
+                diaryLocationRepositoryInterface.save(location);
 
+                System.out.println(positive);
+                System.out.println("createdDiary - location" + location);
+
+                score += positive;
+                i++;
+                Math.round(positive);
+
+
+                //address
+                if(!(addressRepositoryInterface.existsByXAndY(diaryLocationDto.getX(), diaryLocationDto.getY()))) {
+                    Address address = new Address();
+                    address.setX(diaryLocationDto.getX());
+                    address.setY(diaryLocationDto.getY());
+                    address.setAddress(diaryLocationDto.getAddress());
+                    addressRepositoryInterface.save(address);
+                }
+
+                    // DiaryLocation 저장
+                    List<DiaryLocationImageDto> diaryLocationImageDtoList = diaryLocationDto.getDiaryLocationImageDtoList();
+                    for (DiaryLocationImageDto diaryLocationImageDto : diaryLocationImageDtoList) {
+                        diaryLocationImageRepository.createImage(diaryLocationImageDto, location.getDiaryLocationId());
+                    }
             }
             diaryEntity.setDiaryLocations(savedLocations);
 
