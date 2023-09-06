@@ -13,4 +13,6 @@ public class PlanLocationDto {
     private Time timeEnd;
     private String name;
     private String address;
+    private String x;
+    private String y;
 }

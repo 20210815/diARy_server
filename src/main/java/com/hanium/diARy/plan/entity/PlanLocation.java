@@ -39,4 +39,10 @@ public class PlanLocation {
 
     @Column(name = "address", nullable = false, length = 50)
     private String address;
+
+    @Column(name = "x")
+    private String x;
+
+    @Column(name = "y")
+    private String y;
 }
