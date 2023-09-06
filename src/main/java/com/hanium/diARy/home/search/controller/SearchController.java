@@ -34,4 +34,14 @@ public class SearchController {
     public List<PlanResponseDto> findPlanByTag(@PathVariable String searchword){
         return searchService.findPlanByTag(searchword);
     }
+
+    @GetMapping("/search/{searchword}/diary-writer")
+    public List<DiaryResponseDto> findDiaryByWriter(@PathVariable String searchword) {
+        return searchService.findDiaryByWriter(searchword);
+    }
+
+    @GetMapping("/search/{searchword}/diary-dest")
+    public List<DiaryResponseDto> findDiaryByDest(@PathVariable String searchword) {
+        return searchService.findDiaryByDest(searchword);
+    }
 }

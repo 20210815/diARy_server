@@ -13,4 +13,8 @@ public interface DiaryRepositoryInterface extends CrudRepository<Diary, Long> {
     public List<Diary> findByUser(User user);
     public List<Diary> findByUser_UserId(Long userId);
     public List<Diary> findByIsPublicTrueOrderByLikesCountDesc();
+
+    public List<Diary> findByUserUsernameContaining(String name);
+
+    public List<Diary> findByTravelDestContaining(String dest);
 }
