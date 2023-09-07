@@ -87,6 +87,8 @@ public class DiaryRepository{
         diaryRepositoryInterface.save(diaryEntity);
 
         System.out.println("createDiary" + diaryDto.getDiaryLocationDtoList());
+        
+        
         //DiarylocationDto는 따로 떼어서 저장
         List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
         int score = 0;
@@ -96,7 +98,9 @@ public class DiaryRepository{
             for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
                 DiaryLocation location = new DiaryLocation();
                 Double positive = 0.0;
-                if((diaryLocationDto.getContent() == "")&&(diaryLocationDto.getContent() == null)) {
+                
+                //null이거나 빈칸이면 그냥 0이도록
+                if((diaryLocationDto.getContent() == "")||(diaryLocationDto.getContent() == null)) {
                     BeanUtils.copyProperties(diaryLocationDto, location);
                     location.setContent("");
                     positive = 0.0;
@@ -110,14 +114,15 @@ public class DiaryRepository{
                 diaryLocationRepositoryInterface.save(location);
 
                 System.out.println(positive);
-                System.out.println("createdDiary - location" + location);
+                System.out.println("createdDiary - location 생성 결과 " + location);
 
+                //감정분석 평균으로 diaryEntity에 만족도 저장
                 score += positive;
                 i++;
                 Math.round(positive);
 
 
-                //address
+                //address 있는지 확인 후에 없으면 새로운 객체 생성
                 if(!(addressRepositoryInterface.existsByXAndY(diaryLocationDto.getX(), diaryLocationDto.getY()))) {
                     Address address = new Address();
                     address.setX(diaryLocationDto.getX());
@@ -145,6 +150,9 @@ public class DiaryRepository{
                 // 이 부분에 오류 처리 또는 메시지 출력에 필요한 로직을 추가하세요.
                 score = 0;
             }
+
+
+
             System.out.println(score);
             diaryEntity.setSatisfaction(score);
         }
