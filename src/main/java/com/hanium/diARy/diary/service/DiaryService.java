@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +39,7 @@ public class DiaryService {
         this.userRepositoryInterface = userRepositoryInterface;
     }
 
-    public Long createDiary(DiaryRequestDto diaryDto) {
+    public Long createDiary(DiaryRequestDto diaryDto) throws URISyntaxException, IOException {
         //return this.diaryRepository.createDiary(diaryDto, userRepositoryInterface.findByEmail(useremail));
         return this.diaryRepository.createDiary(diaryDto);
     }

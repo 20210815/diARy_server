@@ -3,6 +3,8 @@ package com.hanium.diARy.diary.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.File;
+
 @Data
 @Entity
 @Table(name="diary_location_image")
@@ -16,7 +18,6 @@ public class DiaryLocationImage {
     @JoinColumn(name = "diary_location_id", nullable = false)
     private DiaryLocation diaryLocation;
 
-    @Lob
     @Column(name = "image_data")
-    private byte[] imageData;
+    private String imageData;
 }
