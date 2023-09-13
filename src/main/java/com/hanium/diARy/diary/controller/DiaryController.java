@@ -11,6 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -30,7 +32,7 @@ public class DiaryController {
     }
 
     @PostMapping()
-    public Long createDiary(@RequestBody DiaryRequestDto dto) {
+    public Long createDiary(@RequestBody DiaryRequestDto dto) throws URISyntaxException, IOException {
         return this.diaryService.createDiary(dto);
     }
 

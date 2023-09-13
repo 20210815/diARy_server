@@ -20,6 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -66,7 +68,7 @@ public class DiaryRepository{
     }
 
     @Transactional
-    public Long createDiary(DiaryRequestDto diaryDto) {
+    public Long createDiary(DiaryRequestDto diaryDto) throws URISyntaxException, IOException {
         // 다이어리 작성 dto -> entity
         DiaryDto diaryInfo = diaryDto.getDiaryDto();
         Diary diaryEntity = new Diary();
@@ -130,12 +132,12 @@ public class DiaryRepository{
                     address.setAddress(diaryLocationDto.getAddress());
                     addressRepositoryInterface.save(address);
                 }
+                List<DiaryLocationImageDto> diaryLocationImageDtoList = diaryLocationDto.getDiaryLocationImageDtoList();
+                if(diaryLocationImageDtoList != null) {
+                    // DiaryLocationImage 저장
+                    diaryLocationImageRepository.createImage(diaryLocationImageDtoList, location.getDiaryLocationId());
+                }
 
-                    // DiaryLocation 저장
-                    List<DiaryLocationImageDto> diaryLocationImageDtoList = diaryLocationDto.getDiaryLocationImageDtoList();
-                    for (DiaryLocationImageDto diaryLocationImageDto : diaryLocationImageDtoList) {
-                        diaryLocationImageRepository.createImage(diaryLocationImageDto, location.getDiaryLocationId());
-                    }
             }
             diaryEntity.setDiaryLocations(savedLocations);
 

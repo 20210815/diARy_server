@@ -50,7 +50,7 @@ public class SearchService {
         this.planLikeRepository = planLikeRepository;
     }
 
-    public List<DiaryResponseDto> findDiaryByTag(String searchword) {
+    public List<DiaryResponseDto> findDiaryByTagLike(String searchword) {
         System.out.println("service");
         DiaryTag diaryTag = tagRepositoryInterface.findByName(searchword);
         List<Diary> diaries = diaryTag.getDiaries();
@@ -62,9 +62,10 @@ public class SearchService {
                 .collect(Collectors.toList());
 
         for (Diary diary: sortedDiaries) {
-            DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
-            diaryResponseDtos.add(diaryResponseDto);
-
+            if(diary.isPublic()) {
+                DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+                diaryResponseDtos.add(diaryResponseDto);
+            }
         }
         return diaryResponseDtos;
     }
@@ -118,7 +119,7 @@ public class SearchService {
         return planResponseDtos;
     }
 
-    public List<DiaryResponseDto> findDiaryByWriter(String searchword) {
+    public List<DiaryResponseDto> findDiaryByWriterLike(String searchword) {
         List<Diary> diaries = diaryRepositoryInterface.findByUserUsernameContaining(searchword);
         List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
         List<Diary> sortedDiaries = diaries.stream()
@@ -126,14 +127,15 @@ public class SearchService {
                 .collect(Collectors.toList());
 
         for (Diary diary: sortedDiaries) {
-            DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
-            diaryResponseDtos.add(diaryResponseDto);
-
+            if(diary.isPublic()) {
+                DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+                diaryResponseDtos.add(diaryResponseDto);
+            }
         }
         return diaryResponseDtos;
     }
 
-    public List<DiaryResponseDto> findDiaryByDest(String searchword) {
+    public List<DiaryResponseDto> findDiaryByDestLike(String searchword) {
         List<Diary> diaries = diaryRepositoryInterface.findByTravelDestContaining(searchword);
         List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
         List<Diary> sortedDiaries = diaries.stream()
@@ -141,8 +143,44 @@ public class SearchService {
                 .collect(Collectors.toList());
 
         for (Diary diary: sortedDiaries) {
-            DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
-            diaryResponseDtos.add(diaryResponseDto);
+            if(diary.isPublic()) {
+                DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+                diaryResponseDtos.add(diaryResponseDto);
+            }
+
+        }
+        return diaryResponseDtos;
+    }
+
+
+    public List<DiaryResponseDto> findDiaryByWriterRecent(String searchword) {
+        List<Diary> diaries = diaryRepositoryInterface.findByUserUsernameContaining(searchword);
+        List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
+        List<Diary> sortedDiaries = diaries.stream()
+                .sorted(Comparator.comparing(Diary::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        for (Diary diary: sortedDiaries) {
+            if(diary.isPublic()) {
+                DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+                diaryResponseDtos.add(diaryResponseDto);
+            }
+        }
+        return diaryResponseDtos;
+    }
+
+    public List<DiaryResponseDto> findDiaryByDestRecent(String searchword) {
+        List<Diary> diaries = diaryRepositoryInterface.findByTravelDestContaining(searchword);
+        List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
+        List<Diary> sortedDiaries = diaries.stream()
+                .sorted(Comparator.comparing(Diary::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        for (Diary diary: sortedDiaries) {
+            if(diary.isPublic()) {
+                DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+                diaryResponseDtos.add(diaryResponseDto);
+            }
 
         }
         return diaryResponseDtos;

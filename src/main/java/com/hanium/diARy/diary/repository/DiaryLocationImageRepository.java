@@ -1,13 +1,28 @@
 package com.hanium.diARy.diary.repository;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.hanium.diARy.S3Config;
 import com.hanium.diARy.diary.dto.DiaryLocationDto;
 import com.hanium.diARy.diary.dto.DiaryLocationImageDto;
 import com.hanium.diARy.diary.entity.DiaryLocation;
 import com.hanium.diARy.diary.entity.DiaryLocationImage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.util.UriBuilder;
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,23 +33,34 @@ import java.util.stream.Collectors;
 public class DiaryLocationImageRepository {
     private final DiaryLocationImageRepositoryInterface diaryLocationImageRepositoryInterface;
     private final DiaryLocationInterface diaryLocationRepositoryInterface;
+    private final S3Config s3Config;
 
     public DiaryLocationImageRepository(
             @Autowired DiaryLocationImageRepositoryInterface diaryLocationImageRepositoryInterface,
-            @Autowired DiaryLocationInterface diaryLocationRepositoryInterface
+            @Autowired DiaryLocationInterface diaryLocationRepositoryInterface,
+            @Autowired S3Config s3Config
     ) {
         this.diaryLocationImageRepositoryInterface = diaryLocationImageRepositoryInterface;
         this.diaryLocationRepositoryInterface = diaryLocationRepositoryInterface;
+        this.s3Config = s3Config;
     }
 
-    public void createImage(DiaryLocationImageDto diaryLocationImageDto, Long locationId) {
-        DiaryLocationImage diaryLocationImage = new DiaryLocationImage();
+    public void createImage(List<DiaryLocationImageDto> diaryLocationImageDtos, Long locationId) throws URISyntaxException, IOException {
         DiaryLocation diaryLocation = diaryLocationRepositoryInterface.findById(locationId).get();
-        diaryLocationImage.setDiaryLocation(diaryLocation);
-        diaryLocationImage.setImageData(diaryLocationImageDto.getImageData());
-        diaryLocationImageRepositoryInterface.save(diaryLocationImage);
-    }
+        List<DiaryLocationImage> diaryLocationImages = new ArrayList<>();
+        for(DiaryLocationImageDto diaryLocationImageDto : diaryLocationImageDtos) {
+            DiaryLocationImage diaryLocationImage = new DiaryLocationImage();
+            BeanUtils.copyProperties(diaryLocationImageDto, diaryLocationImage);
+            diaryLocationImage.setDiaryLocation(diaryLocation);
+            //diaryLocationImage.setImageData(diaryLocationImageDto.getImageData());
 
+            //diaryLocationImage.setImageData(uploadToS3(file, diaryLocationImage.getImageId().toString()));
+            System.out.println("locationImageRepository에서 setImageData" + diaryLocationImage.getImageData());
+            diaryLocationImageRepositoryInterface.save(diaryLocationImage);
+            diaryLocationImages.add(diaryLocationImage);
+        }
+        diaryLocation.setImages(diaryLocationImages);
+    }
 
     public List<DiaryLocationImageDto> readImage(DiaryLocation diaryLocation) {
         List<DiaryLocationImageDto> diaryLocationImageDtoList = new ArrayList<>();
