@@ -62,8 +62,10 @@ public class SearchService {
                 .collect(Collectors.toList());
 
         for (Diary diary: sortedDiaries) {
-            DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
-            diaryResponseDtos.add(diaryResponseDto);
+            if(diary.isPublic()) {
+                DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+                diaryResponseDtos.add(diaryResponseDto);
+            }
 
         }
         return diaryResponseDtos;
@@ -126,9 +128,10 @@ public class SearchService {
                 .collect(Collectors.toList());
 
         for (Diary diary: sortedDiaries) {
-            DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
-            diaryResponseDtos.add(diaryResponseDto);
-
+            if(diary.isPublic()) {
+                DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+                diaryResponseDtos.add(diaryResponseDto);
+            }
         }
         return diaryResponseDtos;
     }
@@ -141,8 +144,10 @@ public class SearchService {
                 .collect(Collectors.toList());
 
         for (Diary diary: sortedDiaries) {
-            DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
-            diaryResponseDtos.add(diaryResponseDto);
+            if(diary.isPublic()) {
+                DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+                diaryResponseDtos.add(diaryResponseDto);
+            }
 
         }
         return diaryResponseDtos;

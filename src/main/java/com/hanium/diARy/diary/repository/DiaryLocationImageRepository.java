@@ -62,12 +62,6 @@ public class DiaryLocationImageRepository {
         diaryLocation.setImages(diaryLocationImages);
     }
 
-    private String uploadToS3(File uploadFile, String filename) {
-        s3Config.amazonS3Client().putObject(new PutObjectRequest("diary", filename, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
-        return s3Config.amazonS3Client().getUrl("diary", filename).toString();
-    }
-
-
     public List<DiaryLocationImageDto> readImage(DiaryLocation diaryLocation) {
         List<DiaryLocationImageDto> diaryLocationImageDtoList = new ArrayList<>();
         List<DiaryLocationImage> diaryLocationImages = diaryLocationImageRepositoryInterface.findByDiaryLocation(diaryLocation);
