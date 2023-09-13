@@ -25,9 +25,9 @@ public class SearchController {
         this.searchService = searchService;
     }
 
-    @GetMapping("/search/{searchword}/diary-tag")
-    public List<DiaryResponseDto> findDiaryByTag(@PathVariable String searchword){
-        return searchService.findDiaryByTag(searchword);
+    @GetMapping("/search/{searchword}/diary-tag/like")
+    public List<DiaryResponseDto> findDiaryByTagLike(@PathVariable String searchword){
+        return searchService.findDiaryByTagLike(searchword);
     }
 
     @GetMapping("/search/{searchword}/plan-tag")
@@ -35,13 +35,23 @@ public class SearchController {
         return searchService.findPlanByTag(searchword);
     }
 
-    @GetMapping("/search/{searchword}/diary-writer")
-    public List<DiaryResponseDto> findDiaryByWriter(@PathVariable String searchword) {
-        return searchService.findDiaryByWriter(searchword);
+    @GetMapping("/search/{searchword}/diary-writer/like")
+    public List<DiaryResponseDto> findDiaryByWriterLike(@PathVariable String searchword) {
+        return searchService.findDiaryByWriterLike(searchword);
     }
 
-    @GetMapping("/search/{searchword}/diary-dest")
-    public List<DiaryResponseDto> findDiaryByDest(@PathVariable String searchword) {
-        return searchService.findDiaryByDest(searchword);
+    @GetMapping("/search/{searchword}/diary-dest/like")
+    public List<DiaryResponseDto> findDiaryByDestLike(@PathVariable String searchword) {
+        return searchService.findDiaryByDestLike(searchword);
+    }
+
+    @GetMapping("/search/{searchword}/diary-writer/recent")
+    public List<DiaryResponseDto> findDiaryByWriterRecent(@PathVariable String searchword) {
+        return searchService.findDiaryByWriterRecent(searchword);
+    }
+
+    @GetMapping("/search/{searchword}/diary-dest/recent")
+    public List<DiaryResponseDto> findDiaryByDestRecent(@PathVariable String searchword) {
+        return searchService.findDiaryByDestRecent(searchword);
     }
 }
