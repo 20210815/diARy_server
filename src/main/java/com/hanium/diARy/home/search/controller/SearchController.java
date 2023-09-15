@@ -30,9 +30,9 @@ public class SearchController {
         return searchService.findDiaryByTagLike(searchword);
     }
 
-    @GetMapping("/search/{searchword}/plan-tag")
-    public List<PlanResponseDto> findPlanByTag(@PathVariable String searchword){
-        return searchService.findPlanByTag(searchword);
+    @GetMapping("/search/{searchword}/diary-tag/recent")
+    public List<DiaryResponseDto> findDiaryByTagRecent(@PathVariable String searchword){
+        return searchService.findDiaryByTagRecent(searchword);
     }
 
     @GetMapping("/search/{searchword}/diary-writer/like")
@@ -53,5 +53,10 @@ public class SearchController {
     @GetMapping("/search/{searchword}/diary-dest/recent")
     public List<DiaryResponseDto> findDiaryByDestRecent(@PathVariable String searchword) {
         return searchService.findDiaryByDestRecent(searchword);
+    }
+
+    @GetMapping("/search/{searchword}/plan-tag/like")
+    public List<PlanResponseDto> findPlanByTagLike(@PathVariable String searchword){
+        return searchService.findPlanByTagLike(searchword);
     }
 }

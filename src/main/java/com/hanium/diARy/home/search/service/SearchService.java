@@ -70,18 +70,43 @@ public class SearchService {
         return diaryResponseDtos;
     }
 
-    public List<PlanResponseDto> findPlanByTag(String searchword) {
-        PlanTag planTag = planTagRepository.findByName(searchword);
+    public List<DiaryResponseDto> findDiaryByTagRecent(String searchword) {
+        System.out.println("service");
+        DiaryTag diaryTag = tagRepositoryInterface.findByName(searchword);
+        List<Diary> diaries = diaryTag.getDiaries();
+        List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
+
+        //좋아요 많은 순서대로 출력
+        List<Diary> sortedDiaries = diaries.stream()
+                .sorted(Comparator.comparing(Diary::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        for (Diary diary: sortedDiaries) {
+            if(diary.isPublic()) {
+                DiaryResponseDto diaryResponseDto = diaryRepository.readDiary(diary.getDiaryId());
+                diaryResponseDtos.add(diaryResponseDto);
+            }
+        }
+        return diaryResponseDtos;
+    }
+
+    public List<PlanResponseDto> findPlanByTagLike(String searchword) {
+        PlanTag planTag = planTagRepository.findByNameContaining(searchword);
         List<Long> planIds = planRepository.findPlanIdsByTagId(planTag.getTagId());
         List<Plan> plans = planRepository.findAllById(planIds);
         List<PlanResponseDto> planResponseDtos = new ArrayList<>();
 
-        for (Plan plan : plans) {
+        List<Plan> sortedPlans = plans.stream()
+                .sorted(Comparator.comparingInt(plan -> -plan.getPlanLikes().size()))
+                .collect(Collectors.toList());
+
+        for (Plan plan : sortedPlans) {
             Long userId = plan.getUser().getUserId();
             PlanDto planDto = new PlanDto();
             BeanUtils.copyProperties(plan, planDto);
 
             List<PlanLocationDto> planLocationDtos = new ArrayList<>();
+
             for (PlanLocation location : plan.getPlanLocations()) {
                 PlanLocationDto planLocationDto = new PlanLocationDto();
                 BeanUtils.copyProperties(location, planLocationDto);
