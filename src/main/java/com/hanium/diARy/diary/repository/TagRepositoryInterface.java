@@ -13,4 +13,5 @@ import java.util.List;
 public interface TagRepositoryInterface extends CrudRepository<DiaryTag, Long> {
     public DiaryTag findByName(String name);
     public List<DiaryTag> findAllByOrderByNumberDesc();
+    public List<DiaryTag> findByNameContaining(String name);
 }

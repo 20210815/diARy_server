@@ -16,4 +16,10 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
     @Query("SELECT ptm.plan.planId FROM PlanTagMap ptm WHERE ptm.planTag.tagId = :tagId")
     List<Long> findPlanIdsByTagId(@Param("tagId") Long tagId);
 
+    List<Plan> findByUserUsernameContainingAndIsPublicTrue(String user);
+    List<Plan> findByTravelDestContainingAndIsPublicTrue(String dest);
+
+    List<Plan> findByIsPublicTrue();
+
+
 }

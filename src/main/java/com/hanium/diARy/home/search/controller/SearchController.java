@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/search")
 @ComponentScan
 public class SearchController {
     private final SearchService searchService;
@@ -25,38 +25,64 @@ public class SearchController {
         this.searchService = searchService;
     }
 
-    @GetMapping("/search/{searchword}/diary-tag/like")
+    @GetMapping("/{searchword}/diary-tag/like")
     public List<DiaryResponseDto> findDiaryByTagLike(@PathVariable String searchword){
         return searchService.findDiaryByTagLike(searchword);
     }
 
-    @GetMapping("/search/{searchword}/diary-tag/recent")
+    @GetMapping("/{searchword}/diary-tag/recent")
     public List<DiaryResponseDto> findDiaryByTagRecent(@PathVariable String searchword){
         return searchService.findDiaryByTagRecent(searchword);
     }
 
-    @GetMapping("/search/{searchword}/diary-writer/like")
+    @GetMapping("/{searchword}/diary-writer/like")
     public List<DiaryResponseDto> findDiaryByWriterLike(@PathVariable String searchword) {
         return searchService.findDiaryByWriterLike(searchword);
     }
 
-    @GetMapping("/search/{searchword}/diary-dest/like")
+    @GetMapping("/{searchword}/diary-dest/like")
     public List<DiaryResponseDto> findDiaryByDestLike(@PathVariable String searchword) {
         return searchService.findDiaryByDestLike(searchword);
     }
 
-    @GetMapping("/search/{searchword}/diary-writer/recent")
+    @GetMapping("/{searchword}/diary-writer/recent")
     public List<DiaryResponseDto> findDiaryByWriterRecent(@PathVariable String searchword) {
         return searchService.findDiaryByWriterRecent(searchword);
     }
 
-    @GetMapping("/search/{searchword}/diary-dest/recent")
+    @GetMapping("/{searchword}/diary-dest/recent")
     public List<DiaryResponseDto> findDiaryByDestRecent(@PathVariable String searchword) {
         return searchService.findDiaryByDestRecent(searchword);
     }
 
-    @GetMapping("/search/{searchword}/plan-tag/like")
+    @GetMapping("/{searchword}/plan-tag/like")
     public List<PlanResponseDto> findPlanByTagLike(@PathVariable String searchword){
         return searchService.findPlanByTagLike(searchword);
     }
+
+    @GetMapping("/{searchword}/plan-tag/recent")
+    public List<PlanResponseDto> findPlanByTagRecent(@PathVariable String searchword){
+        return searchService.findPlanByTagRecent(searchword);
+    }
+
+    @GetMapping("/{searchword}/plan-writer/like")
+    public List<PlanResponseDto> findPlanByWriterLike(@PathVariable String searchword){
+        return searchService.findPlanByWriterLike(searchword);
+    }
+
+    @GetMapping("/{searchword}/plan-writer/recent")
+    public List<PlanResponseDto> findPlanByWriterRecent(@PathVariable String searchword){
+        return searchService.findPlanByWriterRecent(searchword);
+    }
+
+    @GetMapping("/{searchword}/plan-dest/like")
+    public List<PlanResponseDto> findPlanByDestLike(@PathVariable String searchword){
+        return searchService.findPlanByDestLike(searchword);
+    }
+
+    @GetMapping("/{searchword}/plan-dest/recent")
+    public List<PlanResponseDto> findPlanByDestRecent(@PathVariable String searchword){
+        return searchService.findPlanByDestRecent(searchword);
+    }
+
 }
