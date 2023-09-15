@@ -32,6 +32,7 @@ public class TopicService {
     }
 
     public List<HottopicDto> readBestDiaryTag() {
+        //3순위까지만
         List<DiaryTag> diaryTags = tagRepository.DescDiaryTag().subList(0, 3);
         List<HottopicDto> hottopicDtos = new ArrayList<>();
 

@@ -33,7 +33,7 @@ public class User {
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
-    @Column(name = "image", length = 100)
+    @Column(name = "image")
     private String image;
 
     @PrePersist
