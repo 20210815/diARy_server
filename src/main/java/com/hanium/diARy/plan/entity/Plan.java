@@ -28,6 +28,10 @@ public class Plan {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "origin_user_id", nullable = false)
+    private User origin;
+
     @Column(name = "travel_dest", nullable = false, length = 50)
     private String travelDest;
 

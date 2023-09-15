@@ -52,6 +52,7 @@ public class PlanServiceImpl implements PlanService {
         String email = authentication.getName();
         User user = userRepositoryInterface.findByEmail(email);
         plan.setUser(user);
+        plan.setOrigin(user);
 
         BeanUtils.copyProperties(planDto, plan);
         Plan savedPlan = planRepository.save(plan);
