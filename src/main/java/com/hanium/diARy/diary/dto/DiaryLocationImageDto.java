@@ -14,6 +14,7 @@ public class DiaryLocationImageDto {
     private Long imageId;
     private Long diaryLocationId;
     private String imageData;
+    private String imageUri;
 
     // 생성자, 게터/세터, 기타 메서드
 }

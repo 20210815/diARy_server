@@ -51,7 +51,7 @@ public class DiaryController {
 
     @PatchMapping("/{diaryId}")
     public void updateDiary(@PathVariable("diaryId") Long id,
-                            @RequestBody DiaryRequestDto diaryDto){
+                            @RequestBody DiaryRequestDto diaryDto) throws URISyntaxException, IOException {
         this.diaryService.updateDiary(id, diaryDto);
     }
 

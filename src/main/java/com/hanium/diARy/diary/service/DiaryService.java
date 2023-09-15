@@ -51,7 +51,7 @@ public class DiaryService {
         return this.diaryRepository.readPublicDiaryAll();
     }
 
-    public void updateDiary(Long id, DiaryRequestDto diaryDto) {
+    public void updateDiary(Long id, DiaryRequestDto diaryDto) throws URISyntaxException, IOException {
         this.diaryRepository.updateDiary(id, diaryDto);
     }
 

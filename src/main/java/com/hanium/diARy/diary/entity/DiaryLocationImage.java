@@ -20,4 +20,7 @@ public class DiaryLocationImage {
 
     @Column(name = "image_data")
     private String imageData;
+
+    @Column(name = "image_uri")
+    private String imageUri;
 }
