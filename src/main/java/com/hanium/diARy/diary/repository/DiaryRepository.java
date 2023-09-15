@@ -41,6 +41,7 @@ public class DiaryRepository{
     private final CommentRepository commentRepository;
     private final AddressRepository addressRepository;
     private final DiaryLocationImageRepositoryInterface diaryLocationImageRepositoryInterface;
+    private final TagRepository tagRepository;
     public DiaryRepository(
             @Autowired DiaryRepositoryInterface diaryRepositoryInterface,
             @Autowired TagRepositoryInterface tagRepositoryInterface,
@@ -53,7 +54,8 @@ public class DiaryRepository{
             @Autowired ClovaService clovaService,
             @Autowired CommentRepository commentRepository,
             @Autowired AddressRepository addressRepository,
-            @Autowired DiaryLocationImageRepositoryInterface diaryLocationImageRepositoryInterface
+            @Autowired DiaryLocationImageRepositoryInterface diaryLocationImageRepositoryInterface,
+            @Autowired TagRepository tagRepository
 
             ) {
         this.diaryRepositoryInterface = diaryRepositoryInterface;
@@ -68,6 +70,7 @@ public class DiaryRepository{
         this.commentRepository = commentRepository;
         this.addressRepository = addressRepository;
         this.diaryLocationImageRepositoryInterface = diaryLocationImageRepositoryInterface;
+        this.tagRepository = tagRepository;
     }
 
     @Transactional
@@ -177,6 +180,7 @@ public class DiaryRepository{
             else {
                 DiaryTag tag = tagRepositoryInterface.findByName(tagDto.getName());
                 tag.getDiaries().add(diaryEntity);
+                tag.setNumber(tag.getDiaries().size());
                 tagRepositoryInterface.save(tag);
                 diaryEntity.getTags().add(tag);
             }
@@ -191,6 +195,7 @@ public class DiaryRepository{
 
         // Save the diaryEntity using the repository
         this.diaryRepositoryInterface.save(diaryEntity);
+        tagRepository.DescDiaryTag();
         return diaryEntity.getDiaryId();
     }
 
@@ -391,6 +396,7 @@ public class DiaryRepository{
                 savedLocations.add(diaryLocation);
                 diaryLocationRepositoryInterface.save(diaryLocation);
             }
+            tagRepository.DescDiaryTag();
         }
 
 //        DiaryDto updatedDiaryDto = new DiaryDto();
