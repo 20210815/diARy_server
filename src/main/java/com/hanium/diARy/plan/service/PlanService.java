@@ -1,6 +1,7 @@
 package com.hanium.diARy.plan.service;
 
 import com.hanium.diARy.plan.dto.PlanDto;
+import com.hanium.diARy.plan.dto.PlanImageDto;
 import com.hanium.diARy.plan.dto.PlanRequestDto;
 import com.hanium.diARy.plan.dto.PlanResponseDto;
 
@@ -13,4 +14,5 @@ public interface PlanService {
     PlanResponseDto getPlanById(Long planId);
     PlanResponseDto updatePlanIsPublic(Long planId, boolean isPublic);
     List<PlanResponseDto> getAllPlanByUserId(Long userId);
+    void updatePlanImage(Long planId, PlanImageDto planImageDto);
 }

@@ -53,6 +53,12 @@ public class Plan {
     @Column(name = "public", nullable = false)
     private boolean isPublic;
 
+    @Column(name = "image_data")
+    private String imageData;
+
+    @Column(name = "image_uri")
+    private String imageUri;
+
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlanLocation> planLocations;
 

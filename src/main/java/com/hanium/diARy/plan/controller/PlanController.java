@@ -1,6 +1,7 @@
 package com.hanium.diARy.plan.controller;
 
 import com.hanium.diARy.plan.dto.PlanDto;
+import com.hanium.diARy.plan.dto.PlanImageDto;
 import com.hanium.diARy.plan.dto.PlanRequestDto;
 import com.hanium.diARy.plan.dto.PlanResponseDto;
 import com.hanium.diARy.plan.entity.Plan;
@@ -66,5 +67,11 @@ public class PlanController {
         }
 
         return ResponseEntity.ok(updatedPlan);
+    }
+
+    @PatchMapping("/{planId}/image")
+    public ResponseEntity<String> updatePlanImage(@PathVariable Long planId, @RequestBody PlanImageDto planImageDto) {
+        planService.updatePlanImage(planId, planImageDto);
+        return new ResponseEntity<>("success", HttpStatus.OK);
     }
 }
