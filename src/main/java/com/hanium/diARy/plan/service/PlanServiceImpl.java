@@ -1,11 +1,13 @@
 package com.hanium.diARy.plan.service;
 
+import com.hanium.diARy.S3Config;
 import com.hanium.diARy.plan.dto.*;
 import com.hanium.diARy.plan.entity.*;
 import com.hanium.diARy.plan.repository.*;
 import com.hanium.diARy.user.dto.UserDto;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +19,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,14 +30,16 @@ public class PlanServiceImpl implements PlanService {
     private final PlanLikeRepository planLikeRepository;
     private final UserRepositoryInterface userRepositoryInterface;
     private final PlanTagMapRepository planTagMapRepository;
+    private final S3Config s3Config;
 
-    public PlanServiceImpl(PlanRepository planRepository, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanLikeRepository planLikeRepository, UserRepositoryInterface userRepositoryInterface, PlanTagMapRepository planTagMapRepository) {
+    public PlanServiceImpl(PlanRepository planRepository, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanLikeRepository planLikeRepository, UserRepositoryInterface userRepositoryInterface, PlanTagMapRepository planTagMapRepository, S3Config s3Config) {
         this.planRepository = planRepository;
         this.planLocationRepository = planLocationRepository;
         this.planTagRepository = planTagRepository;
         this.planLikeRepository = planLikeRepository;
         this.userRepositoryInterface = userRepositoryInterface;
         this.planTagMapRepository = planTagMapRepository;
+        this.s3Config = s3Config;
     }
 
     @Override
@@ -394,6 +397,22 @@ public class PlanServiceImpl implements PlanService {
         }
 
         return planResponseDtos;
+    }
+
+    @Override
+    public void updatePlanImage(Long planId, PlanImageDto planImageDto) {
+        Plan existingPlan = planRepository.findById(planId).orElse(null);
+        if (existingPlan != null) {
+            // 이미지 데이터 및 이미지 URI를 업데이트합니다.
+            existingPlan.setImageData(planImageDto.getImageData());
+            existingPlan.setImageUri(planImageDto.getImageUri());
+
+            // 업데이트된 Plan 엔터티를 저장합니다.
+            planRepository.save(existingPlan);
+        } else {
+            // 예외 처리: 해당 planId로 Plan이 존재하지 않는 경우
+            throw new EntityNotFoundException("Plan with ID " + planId + " not found");
+        }
     }
 
 }
