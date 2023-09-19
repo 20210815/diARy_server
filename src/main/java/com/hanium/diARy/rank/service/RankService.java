@@ -88,7 +88,10 @@ public class RankService {
             User user = userRepositoryInterface.findById(userId).get();
             BeanUtils.copyProperties(user, userDto);
 
-            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
+            UserDto originDto = new UserDto();
+            BeanUtils.copyProperties(plan.getOrigin(), originDto);
+
+            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, originDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
             planResponseDtos.add(planResponseDto);
 
             // 이미 추가한 Plan으로 표시
@@ -150,7 +153,10 @@ public class RankService {
             User user = userRepositoryInterface.findById(userId).get();
             BeanUtils.copyProperties(user, userDto);
 
-            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
+            UserDto originDto = new UserDto();
+            BeanUtils.copyProperties(plan.getOrigin(), originDto);
+
+            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, originDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
             planResponseDtos.add(planResponseDto);
 
             // 이미 추가한 Plan으로 표시

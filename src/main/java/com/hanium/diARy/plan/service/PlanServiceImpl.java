@@ -204,8 +204,11 @@ public class PlanServiceImpl implements PlanService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(existingPlan.getUser(), userDto);
 
+        UserDto originDto = new UserDto();
+        BeanUtils.copyProperties(existingPlan.getUser(), originDto);
+
         // Return the updated PlanResponseDto
-        PlanResponseDto updatedPlanResponseDto = new PlanResponseDto(userDto, updatedPlanDto, updatedPlanLocationDtos, updatedPlanTagDtos, planLikeDtos);
+        PlanResponseDto updatedPlanResponseDto = new PlanResponseDto(userDto, originDto, updatedPlanDto, updatedPlanLocationDtos, updatedPlanTagDtos, planLikeDtos);
         return updatedPlanResponseDto;
     }
 
@@ -281,8 +284,11 @@ public class PlanServiceImpl implements PlanService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(plan.getUser(), userDto);
 
+        UserDto originDto = new UserDto();
+        BeanUtils.copyProperties(plan.getOrigin(), originDto);
+
         // PlanDto, List<LocationDto>, List<TagDto>를 PlanResponseDto로 변환하여 반환
-        PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
+        PlanResponseDto planResponseDto = new PlanResponseDto(userDto, originDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
         return planResponseDto;
     }
 
@@ -326,8 +332,11 @@ public class PlanServiceImpl implements PlanService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(existingPlan.getUser(), userDto);
 
+        UserDto originDto = new UserDto();
+        BeanUtils.copyProperties(existingPlan.getOrigin(), originDto);
+
         // PlanDto, List<LocationDto>, List<TagDto>를 PlanResponseDto로 변환하여 반환
-        PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
+        PlanResponseDto planResponseDto = new PlanResponseDto(userDto, originDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
         return planResponseDto;
 
     }
@@ -374,7 +383,10 @@ public class PlanServiceImpl implements PlanService {
             User user = userRepositoryInterface.findById(userId).get();
             BeanUtils.copyProperties(user, userDto);
 
-            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
+            UserDto originDto = new UserDto();
+            BeanUtils.copyProperties(plan.getOrigin(), originDto);
+
+            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, originDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
             planResponseDtos.add(planResponseDto);
         }
 
