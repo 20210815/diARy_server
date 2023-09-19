@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
@@ -45,10 +46,10 @@ public class Plan {
     private Date travelEnd;
 
     @Column(name = "created_at")
-    private Date createdAt;
+    private Timestamp createdAt;
 
     @Column(name = "updated_at")
-    private Date updatedAt;
+    private Timestamp updatedAt;
 
     @Column(name = "public", nullable = false)
     private boolean isPublic;
@@ -70,12 +71,12 @@ public class Plan {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = new Date(Instant.now().toEpochMilli());
-        this.updatedAt = new Date(Instant.now().toEpochMilli());
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = new Date(Instant.now().toEpochMilli());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
 }

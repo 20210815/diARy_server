@@ -6,6 +6,7 @@ import lombok.Data;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.Instant;
 
 @Data
@@ -33,22 +34,21 @@ public class Reply {
     private User user;
 
     @Column(name = "created_at", nullable = false)
-    private Date createdAt;
+    private Timestamp createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private Date updatedAt;
+    private Timestamp updatedAt;
 
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = new Date(Instant.now().toEpochMilli());
-        this.updatedAt = new Date(Instant.now().toEpochMilli());
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = new Date(Instant.now().toEpochMilli());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
-
 }
 
