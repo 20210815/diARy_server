@@ -72,7 +72,8 @@ public class PlanServiceImpl implements PlanService {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            System.out.println(location);
+            location.setX(planLocationDto.getX());
+            location.setY(planLocationDto.getY());
             location.setPlan(savedPlan);
             savedLocations.add(location);
             planLocationRepository.save(location);
@@ -145,6 +146,8 @@ public class PlanServiceImpl implements PlanService {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                location.setX(planLocationDto.getX());
+                location.setY(planLocationDto.getY());
                 location.setPlan(existingPlan);
                 savedLocations.add(location);
                 planLocationRepository.save(location);
