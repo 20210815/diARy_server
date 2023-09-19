@@ -108,7 +108,10 @@ public class PlanLikeServiceImpl implements PlanLikeService {
             User user = userRepositoryInterface.findById(userId).get();
             BeanUtils.copyProperties(user, userDto);
 
-            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
+            UserDto originDto = new UserDto();
+            BeanUtils.copyProperties(plan.getOrigin(), originDto);
+
+            PlanResponseDto planResponseDto = new PlanResponseDto(userDto, originDto, planDto, planLocationDtos, planTagDtos, planLikeDtos);
             likedPlanResponseDtos.add(planResponseDto);
         }
 

@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class PlanResponseDto {
     private UserDto user;
+    private UserDto origin;
     private PlanDto plan;
     private List<PlanLocationDto> locations;
     private List<PlanTagDto> tags;

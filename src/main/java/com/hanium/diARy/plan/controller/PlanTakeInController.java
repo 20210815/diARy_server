@@ -1,7 +1,7 @@
 package com.hanium.diARy.plan.controller;
 
-import com.hanium.diARy.plan.repository.PlanTakeInRepository;
 import com.hanium.diARy.plan.service.PlanTakeInService;
+import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,8 @@ public class PlanTakeInController {
     @PostMapping
     public ResponseEntity<String> createPlanTakeIn(@PathVariable Long planId) {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        Long userId = userRepositoryInterface.findByEmail(userEmail).getUserId();
+        User user = userRepositoryInterface.findByEmail(userEmail);
+        Long userId = user.getUserId();
 
         planTakeInService.createPlanTakeIn(planId, userId);
         return new ResponseEntity<>("일정 담기", HttpStatus.OK);

@@ -30,12 +30,27 @@ public class PlanTakeInServiceImpl implements PlanTakeInService{
         user.setUserId(userId);
         planTakeIn.setUser(user);
 
-        Plan plan = planRepository.findById(planId).orElse(null);
-        if(plan == null) {
+        Plan existingPlan = planRepository.findById(planId).orElse(null);
+        if(existingPlan == null) {
             throw new IllegalArgumentException("Plan with the given planId does not exist.");
         }
-        planTakeIn.setPlan(plan);
 
+        // 새로운 Plan 엔티티를 생성하고 필요한 정보를 복사
+        Plan newPlan = new Plan();
+        newPlan.setUser(user); // 현재 사용자를 작성자로 설정
+        newPlan.setOrigin(existingPlan.getUser()); // 원래 작성자를 원작자로 설정
+        newPlan.setTravelDest(existingPlan.getTravelDest());
+        newPlan.setContent(existingPlan.getContent());
+        newPlan.setTravelStart(existingPlan.getTravelStart());
+        newPlan.setTravelEnd(existingPlan.getTravelEnd());
+        newPlan.setPublic(existingPlan.isPublic());
+
+        // 새로운 Plan 엔티티를 저장
+        Plan savedPlan = planRepository.save(newPlan);
+
+        planTakeIn.setPlan(savedPlan); // 새로운 Plan을 설정
+
+        // PlanTakeIn 엔티티를 저장
         planTakeInRepository.save(planTakeIn);
     }
 
