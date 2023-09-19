@@ -21,4 +21,6 @@ public class PlanDto {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private boolean isPublic;
+    private String imageData;
+    private String imageUri;
 }
