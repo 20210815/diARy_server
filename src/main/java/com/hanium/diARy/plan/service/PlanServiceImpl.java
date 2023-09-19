@@ -30,16 +30,16 @@ public class PlanServiceImpl implements PlanService {
     private final PlanLikeRepository planLikeRepository;
     private final UserRepositoryInterface userRepositoryInterface;
     private final PlanTagMapRepository planTagMapRepository;
-    private final S3Config s3Config;
+    private final PlanTakeInRepository planTakeInRepository;
 
-    public PlanServiceImpl(PlanRepository planRepository, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanLikeRepository planLikeRepository, UserRepositoryInterface userRepositoryInterface, PlanTagMapRepository planTagMapRepository, S3Config s3Config) {
+    public PlanServiceImpl(PlanRepository planRepository, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanLikeRepository planLikeRepository, UserRepositoryInterface userRepositoryInterface, PlanTagMapRepository planTagMapRepository, PlanTakeInRepository planTakeInRepository) {
         this.planRepository = planRepository;
         this.planLocationRepository = planLocationRepository;
         this.planTagRepository = planTagRepository;
         this.planLikeRepository = planLikeRepository;
         this.userRepositoryInterface = userRepositoryInterface;
         this.planTagMapRepository = planTagMapRepository;
-        this.s3Config = s3Config;
+        this.planTakeInRepository = planTakeInRepository;
     }
 
     @Override
@@ -244,6 +244,11 @@ public class PlanServiceImpl implements PlanService {
         List<PlanTagMap> planTagMaps = plan.getPlanTagMaps();
         for (PlanTagMap planTag : planTagMaps) {
             planTagMapRepository.delete(planTag);
+        }
+
+        List<PlanTakeIn> planTakeIns = planTakeInRepository.findByPlan_PlanId(planId);
+        for (PlanTakeIn planTakeIn : planTakeIns) {
+            planTakeInRepository.delete(planTakeIn);
         }
 
         // Plan 엔티티를 삭제합니다.

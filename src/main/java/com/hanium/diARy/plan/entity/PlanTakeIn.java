@@ -18,7 +18,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @IdClass(PlanTakeInId.class)
 public class PlanTakeIn {
     @Id
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "plan_id")
     private Plan plan;
 
