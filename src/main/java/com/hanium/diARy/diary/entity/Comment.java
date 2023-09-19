@@ -5,6 +5,8 @@ import com.hanium.diARy.user.entity.User;
 import lombok.Data;
 import jakarta.persistence.*;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,14 +29,14 @@ public class Comment {
     private String content;
 
     @Column(name = "created_at", nullable = false)
-    private Date createdAt;
+    private Timestamp createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(name = "updated_at", nullable = false)
-    private Date updatedAt;
+    private Timestamp updatedAt;
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
     @Column(name = "reply_id")
@@ -42,15 +44,14 @@ public class Comment {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = new java.sql.Date(Instant.now().toEpochMilli());
-        this.updatedAt = new java.sql.Date(Instant.now().toEpochMilli());
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = new java.sql.Date(Instant.now().toEpochMilli());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
-
 
     @Override
     public String toString() {

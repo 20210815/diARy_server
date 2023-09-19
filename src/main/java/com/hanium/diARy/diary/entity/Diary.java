@@ -6,6 +6,7 @@ import com.hanium.diARy.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +29,10 @@ public class Diary {
     private String memo;
 
     @Column(name = "created_at", nullable = false)
-    private Date createdAt;
+    private Timestamp createdAt;
 
     @Column(name = "updated_at")
-    private Date updatedAt;
+    private Timestamp updatedAt;
 
     @Column(name = "satisfaction", nullable = false)
     private int satisfaction;
@@ -72,13 +73,12 @@ public class Diary {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = new Date(Instant.now().toEpochMilli());
-        this.updatedAt = new Date(Instant.now().toEpochMilli());
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = new Date(Instant.now().toEpochMilli());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
-
 }

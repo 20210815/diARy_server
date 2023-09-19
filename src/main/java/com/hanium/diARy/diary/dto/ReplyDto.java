@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
@@ -17,8 +18,8 @@ public class ReplyDto {
     private Long commentId;
     private Long diaryId;
     private String content;
-    private Date createdAt;
-    private Date updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     private UserDto userDto;
 
 }
