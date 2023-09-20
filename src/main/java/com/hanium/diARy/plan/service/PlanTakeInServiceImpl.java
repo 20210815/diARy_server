@@ -1,8 +1,8 @@
 package com.hanium.diARy.plan.service;
 
 import com.hanium.diARy.plan.entity.Plan;
-import com.hanium.diARy.plan.entity.PlanLike;
 import com.hanium.diARy.plan.entity.PlanTakeIn;
+import com.hanium.diARy.plan.repository.PlanLocationRepository;
 import com.hanium.diARy.plan.repository.PlanRepository;
 import com.hanium.diARy.plan.repository.PlanTakeInRepository;
 import com.hanium.diARy.user.entity.User;
@@ -15,11 +15,13 @@ public class PlanTakeInServiceImpl implements PlanTakeInService{
     private final PlanTakeInRepository planTakeInRepository;
     private final PlanRepository planRepository;
     private final UserRepositoryInterface userRepositoryInterface;
+    private final PlanLocationRepository planLocationRepository;
 
-    public PlanTakeInServiceImpl(PlanTakeInRepository planTakeInRepository, PlanRepository planRepository, UserRepositoryInterface userRepositoryInterface) {
+    public PlanTakeInServiceImpl(PlanTakeInRepository planTakeInRepository, PlanRepository planRepository, UserRepositoryInterface userRepositoryInterface, PlanLocationRepository planLocationRepository) {
         this.planTakeInRepository = planTakeInRepository;
         this.planRepository = planRepository;
         this.userRepositoryInterface = userRepositoryInterface;
+        this.planLocationRepository = planLocationRepository;
     }
 
     @Override
@@ -44,6 +46,10 @@ public class PlanTakeInServiceImpl implements PlanTakeInService{
         newPlan.setTravelStart(existingPlan.getTravelStart());
         newPlan.setTravelEnd(existingPlan.getTravelEnd());
         newPlan.setPublic(existingPlan.isPublic());
+        newPlan.setPlanLocations(existingPlan.getPlanLocations());
+        newPlan.setImageData(existingPlan.getImageData());
+        newPlan.setImageUri(existingPlan.getImageUri());
+        newPlan.setPlanTagMaps(existingPlan.getPlanTagMaps());
 
         // 새로운 Plan 엔티티를 저장
         Plan savedPlan = planRepository.save(newPlan);
