@@ -90,6 +90,7 @@ public class DiaryRepository{
         diaryEntity.setMemo(diaryInfo.getMemo());
         diaryEntity.setTravelStart(diaryInfo.getTravelStart());
         diaryEntity.setTravelEnd(diaryInfo.getTravelEnd());
+        BeanUtils.copyProperties(diaryInfo, diaryEntity);
 
         //entity 저장
         diaryRepositoryInterface.save(diaryEntity);
@@ -272,7 +273,13 @@ public class DiaryRepository{
     @Transactional
     public void updateDiary(Long id, DiaryRequestDto requestDto) throws URISyntaxException, IOException {
         Diary diaryEntity = this.diaryRepositoryInterface.findById(id).get();
+
         if (requestDto.getDiaryDto() != null) {
+            if(requestDto.getDiaryDto().getImageData() != null) {
+                diaryEntity.setImageData(requestDto.getDiaryDto().getImageData());
+                diaryEntity.setImageUri(requestDto.getDiaryDto().getImageUri());
+            }
+
             if (requestDto.getDiaryDto().getTags() == null) {
                 diaryEntity.getTags().clear();
             }

@@ -30,6 +30,8 @@ public class DiaryDto {
     private List<DiaryLikeDto> likes = new ArrayList<>();
     private int likesCount;
     private List<CommentDto> comments = new ArrayList<>();
+    private String imageData;
+    private String imageUri;
 
 }
 

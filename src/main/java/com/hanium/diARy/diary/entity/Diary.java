@@ -70,6 +70,11 @@ public class Diary {
     @Column(name = "comment_id")
     private List<Comment> comments = new ArrayList<>();
 
+    @Column(name = "image_data")
+    private String imageData;
+
+    @Column(name = "image_uri")
+    private String imageUri;
 
     @PrePersist
     protected void onCreate() {
