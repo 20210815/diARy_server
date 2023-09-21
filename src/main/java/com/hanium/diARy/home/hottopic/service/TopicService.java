@@ -33,13 +33,8 @@ public class TopicService {
 
     public List<HottopicDto> readBestDiaryTag() {
         //3순위까지만
-        List<DiaryTag> diaryTags;
-        if (tagRepository.DescDiaryTag().size() <= 3) {
-            diaryTags = tagRepository.DescDiaryTag();
-        }
-        else {
-            diaryTags = tagRepository.DescDiaryTag().subList(0,3);
-        }
+        System.out.println("hottopic 시작");
+        List<DiaryTag> diaryTags = tagRepository.DescDiaryTag();
         List<HottopicDto> hottopicDtos = new ArrayList<>();
 
         for (DiaryTag diaryTag : diaryTags) {

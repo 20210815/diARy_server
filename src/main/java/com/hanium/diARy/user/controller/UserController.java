@@ -63,16 +63,12 @@ public class UserController {
     @GetMapping("/diary")
     public List<DiaryResponseDto> readUserDiary() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        User user = userRepositoryInterface.findByEmail(email);
-        return this.userService.readUserDiary(user.getUserId());
+        return this.userService.readUserDiary(authentication.getName());
     }
 
     @GetMapping("/mypage")
     public UserDto readUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        User user = userRepositoryInterface.findByEmail(email);
-        return this.userService.readUser(user.getUserId());
+        return this.userService.readUser(authentication.getName());
     }
 }

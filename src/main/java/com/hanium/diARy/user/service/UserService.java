@@ -95,9 +95,9 @@ public class UserService {
         return userCommentReplyDtos;
     }
 
-    public List<DiaryResponseDto> readUserDiary(Long userId) {
+    public List<DiaryResponseDto> readUserDiary(String email) {
         System.out.println("service");
-        List<Diary> diaries = diaryRepositoryInterface.findByUser_UserId(userId);
+        List<Diary> diaries = diaryRepositoryInterface.findByUser_Email(email);
         List<DiaryResponseDto> diaryResponseDtos = new ArrayList<>();
 
         for (Diary diary: diaries) {
@@ -110,8 +110,8 @@ public class UserService {
        return diaryResponseDtos;
     }
 
-    public UserDto readUser(Long userId) {
-        User user = this.userRepositoryInterface.findById(userId).get();
+    public UserDto readUser(String email) {
+        User user = this.userRepositoryInterface.findByEmail(email);
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(user, userDto);
         userDto.setUserId(user.getUserId());

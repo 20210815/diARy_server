@@ -53,26 +53,29 @@ public class TagRepository {
 
     //정렬
     public List<DiaryTag> DescDiaryTag() {
-        Iterator<DiaryTag> diaryTagIterator = tagRepositoryInterface.findAll().iterator();
+//        Iterator<DiaryTag> diaryTagIterator = tagRepositoryInterface.findAll().iterator();
 
-        while (diaryTagIterator.hasNext()) {
-            DiaryTag diaryTag = diaryTagIterator.next();
-            List<Diary> diaries = diaryRepositoryInterface.findByTags(diaryTag);
-
-            // 해당 태그와 관련된 모든 Diary를 가져옴
-            List<Diary> tagDiary = diaryTag.getDiaries();
-
-            // diaries에는 포함되지만 tagDiary에는 포함되지 않은 Diary를 찾아서 추가-
-            for (Diary diary : diaries) {
-                if (!tagDiary.contains(diary)) {
-                    diaryTag.getDiaries().add(diary);
-                }
-            }
-            diaryTag.setNumber(diaryTag.getDiaries().size());
-            tagRepositoryInterface.save(diaryTag);
-        }
+//        while (diaryTagIterator.hasNext()) {
+//            DiaryTag diaryTag = diaryTagIterator.next();
+//            List<Diary> diaries = diaryRepositoryInterface.findByTags(diaryTag);
+//
+//            // 해당 태그와 관련된 모든 Diary를 가져옴
+//            List<Diary> tagDiary = diaryTag.getDiaries();
+//
+//            // diaries에는 포함되지만 tagDiary에는 포함되지 않은 Diary를 찾아서 추가-
+//            for (Diary diary : diaries) {
+//                if (!tagDiary.contains(diary)) {
+//                    diaryTag.getDiaries().add(diary);
+//                }
+//            }
+//            diaryTag.setNumber(diaryTag.getDiaries().size());
+//            tagRepositoryInterface.save(diaryTag);
+//        }
 
         List<DiaryTag> diaryTags = tagRepositoryInterface.findAllByOrderByNumberDesc();
+        if (diaryTags.size() >= 3) {
+            diaryTags = diaryTags.subList(0,3);
+        }
 
         System.out.println(diaryTags);
         return diaryTags;

@@ -11,15 +11,12 @@ import java.util.List;
 
 public interface DiaryRepositoryInterface extends CrudRepository<Diary, Long> {
     public List<Diary> findByIsPublicTrue();
-    public List<Diary> findByUser(User user);
     public List<Diary> findByUser_UserId(Long userId);
-    public List<Diary> findByIsPublicTrueOrderByLikesCountDesc();
+    public List<Diary> findByUser_Email(String email);
 
     public List<Diary> findByUserUsernameContaining(String name);
 
     public List<Diary> findByTravelDestContaining(String dest);
-
-    public List<Diary> findByTagsAndIsPublicTrue(DiaryTag diaryTag);
 
     public List<Diary> findByTags(DiaryTag diaryTag);
 }
