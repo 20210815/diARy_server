@@ -30,10 +30,10 @@ public class DiaryLocation {
     @Column(name = "time_end")
     private Time timeEnd;
 
-    @Column(name = "content", length = 100)
+    @Column(name = "content", length = 1000)
     private String content = "";
 
-    @Column(name = "name", length = 20)
+    @Column(name = "name")
     private String name;
 
     private String address;
