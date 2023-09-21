@@ -130,6 +130,12 @@ public class PlanServiceImpl implements PlanService {
             if (planDto.isPublic() != existingPlan.isPublic()) {
                 existingPlan.setPublic(planDto.isPublic());
             }
+            if(planDto.getImageData() != null) {
+                existingPlan.setImageData(planDto.getImageData());
+            }
+            if(planDto.getImageUri() != null) {
+                 existingPlan.setImageUri(planDto.getImageUri());
+            }
         }
 
         List<PlanLocationDto> planLocationDtos = request.getLocations();
