@@ -45,7 +45,7 @@ public class RankService {
 
         List<Plan> sortedPlans = plans.stream()
                 .sorted((plan1, plan2) -> Integer.compare(plan2.getPlanLikes().size(), plan1.getPlanLikes().size()))
-                .limit(20) // 상위 20개 Plan만 반환
+                .limit(10) // 상위 20개 Plan만 반환
                 .collect(Collectors.toList());
 
         for (Plan plan : sortedPlans) {
