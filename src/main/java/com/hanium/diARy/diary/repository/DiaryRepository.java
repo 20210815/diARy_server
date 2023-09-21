@@ -112,11 +112,15 @@ public class DiaryRepository{
                 if((diaryLocationDto.getContent() == "")||(diaryLocationDto.getContent() == null)) {
                     BeanUtils.copyProperties(diaryLocationDto, location);
                     location.setContent("");
-                    positive = 0.0;
                 }
                 else {
                     BeanUtils.copyProperties(diaryLocationDto, location);
                     positive = this.clovaService.performSentimentAnalysis(diaryLocationDto.getContent());
+                    //감정분석 평균으로 diaryEntity에 만족도 저장
+                    score += positive;
+                    i++;
+                    Math.round(positive);
+
                 }
                 location.setDiary(diaryEntity);
                 savedLocations.add(location);
@@ -125,10 +129,6 @@ public class DiaryRepository{
                 System.out.println(positive);
                 System.out.println("createdDiary - location 생성 결과 " + location);
 
-                //감정분석 평균으로 diaryEntity에 만족도 저장
-                score += positive;
-                i++;
-                Math.round(positive);
 
 
                 //address 있는지 확인 후에 없으면 새로운 객체 생성
@@ -346,16 +346,16 @@ public class DiaryRepository{
                 if((diaryLocationDto.getContent() == "")||(diaryLocationDto.getContent() == null)) {
                     BeanUtils.copyProperties(diaryLocationDto, diaryLocation);
                     diaryLocation.setContent("");
-                    positive = 0.0;
                 }
                 else {
                     BeanUtils.copyProperties(diaryLocationDto, diaryLocation);
                     positive = this.clovaService.performSentimentAnalysis(diaryLocationDto.getContent());
+                    score += positive;
+                    i++;
+                    Math.round(positive);
                 }
                 //감정분석 평균으로 diaryEntity에 만족도 저장
-                score += positive;
-                i++;
-                Math.round(positive);
+
 
                 if (!(addressRepositoryInterface.existsByXAndY(diaryLocationDto.getX(), diaryLocation.getY()))) {
                     Address address = new Address();
