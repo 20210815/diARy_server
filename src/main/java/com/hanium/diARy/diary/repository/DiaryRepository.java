@@ -75,6 +75,7 @@ public class DiaryRepository{
 
     @Transactional
     public Long createDiary(DiaryRequestDto diaryDto) throws URISyntaxException, IOException {
+        System.out.println(diaryDto.getDiaryLocationDtoList());
         // 다이어리 작성 dto -> entity
         DiaryDto diaryInfo = diaryDto.getDiaryDto();
         Diary diaryEntity = new Diary();
@@ -101,28 +102,31 @@ public class DiaryRepository{
         //DiarylocationDto는 따로 떼어서 저장
         List<DiaryLocationDto> diaryLocationDtoList = diaryDto.getDiaryLocationDtoList();
         int score = 0;
-        int i = 0;
         List<DiaryLocation> savedLocations = new ArrayList<>();
         if (diaryLocationDtoList != null) {
             for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
                 DiaryLocation location = new DiaryLocation();
                 Double positive = 0.0;
-                
-                //null이거나 빈칸이면 그냥 0이도록
-                if((diaryLocationDto.getContent() == "")||(diaryLocationDto.getContent() == null)) {
-                    BeanUtils.copyProperties(diaryLocationDto, location);
+
+                //저장을 해야 set이 될 듯
+                BeanUtils.copyProperties(diaryLocationDto, location);
+                location.setDiary(diaryEntity);
+                diaryLocationRepositoryInterface.save(location);
+
+
+                //null이거나 빈칸이면 그냥 50이도록
+                if((Objects.equals(diaryLocationDto.getContent(), ""))||(diaryLocationDto.getContent() == null)) {
                     location.setContent("");
-                }
-                else {
-                    BeanUtils.copyProperties(diaryLocationDto, location);
-                    positive = this.clovaService.performSentimentAnalysis(diaryLocationDto.getContent());
-                    //감정분석 평균으로 diaryEntity에 만족도 저장
-                    score += positive;
-                    i++;
-                    Math.round(positive);
+                    positive = 50.0;
+                    location.setLocationSatisfaction((int) Math.round(positive));
 
                 }
-                location.setDiary(diaryEntity);
+                else {
+                    positive = this.clovaService.performSentimentAnalysis(diaryLocationDto.getContent());
+                    location.setLocationSatisfaction((int) Math.round(positive));
+                }
+                score += positive.intValue();
+                //일기에 추가할 것
                 savedLocations.add(location);
                 diaryLocationRepositoryInterface.save(location);
 
@@ -149,10 +153,10 @@ public class DiaryRepository{
             diaryEntity.setDiaryLocations(savedLocations);
 
             try {
-                if (i == 0) {
+                if (savedLocations.isEmpty()) {
                     throw new ArithmeticException("Dividing by zero");
                 }
-                score /= i;
+                score /= savedLocations.size();
             } catch (ArithmeticException e) {
                 // 0으로 나누는 오류가 발생한 경우에 대한 예외 처리 코드
                 System.err.println("Error: " + e.getMessage());
@@ -160,9 +164,8 @@ public class DiaryRepository{
                 score = 0;
             }
 
-
-
             System.out.println(score);
+            //저장 후에 여기서 만족도 저장
             diaryEntity.setSatisfaction(score);
         }
 
@@ -272,6 +275,7 @@ public class DiaryRepository{
 
     @Transactional
     public void updateDiary(Long id, DiaryRequestDto requestDto) throws URISyntaxException, IOException {
+        System.out.println("수정!!!" + requestDto.getDiaryLocationDtoList());
         Diary diaryEntity = this.diaryRepositoryInterface.findById(id).get();
 
         if (requestDto.getDiaryDto() != null) {
@@ -331,31 +335,38 @@ public class DiaryRepository{
                 }
             }
         }
-
+        System.out.println("여기까지 들어옴");
+        int score = 0;
         List<DiaryLocationDto> diaryLocationDtoList = requestDto.getDiaryLocationDtoList();
+        diaryEntity.getDiaryLocations().clear();
         if (diaryLocationDtoList != null) {
-            diaryEntity.getDiaryLocations().clear();
+            
+            //저장할 것
             List<DiaryLocation> savedLocations = new ArrayList<>();
-            int score = 0;
-            int i = 0;
+            
             for (DiaryLocationDto diaryLocationDto : diaryLocationDtoList) {
+                
                 DiaryLocation diaryLocation = new DiaryLocation();
                 Double positive = 0.0;
                 BeanUtils.copyProperties(diaryLocationDto, diaryLocation);
-                //null이거나 빈칸이면 그냥 0이도록
-                if((diaryLocationDto.getContent() == "")||(diaryLocationDto.getContent() == null)) {
-                    BeanUtils.copyProperties(diaryLocationDto, diaryLocation);
+                diaryLocation.setDiary(diaryEntity);
+                diaryLocationRepositoryInterface.save(diaryLocation);
+                System.out.println("일단 저장");
+                
+                //null이거나 빈칸이면 그냥 50이도록
+                if((Objects.equals(diaryLocationDto.getContent(), ""))||(diaryLocationDto.getContent() == null)) {
                     diaryLocation.setContent("");
+                    positive = 50.0;
+                    diaryLocation.setLocationSatisfaction((int) Math.round(positive));
                 }
                 else {
-                    BeanUtils.copyProperties(diaryLocationDto, diaryLocation);
                     positive = this.clovaService.performSentimentAnalysis(diaryLocationDto.getContent());
-                    score += positive;
-                    i++;
-                    Math.round(positive);
+                    diaryLocation.setLocationSatisfaction((int) Math.round(positive));
                 }
-                //감정분석 평균으로 diaryEntity에 만족도 저장
-
+                
+                //감정분석 평균으로 diaryEntity에 만족도 저장 하나하나씩 저장
+                score += positive.intValue();
+                System.out.println("score" + score);
 
                 if (!(addressRepositoryInterface.existsByXAndY(diaryLocationDto.getX(), diaryLocation.getY()))) {
                     Address address = new Address();
@@ -375,35 +386,34 @@ public class DiaryRepository{
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                diaryLocation.setDiary(diaryEntity);
 
-                try {
-                    if (i == 0) {
-                        throw new ArithmeticException("Dividing by zero");
-                    }
-                    score /= i;
-                } catch (ArithmeticException e) {
-                    // 0으로 나누는 오류가 발생한 경우에 대한 예외 처리 코드
-                    System.err.println("Error: " + e.getMessage());
-                    // 이 부분에 오류 처리 또는 메시지 출력에 필요한 로직을 추가하세요.
-                    score = 0;
-                }
+
                 diaryLocationRepositoryInterface.save(diaryLocation);
-
+                System.out.println("이미지 저장하기");
                 List<DiaryLocationImageDto> diaryLocationImageDtoList = diaryLocationDto.getDiaryLocationImageDtoList();
-                if(diaryLocationImageDtoList != null) {
+                if((diaryLocationImageDtoList != null)) {
                     // DiaryLocationImage 저장
                     diaryLocationImageRepository.createImage(diaryLocationImageDtoList, diaryLocation.getDiaryLocationId());
                 }
+                System.out.println("저장 완료");
 
-                System.out.println(score);
-                diaryEntity.setSatisfaction(score);
-                diaryRepositoryInterface.save(diaryEntity);
-
-                savedLocations.add(diaryLocation);
                 diaryLocationRepositoryInterface.save(diaryLocation);
+                savedLocations.add(diaryLocation);
             }
-            tagRepository.DescDiaryTag();
+
+            try {
+                if (savedLocations.isEmpty()) {
+                    throw new ArithmeticException("Dividing by zero");
+                }
+                score /= savedLocations.size();
+            } catch (ArithmeticException e) {
+                // 0으로 나누는 오류가 발생한 경우에 대한 예외 처리 코드
+                System.err.println("Error: " + e.getMessage());
+                // 이 부분에 오류 처리 또는 메시지 출력에 필요한 로직을 추가하세요.
+                score = 0;
+            }
+            diaryEntity.setSatisfaction(score);
+            System.out.println("가진 location" + diaryEntity.getDiaryLocations());
         }
 
 //        DiaryDto updatedDiaryDto = new DiaryDto();

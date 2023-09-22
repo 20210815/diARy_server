@@ -53,6 +53,7 @@ public class DiaryLocationRepository {
             diaryLocationDto.setAddress(diaryLocation.getAddress());
             diaryLocationDto.setX(diaryLocation.getX());
             diaryLocationDto.setY(diaryLocation.getY());
+            diaryLocationDto.setLocationSatisfaction(diaryLocation.getLocationSatisfaction());
 
             diaryLocationDto.setTimeEnd(diaryLocation.getTimeEnd());
             diaryLocationDto.setTimeStart(diaryLocation.getTimeStart());

@@ -23,5 +23,6 @@ public class DiaryLocationDto {
     private String address;
     private String x;
     private String y;
+    private int locationSatisfaction;
     private List<DiaryLocationImageDto> diaryLocationImageDtoList;
 }

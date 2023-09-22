@@ -40,6 +40,9 @@ public class DiaryLocation {
     private String x;
     private String y;
 
+    @Column(name = "location_satisfaction")
+    private int locationSatisfaction = 50;
+
     @OneToMany(mappedBy = "diaryLocation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DiaryLocationImage> images = new ArrayList<>();
 
