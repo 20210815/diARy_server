@@ -25,7 +25,8 @@ public class PlanTakeInController {
         User user = userRepositoryInterface.findByEmail(userEmail);
         Long userId = user.getUserId();
 
-        planTakeInService.createPlanTakeIn(planId, userId);
+//        planTakeInService.createPlanTakeIn(planId, userId);
+        planTakeInService.createPlanTakeIn(planId, user);
         return new ResponseEntity<>("일정 담기", HttpStatus.OK);
     }
 

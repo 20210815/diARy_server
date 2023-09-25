@@ -1,15 +1,11 @@
 package com.hanium.diARy.plan.service;
 
-import com.hanium.diARy.plan.dto.PlanLocationDto;
 import com.hanium.diARy.plan.dto.PlanTagDto;
 import com.hanium.diARy.plan.entity.*;
-import com.hanium.diARy.plan.repository.PlanLocationRepository;
-import com.hanium.diARy.plan.repository.PlanRepository;
-import com.hanium.diARy.plan.repository.PlanTakeInRepository;
+import com.hanium.diARy.plan.repository.*;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,22 +17,21 @@ public class PlanTakeInServiceImpl implements PlanTakeInService{
     private final PlanRepository planRepository;
     private final UserRepositoryInterface userRepositoryInterface;
     private final PlanLocationRepository planLocationRepository;
+    private final PlanTagRepository planTagRepository;
+    private final PlanTagMapRepository planTagMapRepository;
 
-    public PlanTakeInServiceImpl(PlanTakeInRepository planTakeInRepository, PlanRepository planRepository, UserRepositoryInterface userRepositoryInterface, PlanLocationRepository planLocationRepository) {
+    public PlanTakeInServiceImpl(PlanTakeInRepository planTakeInRepository, PlanRepository planRepository, UserRepositoryInterface userRepositoryInterface, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanTagMapRepository planTagMapRepository1) {
         this.planTakeInRepository = planTakeInRepository;
         this.planRepository = planRepository;
         this.userRepositoryInterface = userRepositoryInterface;
         this.planLocationRepository = planLocationRepository;
+        this.planTagRepository = planTagRepository;
+        this.planTagMapRepository = planTagMapRepository1;
     }
 
     @Override
-    public void createPlanTakeIn(Long planId, Long userId) {
-        PlanTakeIn planTakeIn = new PlanTakeIn();
-
-        User user = new User();
-        user.setUserId(userId);
-        planTakeIn.setUser(user);
-
+    @Transactional
+    public void createPlanTakeIn(Long planId, User user) {
         Plan existingPlan = planRepository.findById(planId).orElse(null);
         if (existingPlan == null) {
             throw new IllegalArgumentException("Plan with the given planId does not exist.");
@@ -45,7 +40,7 @@ public class PlanTakeInServiceImpl implements PlanTakeInService{
         // 새로운 Plan 엔티티를 생성하고 필요한 정보를 복사
         Plan newPlan = new Plan();
         newPlan.setUser(user); // 현재 사용자를 작성자로 설정
-        newPlan.setOrigin(existingPlan.getUser()); // 원래 작성자를 원작자로 설정
+        newPlan.setOrigin(existingPlan.getOrigin()); // 원래 작성자를 원작자로 설정
         newPlan.setTravelDest(existingPlan.getTravelDest());
         newPlan.setContent(existingPlan.getContent());
         newPlan.setTravelStart(existingPlan.getTravelStart());
@@ -53,45 +48,55 @@ public class PlanTakeInServiceImpl implements PlanTakeInService{
         newPlan.setPublic(existingPlan.isPublic());
         newPlan.setImageData(existingPlan.getImageData());
         newPlan.setImageUri(existingPlan.getImageUri());
-//        newPlan.setPlanTagMaps(existingPlan.getPlanTagMaps());
 
-        // 새로운 Plan 엔티티를 저장
-        Plan savedPlan = planRepository.save(newPlan);
-        planTakeIn.setPlan(savedPlan);
+        // 새로운 Plan 엔티티 저장
+        planRepository.save(newPlan);
 
-        List<PlanLocationDto> planLocationDtos = new ArrayList<>();
-        for (PlanLocation location : existingPlan.getPlanLocations()) {
-            PlanLocationDto planLocationDto = new PlanLocationDto();
-            BeanUtils.copyProperties(location, planLocationDto);
-            planLocationDtos.add(planLocationDto);
-        }
+        // PlanTakeIn 엔티티 생성
+        PlanTakeIn planTakeIn = new PlanTakeIn();
+        planTakeIn.setPlan(newPlan);
+        planTakeIn.setUser(user);
 
-        List<PlanLocation> planLocations = new ArrayList<>();
-        for (PlanLocationDto planLocationDto : planLocationDtos) { // 적절한 PlanLocationDto 목록을 가져와서 사용해야 합니다.
-            PlanLocation location = new PlanLocation();
-            BeanUtils.copyProperties(planLocationDto, location);
-            location.setPlan(savedPlan);
-            planLocations.add(location);
-        }
-
-//        List<PlanTagDto> planTagDtos = new ArrayList<>();
-//        for (PlanTagMap planTagMap : existingPlan.getPlanTagMaps()) {
-//            PlanTagDto planTagDto = new PlanTagDto();
-//            BeanUtils.copyProperties(planTagMap.getPlanTag(), planTagDto);
-//            planTagDtos.add(planTagDto);
-//        }
-
-//        List<PlanTag> planTags = new ArrayList<>();
-//        for (PlanTagDto planTagDto : planTags) {
-//            PlanTagMap planTagmap = new PlanTagMap();
-//            BeanUtils.copyProperties(planTagDto, planTagmap);
-//            planTagmap.setPlan(existingPlan);
-//            planTagmap.setPlanTag(pla);
-//
-//
-//        }
+        // PlanTakeIn 엔티티 저장
         planTakeInRepository.save(planTakeIn);
-        planLocationRepository.saveAll(planLocations);
+
+        List<PlanLocation> existingLocations = existingPlan.getPlanLocations();
+        List<PlanLocation> newLocations = new ArrayList<>();
+
+        for (PlanLocation existingLocation : existingLocations) {
+            PlanLocation newLocation = new PlanLocation();
+            newLocation.setPlan(newPlan);
+            newLocation.setName(existingLocation.getName());
+            newLocation.setX(existingLocation.getX());
+            newLocation.setY(existingLocation.getY());
+            newLocation.setAddress(existingLocation.getAddress());
+            newLocation.setDate(existingLocation.getDate());
+            newLocation.setTimeStart(existingLocation.getTimeStart());
+            newLocation.setTimeEnd(existingLocation.getTimeEnd());
+
+            newLocations.add(newLocation);
+        }
+
+        // 새로운 PlanLocation 엔티티들 저장
+        planLocationRepository.saveAll(newLocations);
+
+        List<PlanTagMap> existingTagMaps = existingPlan.getPlanTagMaps();
+        List<PlanTagMap> newTags = new ArrayList<>();
+        for (PlanTagMap planTagMap : existingTagMaps) {
+            // PlanTag 엔티티 생성 또는 가져오기
+            PlanTag planTag = planTagRepository.findByName(planTagMap.getPlanTag().getName());
+            if (planTag == null) {
+                planTag = new PlanTag();
+                planTag.setName(planTagMap.getPlanTag().getName());
+                planTag = planTagRepository.save(planTag);
+            }
+
+            PlanTagMap newPlanTagMap = new PlanTagMap();
+            newPlanTagMap.setPlan(newPlan);
+            newPlanTagMap.setPlanTag(planTag);
+            newTags.add(newPlanTagMap);
+            planTagMapRepository.save(newPlanTagMap);
+        }
     }
 
     @Override
