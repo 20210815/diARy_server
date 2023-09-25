@@ -1,20 +1,13 @@
 package com.hanium.diARy.plan.service;
 
-import com.hanium.diARy.plan.dto.PlanLocationDto;
 import com.hanium.diARy.plan.dto.PlanTagDto;
 import com.hanium.diARy.plan.entity.*;
-import com.hanium.diARy.plan.repository.PlanLocationRepository;
-import com.hanium.diARy.plan.repository.PlanRepository;
-import com.hanium.diARy.plan.repository.PlanTakeInRepository;
+import com.hanium.diARy.plan.repository.*;
 import com.hanium.diARy.user.entity.User;
 import com.hanium.diARy.user.repository.UserRepositoryInterface;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +17,16 @@ public class PlanTakeInServiceImpl implements PlanTakeInService{
     private final PlanRepository planRepository;
     private final UserRepositoryInterface userRepositoryInterface;
     private final PlanLocationRepository planLocationRepository;
+    private final PlanTagRepository planTagRepository;
+    private final PlanTagMapRepository planTagMapRepository;
 
-    public PlanTakeInServiceImpl(PlanTakeInRepository planTakeInRepository, PlanRepository planRepository, UserRepositoryInterface userRepositoryInterface, PlanLocationRepository planLocationRepository) {
+    public PlanTakeInServiceImpl(PlanTakeInRepository planTakeInRepository, PlanRepository planRepository, UserRepositoryInterface userRepositoryInterface, PlanLocationRepository planLocationRepository, PlanTagRepository planTagRepository, PlanTagMapRepository planTagMapRepository1) {
         this.planTakeInRepository = planTakeInRepository;
         this.planRepository = planRepository;
         this.userRepositoryInterface = userRepositoryInterface;
         this.planLocationRepository = planLocationRepository;
+        this.planTagRepository = planTagRepository;
+        this.planTagMapRepository = planTagMapRepository1;
     }
 
     @Override
@@ -39,10 +36,6 @@ public class PlanTakeInServiceImpl implements PlanTakeInService{
         if (existingPlan == null) {
             throw new IllegalArgumentException("Plan with the given planId does not exist.");
         }
-
-//        User user = new User();
-//        user.setUserId(userId);
-
 
         // 새로운 Plan 엔티티를 생성하고 필요한 정보를 복사
         Plan newPlan = new Plan();
@@ -87,82 +80,23 @@ public class PlanTakeInServiceImpl implements PlanTakeInService{
         // 새로운 PlanLocation 엔티티들 저장
         planLocationRepository.saveAll(newLocations);
 
-//        List<PlanLocationDto> planLocationDtos = new ArrayList<>();
-//        for (PlanLocation location : existingPlan.getPlanLocations()) {
-//            PlanLocationDto planLocationDto = new PlanLocationDto();
-//            BeanUtils.copyProperties(location, planLocationDto);
-//            planLocationDtos.add(planLocationDto);
-//        }
-//        System.out.println(planLocationDtos);
-//
-//        // 기존 PlanLocation 정보를 복사합니다.
-//        List<PlanLocation> planLocations = new ArrayList<>();
-//        for (PlanLocation location : existingPlan.getPlanLocations()) {
-//            PlanLocation newLocation = new PlanLocation();
-//            BeanUtils.copyProperties(location, newLocation);
-//            newLocation.setPlan(newPlan);
-//            System.out.println(newLocation);
-//            planLocations.add(newLocation);
-//        }
-//
-//        // 새로운 Plan 엔티티를 저장
-//        Plan savedPlan = planRepository.save(newPlan);
-//        planTakeIn.setPlan(savedPlan);
+        List<PlanTagMap> existingTagMaps = existingPlan.getPlanTagMaps();
+        List<PlanTagMap> newTags = new ArrayList<>();
+        for (PlanTagMap planTagMap : existingTagMaps) {
+            // PlanTag 엔티티 생성 또는 가져오기
+            PlanTag planTag = planTagRepository.findByName(planTagMap.getPlanTag().getName());
+            if (planTag == null) {
+                planTag = new PlanTag();
+                planTag.setName(planTagMap.getPlanTag().getName());
+                planTag = planTagRepository.save(planTag);
+            }
 
-
-//
-//        // 새로운 PlanLocation 정보를 저장합니다.
-//        for (PlanLocation newLocation : savedLocations) {
-//            planLocationRepository.save(newLocation);
-//        }
-
-//        List<PlanLocation> planLocations = new ArrayList<>();
-//        for (PlanLocationDto planLocationDto : planLocationDtos) { // 적절한 PlanLocationDto 목록을 가져와서 사용해야 합니다.
-//            PlanLocation location = new PlanLocation();
-//            BeanUtils.copyProperties(planLocationDto, location);
-//            location.setPlan(savedPlan);
-//            planLocations.add(location);
-//        }
-//        List<PlanLocation> savedLocations = new ArrayList<>();
-//        for (PlanLocationDto planLocationDto : planLocationDtos) {
-//            PlanLocation location = new PlanLocation();
-//            BeanUtils.copyProperties(planLocationDto, location);
-//            try {
-//                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-//                java.util.Date parsedStartTime = timeFormat.parse(String.valueOf(planLocationDto.getTimeStart()));
-//                java.util.Date parsedEndTime = timeFormat.parse(String.valueOf(planLocationDto.getTimeEnd()));
-//
-//                location.setTimeStart(new Time(parsedStartTime.getTime()));
-//                location.setTimeEnd(new Time(parsedEndTime.getTime()));
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//            location.setX(planLocationDto.getX());
-//            location.setY(planLocationDto.getY());
-//            location.setPlan(savedPlan);
-//            savedLocations.add(location);
-//            planLocationRepository.save(location);
-//        }
-
-//        List<PlanTagDto> planTagDtos = new ArrayList<>();
-//        for (PlanTagMap planTagMap : existingPlan.getPlanTagMaps()) {
-//            PlanTagDto planTagDto = new PlanTagDto();
-//            BeanUtils.copyProperties(planTagMap.getPlanTag(), planTagDto);
-//            planTagDtos.add(planTagDto);
-//        }
-
-        //        List<PlanTag> planTags = new ArrayList<>();
-//        for (PlanTagDto planTagDto : planTags) {
-//            PlanTagMap planTagmap = new PlanTagMap();
-//            BeanUtils.copyProperties(planTagDto, planTagmap);
-//            planTagmap.setPlan(existingPlan);
-//            planTagmap.setPlanTag(pla);
-//
-//
-//        }
-
-//        planTakeInRepository.save(planTakeIn);
-//        planLocationRepository.saveAll(planLocations);
+            PlanTagMap newPlanTagMap = new PlanTagMap();
+            newPlanTagMap.setPlan(newPlan);
+            newPlanTagMap.setPlanTag(planTag);
+            newTags.add(newPlanTagMap);
+            planTagMapRepository.save(newPlanTagMap);
+        }
     }
 
     @Override
